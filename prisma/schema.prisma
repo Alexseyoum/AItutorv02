@@ -20,7 +20,7 @@ model Post {
   userId String
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@map("post")
+  @@map("posts")
 }
 model User {
   id            String    @id
