@@ -33,13 +33,27 @@ export const RegisterForm = () => {
         body: JSON.stringify({ name, email, password }),
       });
 
-      const data = await response.json();
+      // Safe JSON parsing - check if response has content first
+      let data = null;
+      const contentType = response.headers.get("content-type");
+      
+      if (contentType && contentType.includes("application/json")) {
+        const text = await response.text();
+        if (text) {
+          try {
+            data = JSON.parse(text);
+          } catch (jsonError) {
+            console.error("JSON parse error:", jsonError);
+          }
+        }
+      }
 
       if (response.ok) {
         toast.success("Registration successful!");
         (event.target as HTMLFormElement).reset();
       } else {
-        toast.error(data.error || "Registration failed");
+        const errorMessage = data?.error || data?.message || `Registration failed (Status: ${response.status})`;
+        toast.error(errorMessage);
       }
     } catch (error) {
       toast.error("An error occurred during registration");
