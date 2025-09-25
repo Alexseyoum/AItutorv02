@@ -3,41 +3,32 @@
 import { Button } from "@/components/ui/button";
 import { LoadingSpinner } from "@/components/ui/loading-spinner";
 import { FormField } from "@/components/ui/form-field";
-import { signUp } from "@/lib/auth-client";
+import { authClient } from "@/lib/auth-client";
 import { useFormHandler } from "@/hooks/use-form-handler";
 import { BUTTON_STYLES, VALIDATION_MESSAGES } from "@/lib/constants";
 
-export const RegisterForm = () => {
+export const LoginForm = () => {
   const { isLoading, handleSubmit } = useFormHandler({
     redirectTo: "/profile",
-    successMessage: VALIDATION_MESSAGES.REGISTRATION_SUCCESS,
-    errorMessage: VALIDATION_MESSAGES.REGISTRATION_ERROR
+    successMessage: VALIDATION_MESSAGES.LOGIN_SUCCESS,
+    errorMessage: VALIDATION_MESSAGES.LOGIN_ERROR
   });
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     handleSubmit(
       event,
       async (formData) => {
-        const name = formData.get("name") as string;
         const email = formData.get("email") as string;
         const password = formData.get("password") as string;
         
-        return await signUp.email({ email, password, name });
+        return await authClient.signIn.email({ email, password });
       },
-      ["name", "email", "password"]
+      ["email", "password"]
     );
   };
 
   return (
     <form onSubmit={onSubmit} className="space-y-6">
-      <FormField
-        id="name"
-        label="Full Name"
-        placeholder="Enter your full name"
-        required
-        disabled={isLoading}
-      />
-
       <FormField
         id="email"
         label="Email Address"
@@ -51,7 +42,7 @@ export const RegisterForm = () => {
         id="password"
         label="Password"
         type="password"
-        placeholder="Create a strong password"
+        placeholder="Enter your password"
         required
         disabled={isLoading}
       />
@@ -62,9 +53,9 @@ export const RegisterForm = () => {
         disabled={isLoading}
       >
         {isLoading ? (
-          <LoadingSpinner text="Creating Account..." />
+          <LoadingSpinner text="Signing In..." />
         ) : (
-          "Create Account"
+          "Sign In"
         )}
       </Button>
     </form>
