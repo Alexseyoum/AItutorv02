@@ -9,6 +9,11 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  ADMIN
+}
+
 model Post {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
@@ -31,7 +36,11 @@ model User {
   email         String @unique
   emailVerified Boolean   
   image         String?
-  
+  role          UserRole  @default(USER)
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
   sessions      Session[]
   accounts      Account[]
   posts         Post[]
@@ -48,6 +57,7 @@ model Session {
   token     String    @unique
   ipAddress String?
   userAgent String?
+  impersonatedBy String?
   
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)

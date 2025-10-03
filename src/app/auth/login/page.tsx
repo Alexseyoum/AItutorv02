@@ -1,4 +1,4 @@
-import { RegisterForm } from "@/components/register-form";
+import { LoginForm } from "@/components/login-form";
 import { ReturnButton } from "@/components/return-button";
 import { SignInOauthButton } from "@/components/sign-in-oauth-button";
 import Link from "next/link";
@@ -9,16 +9,16 @@ export default function Page() {
       <div className="space-y-4">
         <ReturnButton href="/" label="Home" />
 
-        <h1 className="text-3xl font-bold">Register</h1>
+        <h1 className="text-3xl font-bold">Login</h1>
       </div>
 
       <div className="space-y-4">
-        <RegisterForm />
+        <LoginForm />
 
         <p className="text-muted-foreground text-sm">
-          Already have an account?{" "}
-          <Link href="/auth/login" className="hover:text-foreground">
-            Login
+          Don&apos;t have an account?{" "}
+          <Link href="/auth/register" className="hover:text-foreground">
+            Register
           </Link>
         </p>
       </div>
@@ -26,8 +26,8 @@ export default function Page() {
       <hr className="max-w-sm" />
 
       <div className="flex flex-col max-w-sm gap-4">
-        <SignInOauthButton provider="google" signUp />
-        <SignInOauthButton provider="github" signUp />
+        <SignInOauthButton provider="google" />
+        <SignInOauthButton provider="github" />
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Brain, Users, Zap, BookOpen, ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
+import { GetStartedButton } from "@/components/get-started-button";
 
 export default function Home() {
   return (
@@ -14,9 +15,6 @@ export default function Home() {
         <div className="flex items-center gap-4">
           <Button variant="ghost" asChild>
             <Link href="/auth/login">Sign In</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/auth/register">Get Started</Link>
           </Button>
         </div>
       </nav>
@@ -34,12 +32,9 @@ export default function Home() {
             interactive lessons, and adaptive learning paths tailored just for you.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <Button size="lg" className="text-lg px-8 py-6" asChild>
-              <Link href="/auth/register">
-                Start Learning Free
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </Link>
-            </Button>
+            <div className="flex justify-center">
+              <GetStartedButton />
+            </div>
             <Button variant="outline" size="lg" className="text-lg px-8 py-6">
               Watch Demo
             </Button>
@@ -164,12 +159,7 @@ export default function Home() {
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Join thousands of students who are already experiencing the power of AI-driven education.
           </p>
-          <Button size="lg" className="text-lg px-8 py-6" asChild>
-            <Link href="/auth/register">
-              Start Your Free Trial
-              <ArrowRight className="ml-2 h-5 w-5" />
-            </Link>
-          </Button>
+          <GetStartedButton />
         </div>
       </main>
 
