@@ -29,19 +29,39 @@ export const ChangePasswordForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="currentPassword">Current Password</Label>
-        <Input type="password" id="currentPassword" name="currentPassword" />
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
+      <div className="space-y-2">
+        <Label htmlFor="currentPassword" className="text-gray-700 dark:text-gray-300 font-medium">
+          Current Password
+        </Label>
+        <Input 
+          type="password" 
+          id="currentPassword" 
+          name="currentPassword" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter current password"
+        />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="newPassword">New Password</Label>
-        <Input type="password" id="newPassword" name="newPassword" />
+      <div className="space-y-2">
+        <Label htmlFor="newPassword" className="text-gray-700 dark:text-gray-300 font-medium">
+          New Password
+        </Label>
+        <Input 
+          type="password" 
+          id="newPassword" 
+          name="newPassword" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter new password"
+        />
       </div>
 
-      <Button type="submit" disabled={isPending}>
-        Change Password
+      <Button 
+        type="submit" 
+        disabled={isPending}
+        className="w-full h-12 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+      >
+        {isPending ? "Changing Password..." : "Change Password"}
       </Button>
     </form>
   );

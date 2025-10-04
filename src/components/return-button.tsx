@@ -9,9 +9,14 @@ interface ReturnButtonProps {
 
 export const ReturnButton = ({ href, label }: ReturnButtonProps) => {
   return (
-    <Button size="sm" asChild>
-      <Link href={href}>
-        <ArrowLeftIcon /> {label}
+    <Button 
+      variant="ghost" 
+      size="sm" 
+      asChild 
+      className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white hover:bg-white/50 dark:hover:bg-gray-800/50 backdrop-blur-sm"
+    >
+      <Link href={href} className="flex items-center gap-2">
+        <ArrowLeftIcon className="h-4 w-4" /> {label}
       </Link>
     </Button>
   );

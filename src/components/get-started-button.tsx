@@ -15,7 +15,7 @@ export const GetStartedButton = () => {
     );
   }
 
-  const href = session ? "/tutoring" : "/auth/login";
+  const href = session ? "/" : "/auth/login";
 
   return (
     <div className="flex flex-col items-center gap-4">

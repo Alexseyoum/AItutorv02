@@ -50,19 +50,39 @@ export const UpdateUserForm = ({ name, image }: UpdateUserFormProps) => {
   }
 
   return (
-    <form className="max-w-sm w-full space-y-4" onSubmit={handleSubmit}>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="name">Name</Label>
-        <Input id="name" name="name" defaultValue={name} />
+    <form className="w-full space-y-6" onSubmit={handleSubmit}>
+      <div className="space-y-2">
+        <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 font-medium">
+          Full Name
+        </Label>
+        <Input 
+          id="name" 
+          name="name" 
+          defaultValue={name} 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter your full name"
+        />
       </div>
 
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="image">Image</Label>
-        <Input id="image" name="image" defaultValue={image} />
+      <div className="space-y-2">
+        <Label htmlFor="image" className="text-gray-700 dark:text-gray-300 font-medium">
+          Profile Image URL
+        </Label>
+        <Input 
+          id="image" 
+          name="image" 
+          defaultValue={image} 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter image URL"
+        />
       </div>
 
-      <Button type="submit" disabled={isPending}>
-        Update User
+      <Button 
+        type="submit" 
+        disabled={isPending}
+        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-200"
+      >
+        {isPending ? "Updating..." : "Update Profile"}
       </Button>
     </form>
   );

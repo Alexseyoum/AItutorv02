@@ -32,28 +32,48 @@ export const LoginForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input type="email" id="email" name="email" />
+        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-medium">
+          Email
+        </Label>
+        <Input 
+          type="email" 
+          id="email" 
+          name="email" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter your email"
+        />
       </div>
 
       <div className="space-y-2">
         <div className="flex justify-between items-center gap-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-gray-700 dark:text-gray-300 font-medium">
+            Password
+          </Label>
           <Link
             href="/auth/forgot-password"
-            className="text-sm italic text-muted-foreground hover:text-foreground"
+            className="text-sm text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
           >
             Forgot password?
           </Link>
         </div>
 
-        <Input type="password" id="password" name="password" />
+        <Input 
+          type="password" 
+          id="password" 
+          name="password" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter your password"
+        />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        Login
+      <Button 
+        type="submit" 
+        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-200" 
+        disabled={isPending}
+      >
+        {isPending ? "Signing in..." : "Sign In"}
       </Button>
     </form>
   );

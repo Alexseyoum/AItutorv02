@@ -14,8 +14,12 @@ import {
   BookOpen, 
   Calculator,
   Sparkles,
-  MessageCircle
+  MessageCircle,
+  ArrowLeft,
+  Brain,
+  Settings
 } from "lucide-react";
+import Link from "next/link";
 
 interface Message {
   id: string;
@@ -37,6 +41,8 @@ interface TutorChatProps {
     interests: string[];
     pastEngagement: number;
   };
+  onBack?: () => void;
+  initialTopic?: string;
 }
 
 const suggestedQuestions = [
@@ -62,11 +68,13 @@ const suggestedQuestions = [
   }
 ];
 
-export default function TutorChat({ studentProfile }: TutorChatProps) {
+export default function TutorChat({ studentProfile, onBack, initialTopic }: TutorChatProps) {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: "welcome",
-      content: `Hi there! 👋 I'm your AI tutor, and I'm excited to help you learn today! Whether you need help with ${studentProfile?.subjects?.join(", ") || "any subject"}, want to practice problems, or just have questions, I'm here for you. What would you like to explore?`,
+      content: initialTopic 
+        ? `Great choice! Let's explore ${initialTopic} together. I'll adapt my explanations to your ${studentProfile?.learningStyle?.toLowerCase().replace('_', ' ')} learning style and ${studentProfile?.difficultyLevel?.toLowerCase()} level. What would you like to know first?`
+        : `Hi there! 👋 I'm your AI tutor, and I'm excited to help you learn today! Whether you need help with ${studentProfile?.subjects?.join(", ") || "any subject"}, want to practice problems, or just have questions, I'm here for you. What would you like to explore?`,
       type: "ai",
       timestamp: new Date()
     }
@@ -150,132 +158,180 @@ export default function TutorChat({ studentProfile }: TutorChatProps) {
 
   const TypingIndicator = () => (
     <div className="flex items-center space-x-2 p-4 max-w-xs">
-      <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full">
-        <Bot className="h-4 w-4 text-primary" />
+      <div className="flex items-center justify-center w-10 h-10 bg-purple-500/20 backdrop-blur-sm rounded-full border border-white/20">
+        <Bot className="h-5 w-5 text-purple-300" />
       </div>
-      <div className="bg-card rounded-2xl px-4 py-2 shadow-sm border">
+      <div className="bg-white/10 backdrop-blur-sm rounded-2xl px-4 py-2 border border-white/20">
         <div className="flex space-x-1">
-          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce"></div>
-          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
-          <div className="w-2 h-2 bg-muted-foreground/40 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
+          <div className="w-2 h-2 bg-purple-300 rounded-full animate-bounce"></div>
+          <div className="w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: "0.1s" }}></div>
+          <div className="w-2 h-2 bg-purple-300 rounded-full animate-bounce" style={{ animationDelay: "0.2s" }}></div>
         </div>
       </div>
     </div>
   );
 
   return (
-    <div className="flex flex-col h-full max-w-4xl mx-auto khan-card">
-      {/* Header */}
-      <div className="khan-gradient-primary text-white p-6 rounded-t-lg">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+      {/* Animated Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
+        <div className="absolute top-3/4 left-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+      </div>
+
+      {/* Navigation */}
+      <nav className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
-          <div className="p-2 bg-white/20 rounded-lg">
-            <MessageCircle className="h-6 w-6" />
+          <div className="relative">
+            <Brain className="h-10 w-10 text-purple-400" />
+            <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-ping"></div>
           </div>
-          <div>
-            <h2 className="text-xl font-semibold">AI Tutor Chat</h2>
-            <p className="text-white/90 text-sm">
-              {studentProfile ? (
-                `Grade ${studentProfile.gradeLevel} • ${studentProfile.learningStyle?.toLowerCase().replace('_', ' ')} learner • ${studentProfile.difficultyLevel?.toLowerCase()} level`
-              ) : (
-                "Ask me anything! I'm here to help you learn."
-              )}
+          <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+            TutorByAI
+          </span>
+        </div>
+        <div className="flex items-center gap-4">
+          {onBack ? (
+            <Button 
+              onClick={onBack}
+              variant="ghost" 
+              size="sm" 
+              className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Back to Dashboard
+            </Button>
+          ) : (
+            <Button asChild variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20">
+              <Link href="/">
+                <ArrowLeft className="h-4 w-4 mr-2" />
+                Back to Dashboard
+              </Link>
+            </Button>
+          )}
+          <Button asChild variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20">
+            <Link href="/profile">
+              <Settings className="h-4 w-4 mr-2" />
+              Profile
+            </Link>
+          </Button>
+        </div>
+      </nav>
+
+      {/* Main Chat Container */}
+      <main className="relative z-10 max-w-5xl mx-auto px-6 pb-8">
+        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+          {/* Header */}
+          <div className="bg-gradient-to-r from-purple-600/80 to-cyan-600/80 backdrop-blur-sm text-white p-6">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-white/20 rounded-2xl">
+                <MessageCircle className="h-8 w-8" />
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold">AI Tutor Chat</h2>
+                <p className="text-white/90">
+                  {studentProfile ? (
+                    `Grade ${studentProfile.gradeLevel} • ${studentProfile.learningStyle?.toLowerCase().replace('_', ' ')} learner • ${studentProfile.difficultyLevel?.toLowerCase()} level`
+                  ) : (
+                    "Ask me anything! I'm here to help you learn."
+                  )}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Messages */}
+          <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-black/10">
+            {messages.map((message) => (
+              <div
+                key={message.id}
+                className={cn(
+                  "flex gap-3",
+                  message.type === "user" ? "justify-end" : "justify-start"
+                )}
+              >
+                {message.type === "ai" && (
+                  <div className="flex items-center justify-center w-10 h-10 bg-purple-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
+                    <Bot className="h-5 w-5 text-purple-300" />
+                  </div>
+                )}
+                
+                <div
+                  className={cn(
+                    "max-w-[80%] rounded-2xl px-5 py-4 shadow-lg border",
+                    message.type === "user"
+                      ? "bg-gradient-to-r from-blue-500/90 to-purple-500/90 backdrop-blur-sm text-white border-white/20 ml-auto"
+                      : "bg-white/10 backdrop-blur-sm border-white/20 text-white"
+                  )}
+                >
+                  <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                  <span className="text-xs mt-2 block opacity-70">
+                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                  </span>
+                </div>
+
+                {message.type === "user" && (
+                  <div className="flex items-center justify-center w-10 h-10 bg-cyan-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
+                    <User className="h-5 w-5 text-cyan-300" />
+                  </div>
+                )}
+              </div>
+            ))}
+            
+            {isTyping && <TypingIndicator />}
+            <div ref={messagesEndRef} />
+          </div>
+
+          {/* Suggested Questions */}
+          {messages.length <= 1 && (
+            <div className="p-6 bg-white/5 border-t border-white/20">
+              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-cyan-400" />
+                Try asking me about:
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {suggestedQuestions.map((question, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleSuggestedQuestion(question.text)}
+                    className="justify-start gap-3 h-auto py-3 text-left bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-cyan-400/50 transition-all rounded-xl"
+                    disabled={isLoading}
+                  >
+                    <question.icon className="h-5 w-5 text-cyan-400 shrink-0" />
+                    <span>{question.text}</span>
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Input */}
+          <div className="p-6 bg-white/5 border-t border-white/20">
+            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-3">
+              <Input
+                value={inputMessage}
+                onChange={(e) => setInputMessage(e.target.value)}
+                placeholder="Ask me anything about your studies..."
+                disabled={isLoading}
+                className="flex-1 h-14 rounded-2xl border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-gray-300 focus:border-cyan-400/50 focus:bg-white/20 transition-all"
+              />
+              <Button 
+                type="submit" 
+                disabled={isLoading || !inputMessage.trim()}
+                className="h-14 px-8 rounded-2xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white border-0 shadow-lg hover:shadow-xl transition-all"
+              >
+                <Send className="h-5 w-5" />
+              </Button>
+            </form>
+            <p className="text-xs text-purple-200 mt-3 text-center opacity-70">
+              I'm powered by AI and here to help you learn! Ask me questions, request explanations, or practice problems.
             </p>
           </div>
         </div>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-muted/30">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={cn(
-              "flex gap-3",
-              message.type === "user" ? "justify-end" : "justify-start"
-            )}
-          >
-            {message.type === "ai" && (
-              <div className="flex items-center justify-center w-8 h-8 bg-primary/10 rounded-full shrink-0 mt-1">
-                <Bot className="h-4 w-4 text-primary" />
-              </div>
-            )}
-            
-            <div
-              className={cn(
-                "max-w-[80%] rounded-2xl px-4 py-3 shadow-sm",
-                message.type === "user"
-                  ? "bg-primary text-primary-foreground ml-auto"
-                  : "bg-card border"
-              )}
-            >
-              <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-              <span className={cn(
-                "text-xs mt-2 block",
-                message.type === "user" ? "text-primary-foreground/70" : "text-muted-foreground"
-              )}>
-                {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
-            </div>
-
-            {message.type === "user" && (
-              <div className="flex items-center justify-center w-8 h-8 bg-secondary/10 rounded-full shrink-0 mt-1">
-                <User className="h-4 w-4 text-secondary" />
-              </div>
-            )}
-          </div>
-        ))}
-        
-        {isTyping && <TypingIndicator />}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Suggested Questions */}
-      {messages.length <= 1 && (
-        <div className="p-4 bg-muted/20 border-t">
-          <h3 className="text-sm font-medium text-muted-foreground mb-3 flex items-center gap-2">
-            <Sparkles className="h-4 w-4" />
-            Try asking me about:
-          </h3>
-          <div className="grid grid-cols-2 gap-2">
-            {suggestedQuestions.map((question, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                size="sm"
-                onClick={() => handleSuggestedQuestion(question.text)}
-                className="justify-start gap-2 h-auto py-2 text-left text-sm font-normal hover:bg-primary/5 hover:border-primary/20"
-                disabled={isLoading}
-              >
-                <question.icon className="h-4 w-4 text-primary shrink-0" />
-                <span className="truncate">{question.text}</span>
-              </Button>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Input */}
-      <div className="p-4 bg-card border-t">
-        <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2">
-          <Input
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Ask me anything about your studies..."
-            disabled={isLoading}
-            className="flex-1 h-12 rounded-xl border-2 focus:border-primary/50 transition-colors"
-          />
-          <Button 
-            type="submit" 
-            disabled={isLoading || !inputMessage.trim()}
-            className="h-12 px-6 rounded-xl khan-button-primary"
-          >
-            <Send className="h-4 w-4" />
-          </Button>
-        </form>
-        <p className="text-xs text-muted-foreground mt-2 text-center">
-          I'm powered by AI and here to help you learn! Ask me questions, request explanations, or practice problems.
-        </p>
-      </div>
+      </main>
     </div>
   );
 }

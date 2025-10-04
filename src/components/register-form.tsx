@@ -32,24 +32,51 @@ export const RegisterForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-sm w-full space-y-4">
+    <form onSubmit={handleSubmit} className="w-full space-y-6">
       <div className="space-y-2">
-        <Label htmlFor="name">Name</Label>
-        <Input id="name" name="name" />
+        <Label htmlFor="name" className="text-gray-700 dark:text-gray-300 font-medium">
+          Name
+        </Label>
+        <Input 
+          id="name" 
+          name="name" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter your full name"
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="email">Email</Label>
-        <Input type="email" id="email" name="email" />
+        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-medium">
+          Email
+        </Label>
+        <Input 
+          type="email" 
+          id="email" 
+          name="email" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Enter your email"
+        />
       </div>
 
       <div className="space-y-2">
-        <Label htmlFor="password">Password</Label>
-        <Input type="password" id="password" name="password" />
+        <Label htmlFor="password" className="text-gray-700 dark:text-gray-300 font-medium">
+          Password
+        </Label>
+        <Input 
+          type="password" 
+          id="password" 
+          name="password" 
+          className="h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl"
+          placeholder="Create a password"
+        />
       </div>
 
-      <Button type="submit" className="w-full" disabled={isPending}>
-        {isPending ? "Registering..." : "Register"}
+      <Button 
+        type="submit" 
+        className="w-full h-12 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold rounded-xl text-lg shadow-lg hover:shadow-xl transition-all duration-200" 
+        disabled={isPending}
+      >
+        {isPending ? "Creating Account..." : "Create Account"}
       </Button>
     </form>
   );

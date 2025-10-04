@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
@@ -34,10 +35,12 @@ export const SignOutButton = () => {
 
   return (
     <Button
-      variant="destructive"
+      variant="outline"
       onClick={handleSignOut}
       disabled={isPending}
+      className="text-red-600 border-red-200 hover:bg-red-50 hover:border-red-300 dark:text-red-400 dark:border-red-800 dark:hover:bg-red-900/20 dark:hover:border-red-700 flex items-center gap-2"
     >
+      <LogOut className="h-4 w-4" />
       {isPending ? "Signing out..." : "Sign Out"}
     </Button>
   );
