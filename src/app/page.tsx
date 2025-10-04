@@ -1,9 +1,17 @@
+import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Brain, Users, Zap, BookOpen, ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { GetStartedButton } from "@/components/get-started-button";
+import { headers } from "next/headers";
 
-export default function Home() {
+export default async function Home() {
+  const headersList = await headers();
+
+  const session = await auth.api.getSession({
+    headers: headersList
+  });
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
       {/* Navigation */}
@@ -13,9 +21,20 @@ export default function Home() {
           <span className="text-2xl font-bold text-gray-900 dark:text-white">TutorByAI</span>
         </div>
         <div className="flex items-center gap-4">
-          <Button variant="ghost" asChild>
-            <Link href="/auth/login">Sign In</Link>
-          </Button>
+          {session ? (
+            <>
+              <Button variant="ghost" asChild>
+                <Link href="/tutoring">AI Tutor</Link>
+              </Button>
+              <Button variant="ghost" asChild>
+                <Link href="/profile">Profile</Link>
+              </Button>
+            </>
+          ) : (
+            <Button variant="ghost" asChild>
+              <Link href="/auth/login">Sign In</Link>
+            </Button>
+          )}
         </div>
       </nav>
 

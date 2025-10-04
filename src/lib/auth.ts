@@ -138,7 +138,7 @@ databaseHooks: {
   session: {
     expiresIn: 30 * 24 * 60 * 60, // 30 days
     cookieCache: {
-      enabled: true,
+      enabled: false,
       maxAge: 5 * 60,
     },
   },
