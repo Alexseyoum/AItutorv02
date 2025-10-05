@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { EngagingTutorAgent } from "@/lib/ai/tutor-engine";
 import { auth } from "@/lib/auth";
+import { StudentAnalytics } from "@/lib/student-analytics";
+import { ActivityType } from "@/generated/prisma";
 
 export async function POST(request: NextRequest) {
   try {
@@ -27,9 +29,31 @@ export async function POST(request: NextRequest) {
 
     const tutorAgent = new EngagingTutorAgent();
 
+    // Track the chat activity
+    await StudentAnalytics.trackActivity(
+      session.user.id,
+      ActivityType.CHAT_MESSAGE,
+      {
+        topic: concept || 'General Chat',
+        subject: profile?.subjects?.[0] || 'General',
+        metadata: { message: message.substring(0, 100) } // Store first 100 chars
+      }
+    );
+
     // If it's a concept explanation request
     if (concept && profile) {
       const explanation = await tutorAgent.generateExplanation(concept, profile);
+      
+      // Track explanation request
+      await StudentAnalytics.trackActivity(
+        session.user.id,
+        ActivityType.EXPLANATION_REQUESTED,
+        {
+          topic: concept,
+          subject: profile.subjects?.[0] || 'General'
+        }
+      );
+      
       return NextResponse.json({ 
         type: "explanation",
         data: explanation 

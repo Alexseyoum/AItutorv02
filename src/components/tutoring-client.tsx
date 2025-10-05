@@ -78,24 +78,35 @@ export default function TutoringClient({ user }: TutoringClientProps) {
   const [showChat, setShowChat] = useState(false);
   const [conceptInput, setConceptInput] = useState("");
   const [currentTopic, setCurrentTopic] = useState<string>("");
+  const [studentStats, setStudentStats] = useState<any>(null);
 
   useEffect(() => {
-    const fetchProfile = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetch("/api/profile");
+        // Fetch profile and stats in parallel
+        const [profileResponse, statsResponse] = await Promise.all([
+          fetch("/api/profile"),
+          fetch("/api/student-stats")
+        ]);
         
-        if (!response.ok) {
+        if (!profileResponse.ok) {
           throw new Error("Failed to fetch profile");
         }
 
-        const data = await response.json();
-        const profile = data.profile;
+        const profileData = await profileResponse.json();
+        const profile = profileData.profile;
         
         setStudentProfile(profile);
         setShowOnboarding(!profile.isOnboarded);
+
+        // Set stats if available
+        if (statsResponse.ok) {
+          const statsData = await statsResponse.json();
+          setStudentStats(statsData.stats);
+        }
         
       } catch (error) {
-        console.error("Error fetching profile:", error);
+        console.error("Error fetching data:", error);
         toast.error("Failed to load your profile");
         setShowOnboarding(true);
       } finally {
@@ -103,7 +114,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
       }
     };
 
-    fetchProfile();
+    fetchData();
   }, []);
 
   const handleOnboardingComplete = (profile: StudentProfile) => {
@@ -142,15 +153,9 @@ export default function TutoringClient({ user }: TutoringClientProps) {
     setCurrentTopic("");
   };
 
-  const calculateStreak = () => {
-    // Mock calculation - in real app, this would come from backend
-    return Math.floor(Math.random() * 10) + 1;
-  };
-
-  const calculateWeeklyProgress = () => {
-    // Mock calculation
-    return Math.floor(Math.random() * 100);
-  };
+  // Replace mock calculations with real data
+  const streak = studentStats?.currentStreak || 0;
+  const weeklyProgress = studentStats?.weeklyProgress || 0;
 
   if (isLoading) {
     return (
@@ -181,9 +186,6 @@ export default function TutoringClient({ user }: TutoringClientProps) {
       />
     );
   }
-
-  const streak = calculateStreak();
-  const weeklyProgress = calculateWeeklyProgress();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
@@ -267,18 +269,22 @@ export default function TutoringClient({ user }: TutoringClientProps) {
               <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-2xl p-6 border border-white/10">
                 <div className="flex items-center justify-between">
                   <div>
-                    <h4 className="text-lg font-semibold text-white mb-1">Last Session: Python Fundamentals</h4>
-                    <p className="text-purple-200 text-sm">Progress: 75% complete</p>
+                    <h4 className="text-lg font-semibold text-white mb-1">
+                      {studentStats?.lastSession?.topic || "Start Learning"}
+                    </h4>
+                    <p className="text-purple-200 text-sm">
+                      {studentStats?.lastSession 
+                        ? `Progress: ${studentStats.lastSession.progress}% complete`
+                        : "Begin your AI tutoring journey"
+                      }
+                    </p>
                   </div>
                   <Button 
                     onClick={() => setShowChat(true)}
                     className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white border-0 rounded-xl px-6"
                   >
-                    Resume <ChevronRight className="h-4 w-4 ml-1" />
+                    {studentStats?.lastSession ? "Continue" : "Start"}
                   </Button>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2 mt-4">
-                  <div className="bg-gradient-to-r from-purple-400 to-cyan-400 h-2 rounded-full w-3/4 transition-all duration-1000"></div>
                 </div>
               </div>
             </div>
@@ -440,7 +446,9 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                       style={{ width: `${weeklyProgress}%` }}
                     ></div>
                   </div>
-                  <p className="text-purple-200 text-xs mt-1">Keep it up! You're doing great!</p>
+                  <p className="text-purple-200 text-xs mt-1">
+                    {weeklyProgress >= 100 ? "Goal achieved! 🎉" : "Keep it up! You're doing great!"}
+                  </p>
                 </div>
 
                 {/* Achievement Badge */}
@@ -451,7 +459,9 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     </div>
                     <div>
                       <h4 className="font-semibold text-white text-sm">Latest Achievement</h4>
-                      <p className="text-yellow-200 text-xs">Problem Solver</p>
+                      <p className="text-yellow-200 text-xs">
+                        {studentStats?.completedAchievements > 0 ? "Problem Solver" : "Getting Started"}
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -459,11 +469,15 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                 {/* Quick Stats */}
                 <div className="grid grid-cols-2 gap-3">
                   <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                    <div className="text-cyan-400 font-bold text-lg">24</div>
+                    <div className="text-cyan-400 font-bold text-lg">
+                      {studentStats?.problemsSolved || 0}
+                    </div>
                     <div className="text-purple-200 text-xs">Problems Solved</div>
                   </div>
                   <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                    <div className="text-green-400 font-bold text-lg">8h</div>
+                    <div className="text-purple-400 font-bold text-lg">
+                      {Math.round((studentStats?.totalStudyTime || 0) / 60)}h
+                    </div>
                     <div className="text-purple-200 text-xs">Study Time</div>
                   </div>
                 </div>
