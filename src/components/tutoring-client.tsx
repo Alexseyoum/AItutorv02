@@ -289,6 +289,75 @@ export default function TutoringClient({ user }: TutoringClientProps) {
               </div>
             </div>
 
+            {/* Progress Tracker Widget */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+              <h3 className="text-2xl font-bold text-white mb-6">Your Progress</h3>
+              
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Learning Streak */}
+                <div className="text-center">
+                  <div className="relative inline-block">
+                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center mb-3 mx-auto shadow-lg">
+                      <Flame className="h-8 w-8 text-white" />
+                    </div>
+                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
+                      <span className="text-xs font-bold text-gray-900">{streak}</span>
+                    </div>
+                  </div>
+                  <h4 className="font-semibold text-white">Learning Streak</h4>
+                  <p className="text-purple-200 text-sm">{streak} days in a row!</p>
+                </div>
+
+                {/* Weekly Progress */}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-white font-medium">Weekly Goals</span>
+                    <span className="text-cyan-400 font-bold">{weeklyProgress}%</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-3 mb-2">
+                    <div 
+                      className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full transition-all duration-1000"
+                      style={{ width: `${weeklyProgress}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-purple-200 text-xs">
+                    {weeklyProgress >= 100 ? "Goal achieved! 🎉" : "Keep it up! You're doing great!"}
+                  </p>
+                  
+                  {/* Quick Stats */}
+                  <div className="grid grid-cols-2 gap-2 mt-4">
+                    <div className="bg-white/5 rounded-lg p-2 text-center border border-white/10">
+                      <div className="text-cyan-400 font-bold text-sm">
+                        {studentStats?.problemsSolved || 0}
+                      </div>
+                      <div className="text-purple-200 text-xs">Problems</div>
+                    </div>
+                    <div className="bg-white/5 rounded-lg p-2 text-center border border-white/10">
+                      <div className="text-purple-400 font-bold text-sm">
+                        {Math.round((studentStats?.totalStudyTime || 0) / 60)}h
+                      </div>
+                      <div className="text-purple-200 text-xs">Study Time</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Achievement Badge */}
+                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-4 border border-yellow-500/30">
+                  <div className="flex items-center gap-3 mb-2">
+                    <div className="p-2 bg-yellow-500/30 rounded-lg">
+                      <Trophy className="h-5 w-5 text-yellow-300" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-white text-sm">Latest Achievement</h4>
+                    </div>
+                  </div>
+                  <p className="text-yellow-200 text-xs text-center">
+                    {studentStats?.completedAchievements > 0 ? "Problem Solver" : "Getting Started"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
             {/* Featured Topics Carousel */}
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
               <div className="flex items-center justify-between mb-6">
@@ -325,7 +394,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
             </div>
           </div>
 
-          {/* Right Column - Quick Actions & Progress */}
+          {/* Right Column - Quick Actions */}
           <div className="space-y-6">
             {/* Quick Start Learning Cards */}
             <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
@@ -411,75 +480,6 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                   <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 rounded-xl h-10">
                     Get Suggestions
                   </Button>
-                </div>
-              </div>
-            </div>
-
-            {/* Progress Tracker Widget */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
-              <h3 className="text-xl font-bold text-white mb-6">Your Progress</h3>
-              
-              <div className="space-y-6">
-                {/* Learning Streak */}
-                <div className="text-center">
-                  <div className="relative inline-block">
-                    <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center mb-3 mx-auto shadow-lg">
-                      <Flame className="h-8 w-8 text-white" />
-                    </div>
-                    <div className="absolute -top-2 -right-2 w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-gray-900">{streak}</span>
-                    </div>
-                  </div>
-                  <h4 className="font-semibold text-white">Learning Streak</h4>
-                  <p className="text-purple-200 text-sm">{streak} days in a row!</p>
-                </div>
-
-                {/* Weekly Progress */}
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-white font-medium">Weekly Goals</span>
-                    <span className="text-cyan-400 font-bold">{weeklyProgress}%</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-3">
-                    <div 
-                      className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full transition-all duration-1000"
-                      style={{ width: `${weeklyProgress}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-purple-200 text-xs mt-1">
-                    {weeklyProgress >= 100 ? "Goal achieved! 🎉" : "Keep it up! You're doing great!"}
-                  </p>
-                </div>
-
-                {/* Achievement Badge */}
-                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-4 border border-yellow-500/30">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-yellow-500/30 rounded-lg">
-                      <Trophy className="h-5 w-5 text-yellow-300" />
-                    </div>
-                    <div>
-                      <h4 className="font-semibold text-white text-sm">Latest Achievement</h4>
-                      <p className="text-yellow-200 text-xs">
-                        {studentStats?.completedAchievements > 0 ? "Problem Solver" : "Getting Started"}
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Quick Stats */}
-                <div className="grid grid-cols-2 gap-3">
-                  <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                    <div className="text-cyan-400 font-bold text-lg">
-                      {studentStats?.problemsSolved || 0}
-                    </div>
-                    <div className="text-purple-200 text-xs">Problems Solved</div>
-                  </div>
-                  <div className="bg-white/5 rounded-xl p-3 text-center border border-white/10">
-                    <div className="text-purple-400 font-bold text-lg">
-                      {Math.round((studentStats?.totalStudyTime || 0) / 60)}h
-                    </div>
-                    <div className="text-purple-200 text-xs">Study Time</div>
-                  </div>
                 </div>
               </div>
             </div>

@@ -40,13 +40,8 @@ export default async function Marketing() {
             Experience personalized learning with our advanced AI tutor. Get instant answers, 
             interactive lessons, and adaptive learning paths tailored just for you.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-            <div className="flex justify-center">
-              <GetStartedButton />
-            </div>
-            <Button variant="outline" size="lg" className="text-lg px-8 py-6">
-              Watch Demo
-            </Button>
+          <div className="flex justify-center mb-16">
+            <GetStartedButton />
           </div>
 
           {/* Stats */}

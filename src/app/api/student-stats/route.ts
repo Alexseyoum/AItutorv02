@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { ActivityType } from "@/generated/prisma";
 
 export async function GET(request: NextRequest) {
   try {
@@ -64,7 +65,7 @@ export async function GET(request: NextRequest) {
       prisma.studentActivity.count({
         where: { 
           userId,
-          type: 'PROBLEM_SOLVED'
+          type: ActivityType.PROBLEM_SOLVED
         }
       }),
       
@@ -157,6 +158,20 @@ export async function GET(request: NextRequest) {
 
   } catch (error) {
     console.error("Student stats API error:", error);
+    
+    // Enhanced error handling for database connection issues
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
+    if (errorMessage.includes("Can't reach database server")) {
+      return NextResponse.json(
+        { 
+          error: "Database temporarily unavailable. Please try again in a moment.",
+          code: "DATABASE_UNAVAILABLE"
+        },
+        { status: 503 }
+      );
+    }
+    
     return NextResponse.json(
       { error: "Failed to fetch student stats" },
       { status: 500 }

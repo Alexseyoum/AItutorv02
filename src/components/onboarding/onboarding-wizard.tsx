@@ -31,6 +31,7 @@ const INTERESTS_OPTIONS = [
 export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [learningGoalsText, setLearningGoalsText] = useState("");
   const [formData, setFormData] = useState<OnboardingData>({
     gradeLevel: 9,
     age: undefined,
@@ -53,12 +54,23 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     setIsSubmitting(true);
     
     try {
+      // Process learning goals text into array before submitting
+      const processedGoals = learningGoalsText
+        .split(",")
+        .map(s => s.trim())
+        .filter(Boolean);
+
+      const submissionData = {
+        ...formData,
+        learningGoals: processedGoals
+      };
+
       const response = await fetch("/api/profile", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(submissionData),
       });
 
       if (!response.ok) {
@@ -156,14 +168,14 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
               <textarea
                 id="learningGoals"
                 placeholder="What do you want to achieve? (e.g., improve math skills, prepare for exams, understand science better)"
-                value={formData.learningGoals.join(", ")}
-                onChange={(e) => setFormData(prev => ({ 
-                  ...prev, 
-                  learningGoals: e.target.value.split(",").map(s => s.trim()).filter(Boolean)
-                }))}
+                value={learningGoalsText}
+                onChange={(e) => setLearningGoalsText(e.target.value)}
                 className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 rows={3}
               />
+              <p className="text-sm text-gray-500 mt-1">
+                Separate multiple goals with commas
+              </p>
             </div>
           </div>
         );
