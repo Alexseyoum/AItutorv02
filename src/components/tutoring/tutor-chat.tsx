@@ -5,6 +5,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import VoiceInteraction from "@/components/tutoring/voice-interaction";
+import { useChatPersistence } from "@/lib/hooks/useChatPersistence";
+import { contextManager } from "@/lib/ai/context-manager";
+import { Message } from "@/lib/types";
 import { 
   Send, 
   Bot, 
@@ -17,16 +21,14 @@ import {
   MessageCircle,
   ArrowLeft,
   Brain,
-  Settings
+  Settings,
+  Mic,
+  History,
+  Plus
 } from "lucide-react";
 import Link from "next/link";
 
-interface Message {
-  id: string;
-  content: string;
-  type: "user" | "ai";
-  timestamp: Date;
-}
+
 
 interface TutorChatProps {
   studentProfile?: {
@@ -69,19 +71,22 @@ const suggestedQuestions = [
 ];
 
 export default function TutorChat({ studentProfile, onBack, initialTopic }: TutorChatProps) {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "welcome",
-      content: initialTopic 
-        ? `Great choice! Let's explore ${initialTopic} together. I'll adapt my explanations to your ${studentProfile?.learningStyle?.toLowerCase().replace('_', ' ')} learning style and ${studentProfile?.difficultyLevel?.toLowerCase()} level. What would you like to know first?`
-        : `Hi there! 👋 I'm your AI tutor, and I'm excited to help you learn today! Whether you need help with ${studentProfile?.subjects?.join(", ") || "any subject"}, want to practice problems, or just have questions, I'm here for you. What would you like to explore?`,
-      type: "ai",
-      timestamp: new Date()
-    }
-  ]);
+  const {
+    currentSessionId,
+    messages,
+    sessions,
+    isLoading: isPersistenceLoading,
+    addMessage,
+    createNewSession,
+    loadSession,
+    setMessages
+  } = useChatPersistence(initialTopic);
+
   const [inputMessage, setInputMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isTyping, setIsTyping] = useState(false);
+  const [autoSpeak, setAutoSpeak] = useState(false);
+  const [showSessions, setShowSessions] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -91,6 +96,13 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Create initial session if none exists
+  useEffect(() => {
+    if (!currentSessionId && !isPersistenceLoading) {
+      createNewSession();
+    }
+  }, [currentSessionId, isPersistenceLoading]);
 
   const simulateTyping = () => {
     setIsTyping(true);
@@ -107,12 +119,27 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
       timestamp: new Date()
     };
 
-    setMessages(prev => [...prev, userMessage]);
+    await addMessage(userMessage);
     setInputMessage("");
     setIsLoading(true);
     simulateTyping();
 
     try {
+      // Prepare optimized conversation context
+      const conversationContext = contextManager.getOptimizedContext(messages, {
+        maxMessages: 8,        // Keep last 8 messages for context
+        maxTokens: 1500,       // Limit to ~1500 tokens to control costs
+        systemPrompt: studentProfile ? undefined : "You are a helpful AI tutor focused on clear, engaging explanations."
+      });
+
+      // Add the current user message to context
+      conversationContext.push({
+        role: "user",
+        content: messageText
+      });
+
+      console.log(`🔄 Sending ${conversationContext.length} messages to AI (optimized context)`);
+
       const response = await fetch("/api/ai/chat", {
         method: "POST",
         headers: {
@@ -120,6 +147,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
         },
         body: JSON.stringify({
           message: messageText,
+          history: conversationContext,  // 🎯 Optimized conversation history
           profile: studentProfile ? {
             gradeLevel: studentProfile.gradeLevel,
             learningStyle: studentProfile.learningStyle?.toLowerCase().replace('_', ' '),
@@ -142,8 +170,14 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
         timestamp: new Date()
       };
 
-      setMessages(prev => [...prev, aiMessage]);
-    } catch (error) {
+      await addMessage(aiMessage);
+
+      // Log context optimization results (development only)
+      if (process.env.NODE_ENV === 'development' && data.meta) {
+        console.log(`📊 Context optimization - History: ${data.meta.historyLength} messages, Optimized: ${data.meta.contextOptimized}`);
+      }
+
+    } catch (error: unknown) {
       console.error("Error sending message:", error);
       toast.error("Failed to send message. Please try again.");
     } finally {
@@ -154,6 +188,13 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
 
   const handleSuggestedQuestion = (question: string) => {
     sendMessage(question);
+  };
+
+  const handleVoiceInput = (transcript: string) => {
+    setInputMessage(transcript);
+    if (transcript.trim()) {
+      sendMessage(transcript);
+    }
   };
 
   const TypingIndicator = () => (
@@ -192,6 +233,28 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
           </span>
         </div>
         <div className="flex items-center gap-4">
+          {/* Chat History Toggle */}
+          <Button 
+            onClick={() => setShowSessions(!showSessions)}
+            variant="ghost" 
+            size="sm" 
+            className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+          >
+            <History className="h-4 w-4 mr-2" />
+            Chat History
+          </Button>
+          
+          {/* New Chat Button */}
+          <Button 
+            onClick={() => createNewSession()}
+            variant="ghost" 
+            size="sm" 
+            className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+          >
+            <Plus className="h-4 w-4 mr-2" />
+            New Chat
+          </Button>
+
           {onBack ? (
             <Button 
               onClick={onBack}
@@ -210,128 +273,180 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
               </Link>
             </Button>
           )}
-          <Button asChild variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20">
-            <Link href="/profile">
-              <Settings className="h-4 w-4 mr-2" />
-              Profile
-            </Link>
-          </Button>
         </div>
       </nav>
 
-      {/* Main Chat Container */}
-      <main className="relative z-10 max-w-5xl mx-auto px-6 pb-8">
-        <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
-          {/* Header */}
-          <div className="bg-gradient-to-r from-purple-600/80 to-cyan-600/80 backdrop-blur-sm text-white p-6">
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-white/20 rounded-2xl">
-                <MessageCircle className="h-8 w-8" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold">AI Tutor Chat</h2>
-                <p className="text-white/90">
-                  {studentProfile ? (
-                    `Grade ${studentProfile.gradeLevel} • ${studentProfile.learningStyle?.toLowerCase().replace('_', ' ')} learner • ${studentProfile.difficultyLevel?.toLowerCase()} level`
-                  ) : (
-                    "Ask me anything! I'm here to help you learn."
-                  )}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Messages */}
-          <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-black/10">
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={cn(
-                  "flex gap-3",
-                  message.type === "user" ? "justify-end" : "justify-start"
-                )}
-              >
-                {message.type === "ai" && (
-                  <div className="flex items-center justify-center w-10 h-10 bg-purple-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
-                    <Bot className="h-5 w-5 text-purple-300" />
-                  </div>
-                )}
-                
-                <div
+      <div className="relative z-10 max-w-7xl mx-auto px-6 pb-8 flex gap-6">
+        {/* Chat History Sidebar */}
+        {showSessions && (
+          <div className="w-80 bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 h-fit">
+            <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+              <History className="h-5 w-5" />
+              Chat History
+            </h3>
+            <div className="space-y-3">
+              {sessions.map((session) => (
+                <Button
+                  key={session.id}
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => loadSession(session.id)}
                   className={cn(
-                    "max-w-[80%] rounded-2xl px-5 py-4 shadow-lg border",
-                    message.type === "user"
-                      ? "bg-gradient-to-r from-blue-500/90 to-purple-500/90 backdrop-blur-sm text-white border-white/20 ml-auto"
-                      : "bg-white/10 backdrop-blur-sm border-white/20 text-white"
+                    "w-full justify-start text-left p-3 h-auto bg-white/5 hover:bg-white/10 border border-white/10",
+                    currentSessionId === session.id && "bg-purple-500/20 border-purple-400/50"
                   )}
                 >
-                  <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
-                  <span className="text-xs mt-2 block opacity-70">
-                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
-                </div>
-
-                {message.type === "user" && (
-                  <div className="flex items-center justify-center w-10 h-10 bg-cyan-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
-                    <User className="h-5 w-5 text-cyan-300" />
+                  <div className="truncate">
+                    <div className="font-medium text-white truncate">
+                      {session.title || "Untitled Chat"}
+                    </div>
+                    <div className="text-xs text-purple-200 truncate">
+                      {new Date(session.updatedAt).toLocaleDateString()}
+                    </div>
                   </div>
-                )}
-              </div>
-            ))}
-            
-            {isTyping && <TypingIndicator />}
-            <div ref={messagesEndRef} />
+                </Button>
+              ))}
+            </div>
           </div>
+        )}
 
-          {/* Suggested Questions */}
-          {messages.length <= 1 && (
-            <div className="p-6 bg-white/5 border-t border-white/20">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-cyan-400" />
-                Try asking me about:
-              </h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                {suggestedQuestions.map((question, index) => (
-                  <Button
-                    key={index}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleSuggestedQuestion(question.text)}
-                    className="justify-start gap-3 h-auto py-3 text-left bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-cyan-400/50 transition-all rounded-xl"
-                    disabled={isLoading}
-                  >
-                    <question.icon className="h-5 w-5 text-cyan-400 shrink-0" />
-                    <span>{question.text}</span>
-                  </Button>
-                ))}
+        {/* Main Chat Container */}
+        <main className="flex-1">
+          <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl shadow-2xl overflow-hidden">
+            {/* Header */}
+            <div className="bg-gradient-to-r from-purple-600/80 to-cyan-600/80 backdrop-blur-sm text-white p-6">
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-white/20 rounded-2xl">
+                  <MessageCircle className="h-8 w-8" />
+                </div>
+                <div>
+                  <h2 className="text-2xl font-bold">AI Tutor Chat</h2>
+                  <p className="text-white/90">
+                    {studentProfile ? (
+                      `Grade ${studentProfile.gradeLevel} • ${studentProfile.learningStyle?.toLowerCase().replace('_', ' ')} learner • ${studentProfile.difficultyLevel?.toLowerCase()} level`
+                    ) : (
+                      "Ask me anything! I'm here to help you learn."
+                    )}
+                  </p>
+                </div>
               </div>
             </div>
-          )}
 
-          {/* Input */}
-          <div className="p-6 bg-white/5 border-t border-white/20">
-            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-3">
-              <Input
-                value={inputMessage}
-                onChange={(e) => setInputMessage(e.target.value)}
-                placeholder="Ask me anything about your studies..."
-                disabled={isLoading}
-                className="flex-1 h-14 rounded-2xl border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-gray-300 focus:border-cyan-400/50 focus:bg-white/20 transition-all"
-              />
-              <Button 
-                type="submit" 
-                disabled={isLoading || !inputMessage.trim()}
-                className="h-14 px-8 rounded-2xl bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white border-0 shadow-lg hover:shadow-xl transition-all"
-              >
-                <Send className="h-5 w-5" />
-              </Button>
-            </form>
-            <p className="text-xs text-purple-200 mt-3 text-center opacity-70">
-              I'm powered by AI and here to help you learn! Ask me questions, request explanations, or practice problems.
-            </p>
+            {/* Messages */}
+            <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-black/10">
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={cn(
+                    "flex gap-3",
+                    message.type === "user" ? "justify-end" : "justify-start"
+                  )}
+                >
+                  {message.type === "ai" && (
+                    <div className="flex items-center justify-center w-10 h-10 bg-purple-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
+                      <Bot className="h-5 w-5 text-purple-300" />
+                    </div>
+                  )}
+                  
+                  <div
+                    className={cn(
+                      "max-w-[80%] rounded-2xl px-5 py-4 shadow-lg border",
+                      message.type === "user"
+                        ? "bg-gradient-to-r from-blue-500/90 to-purple-500/90 backdrop-blur-sm text-white border-white/20 ml-auto"
+                        : "bg-white/10 backdrop-blur-sm border-white/20 text-white"
+                    )}
+                  >
+                    <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                    <span className="text-xs mt-2 block opacity-70">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                  </div>
+
+                  {message.type === "user" && (
+                    <div className="flex items-center justify-center w-10 h-10 bg-cyan-500/20 backdrop-blur-sm rounded-full shrink-0 mt-1 border border-white/20">
+                      <User className="h-5 w-5 text-cyan-300" />
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {isTyping && <TypingIndicator />}
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Suggested Questions */}
+            {messages.length <= 1 && (
+              <div className="p-6 bg-white/5 border-t border-white/20">
+                <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-cyan-400" />
+                  Try asking me about:
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  {suggestedQuestions.map((question, index) => (
+                    <Button
+                      key={index}
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleSuggestedQuestion(question.text)}
+                      className="justify-start gap-3 h-auto py-3 text-left bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-cyan-400/50 transition-all rounded-xl"
+                      disabled={isLoading}
+                    >
+                      <question.icon className="h-5 w-5 text-cyan-400 shrink-0" />
+                      <span>{question.text}</span>
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Input */}
+            <div className="p-6 bg-white/5 border-t border-white/20">
+              {/* Voice Controls Header */}
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-3">
+                  <VoiceInteraction
+                    onVoiceInput={handleVoiceInput}
+                    size="md"
+                    className="flex items-center gap-2"
+                  />
+                  <span className="text-sm text-purple-200">Voice input available</span>
+                </div>
+                
+                <div className="flex items-center gap-2">
+                  <label className="flex items-center gap-2 text-sm text-purple-200 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={autoSpeak}
+                      onChange={(e) => setAutoSpeak(e.target.checked)}
+                      className="rounded border-white/20 bg-white/10 text-purple-500 focus:ring-purple-500"
+                    />
+                    Auto-speak responses
+                  </label>
+                </div>
+              </div>
+
+              <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-3">
+                <div className="flex-1 relative">
+                  <Input
+                    value={inputMessage}
+                    onChange={(e) => setInputMessage(e.target.value)}
+                    placeholder="Type your message or use voice input..."
+                    disabled={isLoading}
+                    className="h-14 rounded-2xl border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-gray-300 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 pr-12"
+                  />
+                </div>
+                <Button
+                  type="submit"
+                  disabled={isLoading || !inputMessage.trim()}
+                  className="h-14 px-6 bg-gradient-to-r from-cyan-500 to-purple-500 hover:from-cyan-600 hover:to-purple-600 text-white border-0 rounded-2xl font-medium shadow-lg hover:shadow-xl transition-all duration-200"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </form>
+            </div>
           </div>
-        </div>
-      </main>
+        </main>
+      </div>
     </div>
   );
 }

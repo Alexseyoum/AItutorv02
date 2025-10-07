@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { SignOutButton } from "@/components/sign-out-button";
 import Link from "next/link";
+import VoiceInteraction from "@/components/tutoring/voice-interaction";
 
 interface User {
   id: string;
@@ -411,11 +412,26 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                   </div>
                   <div className="space-y-3">
                     <Input 
-                      placeholder="Enter concept..."
+                      placeholder="Enter concept or speak..."
                       value={conceptInput}
                       onChange={(e) => setConceptInput(e.target.value)}
                       className="bg-white/10 border-white/20 text-white placeholder:text-gray-300 h-10 rounded-xl"
                     />
+                    
+                    {/* Voice Interaction Component */}
+                    <VoiceInteraction
+                      onVoiceInput={(text) => {
+                        setConceptInput(text);
+                        // Optionally auto-submit after voice input
+                        setTimeout(() => {
+                          if (text.trim()) {
+                            setCurrentTopic(`Explaining: ${text}`);
+                            setShowChat(true);
+                          }
+                        }, 500);
+                      }}
+                    />
+                    
                     <Button 
                       onClick={handleConceptExplain}
                       className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-xl h-10"
@@ -437,6 +453,16 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     <h4 className="font-semibold text-white">Practice Problems</h4>
                   </div>
                   <p className="text-gray-300 text-sm mb-3">Get personalized practice questions</p>
+                  
+                  {/* Add voice option for specific subjects */}
+                  <div className="mb-3">
+                    <VoiceInteraction
+                      onVoiceInput={(text) => {
+                        handleQuickAction(`Practice Problems: ${text}`);
+                      }}
+                    />
+                  </div>
+                  
                   <Button className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 rounded-xl h-10">
                     Start Practice
                   </Button>

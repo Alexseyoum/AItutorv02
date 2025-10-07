@@ -1,4 +1,14 @@
 // src/lib/types.ts
+
+// Chat message interface for tutoring conversations
+export interface Message {
+  id: string;
+  content: string;
+  type: "user" | "ai";
+  timestamp: Date;
+  metadata?: any;
+}
+
 export interface StudentProfile {
   gradeLevel: number;
   age?: number;

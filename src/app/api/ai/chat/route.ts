@@ -3,6 +3,7 @@ import { EngagingTutorAgent } from "@/lib/ai/tutor-engine";
 import { auth } from "@/lib/auth";
 import { StudentAnalytics } from "@/lib/student-analytics";
 import { ActivityType } from "@/generated/prisma";
+import { contextManager } from "@/lib/ai/context-manager";
 
 export async function POST(request: NextRequest) {
   try {
@@ -18,7 +19,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { message, concept, profile } = await request.json();
+    const { message, history, concept, profile } = await request.json();
 
     if (!message) {
       return NextResponse.json(
@@ -36,11 +37,14 @@ export async function POST(request: NextRequest) {
       {
         topic: concept || 'General Chat',
         subject: profile?.subjects?.[0] || 'General',
-        metadata: { message: message.substring(0, 100) } // Store first 100 chars
+        metadata: { 
+          message: message.substring(0, 100),
+          hasHistory: !!history && history.length > 0
+        }
       }
     );
 
-    // If it's a concept explanation request
+    // If it's a concept explanation request (legacy support)
     if (concept && profile) {
       const explanation = await tutorAgent.generateExplanation(concept, profile);
       
@@ -60,15 +64,43 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    // For general chat
+    // Handle conversational chat with history
+    if (history && Array.isArray(history) && history.length > 0) {
+      console.log(`🗣️ Processing conversational chat with ${history.length} history messages`);
+      
+      const response = await tutorAgent.generateConversationalResponse(
+        history,
+        profile ? {
+          gradeLevel: profile.gradeLevel,
+          learningStyle: profile.learningStyle,
+          interests: profile.interests,
+          pastEngagement: profile.pastEngagement || 0
+        } : undefined
+      );
+      
+      return NextResponse.json({ 
+        type: "chat",
+        data: { message: response },
+        meta: {
+          historyLength: history.length,
+          contextOptimized: true
+        }
+      });
+    }
+
+    // Fallback to simple chat (backward compatibility)
     const response = await tutorAgent.quickResponse(message);
     
     return NextResponse.json({ 
       type: "chat",
-      data: { message: response }
+      data: { message: response },
+      meta: {
+        historyLength: 0,
+        contextOptimized: false
+      }
     });
 
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("AI Chat API error:", error);
     return NextResponse.json(
       { error: "Internal server error" },

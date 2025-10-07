@@ -92,6 +92,7 @@ model User {
   activities    StudentActivity[]
   streak        LearningStreak?
   achievements  Achievement[]
+  chatSessions  ChatSession[]
 
   @@map("users")
 }
@@ -191,4 +192,35 @@ model Achievement {
   completed   Boolean  @default(false)
   
   @@map("achievements")
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String?
+  topic     String?
+  isActive  Boolean  @default(true)
+  
+  messages  ChatMessage[]
+  
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  content   String
+  type      String   // "user" or "ai"
+  metadata  Json?
+  
+  @@map("chat_messages")
 }

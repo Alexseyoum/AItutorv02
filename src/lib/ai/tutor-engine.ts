@@ -1,4 +1,6 @@
 import { groq, GROQ_MODELS } from "@/lib/groq/client";
+import { AIProviderManager } from "@/lib/ai/ai-providers";
+import { ConversationMessage } from "@/lib/ai/context-manager";
 
 export interface StudentProfile {
   gradeLevel: number;
@@ -21,35 +23,44 @@ export interface QuizQuestion {
 }
 
 export class EngagingTutorAgent {
-  private async generateWithPrompt(prompt: string, maxTokens: number = 500) {
-    try {
-      const completion = await groq.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: GROQ_MODELS.LLAMA3_70B,
-        temperature: 0.8,
-        max_tokens: maxTokens,
-        stream: false,
-      });
+  private aiProviderManager: AIProviderManager;
 
-      return completion.choices[0]?.message?.content || "I'm having trouble thinking right now. Can you try again?";
-    } catch (error: unknown) {
-      console.error("Groq API error details:", {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        status: (error as any)?.status,
-        error: (error as any)?.error,
-        model: GROQ_MODELS.LLAMA3_70B,
-        hasApiKey: !!process.env.GROQ_API_KEY
-      });
-      return "I'm currently unavailable. Please try again in a moment!";
+  constructor() {
+    this.aiProviderManager = new AIProviderManager();
+  }
+
+  private async generateWithPrompt(prompt: string, maxTokens: number = 500): Promise<string> {
+    try {
+      // First try the new AI provider manager with fallbacks
+      return await this.aiProviderManager.generateWithFallback(prompt, maxTokens);
+    } catch (error) {
+      console.error("All AI providers failed:", error);
+      
+      // Ultimate fallback - try direct Groq call
+      try {
+        const completion = await groq.chat.completions.create({
+          messages: [{ role: "user", content: prompt }],
+          model: GROQ_MODELS.LLAMA3_70B,
+          temperature: 0.8,
+          max_tokens: maxTokens,
+          stream: false,
+        });
+
+        return completion.choices[0]?.message?.content || "I'm having trouble thinking right now. Can you try again?";
+      } catch (groqError) {
+        console.error("Even direct Groq failed:", groqError);
+        return "I'm currently unavailable. Please try again in a moment!";
+      }
     }
   }
 
+  // Enhanced explanation with dynamic model switching
   async generateExplanation(
     concept: string,
     profile: StudentProfile
   ): Promise<TutorResponse> {
     const prompt = `
-      Explain ${concept} to a grade ${profile.gradeLevel} student who learns best through ${profile.learningStyle || 'various'} methods.
+      Think step-by-step: For a ${profile.learningStyle || 'mixed'} learner in grade ${profile.gradeLevel}, explain ${concept}.
       
       Requirements:
       - Make it engaging and relatable to teenagers
@@ -169,28 +180,104 @@ export class EngagingTutorAgent {
     }
   }
 
-  // Quick response method for chat interactions
-  async quickResponse(prompt: string): Promise<string> {
+  /**
+   * Enhanced conversational response with context awareness
+   */
+  async generateConversationalResponse(
+    messages: ConversationMessage[],
+    profile?: StudentProfile
+  ): Promise<string> {
     try {
-      console.log("Attempting Groq API call with model:", GROQ_MODELS.LLAMA3_8B);
+      // Build context-aware prompt with student profile
+      const systemMessage = this.buildSystemPrompt(profile);
       
+      // Prepare messages for AI
+      const conversationMessages = [
+        { role: "system", content: systemMessage },
+        ...messages
+      ];
+
+      // Use the AI provider manager with conversation format
+      return await this.generateWithConversation(conversationMessages);
+    } catch (error) {
+      console.error("Conversational response error:", error);
+      return "I'm having trouble understanding the context. Could you rephrase your question?";
+    }
+  }
+
+  /**
+   * Generate response using conversation format
+   */
+  private async generateWithConversation(
+    messages: Array<{role: string, content: string}>,
+    maxTokens: number = 500
+  ): Promise<string> {
+    try {
+      // Try with Groq first as it supports conversation format natively
       const completion = await groq.chat.completions.create({
-        messages: [{ role: "user", content: prompt }],
-        model: GROQ_MODELS.LLAMA3_70B, // Use 70B model instead of 8B
-        temperature: 0.7,
-        max_tokens: 150,
+        messages: messages as any,
+        model: GROQ_MODELS.LLAMA3_70B,
+        temperature: 0.8,
+        max_tokens: maxTokens,
         stream: false,
       });
 
-      return completion.choices[0]?.message?.content || "Sure!";
+      return completion.choices[0]?.message?.content || "I'm having trouble thinking right now. Can you try again?";
+    } catch (error) {
+      console.error("Groq conversation failed:", error);
+      
+      // Fallback to prompt-based approach for other providers
+      const conversationPrompt = this.convertConversationToPrompt(messages);
+      return await this.aiProviderManager.generateWithFallback(conversationPrompt, maxTokens);
+    }
+  }
+
+  /**
+   * Build system prompt based on student profile
+   */
+  private buildSystemPrompt(profile?: StudentProfile): string {
+    const basePrompt = `You are an engaging AI tutor that helps students learn effectively. You should:
+- Provide clear, concise explanations appropriate for the student's level
+- Use encouraging and supportive language
+- Ask follow-up questions to check understanding
+- Provide examples and analogies when helpful
+- Keep responses focused and not too lengthy`;
+
+    if (!profile) return basePrompt;
+
+    return `${basePrompt}
+
+Student Profile:
+- Grade Level: ${profile.gradeLevel}
+- Learning Style: ${profile.learningStyle || 'mixed'}
+- Interests: ${profile.interests?.join(', ') || 'general topics'}
+- Engagement Level: ${profile.pastEngagement || 0}
+
+Adjust your teaching style to match their grade level and learning preferences.`;
+  }
+
+  /**
+   * Convert conversation array to single prompt for non-conversation APIs
+   */
+  private convertConversationToPrompt(messages: Array<{role: string, content: string}>): string {
+    return messages
+      .map(msg => {
+        if (msg.role === 'system') return `Instructions: ${msg.content}`;
+        if (msg.role === 'user') return `Student: ${msg.content}`;
+        return `Tutor: ${msg.content}`;
+      })
+      .join('\n\n') + '\n\nTutor:';
+  }
+
+  // Enhanced quick response with smart provider selection
+  async quickResponse(prompt: string): Promise<string> {
+    try {
+      console.log("🚀 Quick response requested");
+      
+      // Use the AI provider manager for quick responses
+      return await this.aiProviderManager.generateWithFallback(prompt, 150);
     } catch (error: unknown) {
-      console.error("Quick response error details:", {
-        message: error instanceof Error ? error.message : 'Unknown error',
-        status: (error as any)?.status,
-        error: (error as any)?.error,
-        model: GROQ_MODELS.LLAMA3_70B,
-        hasApiKey: !!process.env.GROQ_API_KEY
-      });
+      console.error("Quick response error:", error);
       return "I'm having trouble responding right now. Could you try again?";
     }
   }
@@ -217,5 +304,10 @@ export class EngagingTutorAgent {
     `;
 
     return await this.quickResponse(prompt);
+  }
+
+  // Get available AI providers for debugging
+  getAvailableProviders(): string[] {
+    return this.aiProviderManager.getAvailableProviders();
   }
 }
