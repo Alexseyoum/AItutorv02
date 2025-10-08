@@ -24,7 +24,9 @@ import {
   Settings,
   Mic,
   History,
-  Plus
+  Plus,
+  ExternalLink,
+  Image as ImageIcon
 } from "lucide-react";
 import Link from "next/link";
 
@@ -167,7 +169,13 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
         id: (Date.now() + 1).toString(),
         content: data.data.message || data.data.explanation || "I'm not sure how to respond to that.",
         type: "ai",
-        timestamp: new Date()
+        timestamp: new Date(),
+        // Enhanced content from API response
+        imageUrl: data.data.imageUrl,
+        links: data.data.links,
+        keywords: data.data.keywords,
+        funFact: data.data.funFact,
+        analogy: data.data.analogy
       };
 
       await addMessage(aiMessage);
@@ -357,6 +365,89 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                     )}
                   >
                     <p className="whitespace-pre-wrap leading-relaxed">{message.content}</p>
+                    
+                    {/* Enhanced Content - Only for AI messages */}
+                    {message.type === "ai" && (
+                      <>
+                        {/* Display educational image */}
+                        {message.imageUrl && (
+                          <div className="mt-4 rounded-xl overflow-hidden border border-white/20">
+                            <img 
+                              src={message.imageUrl} 
+                              alt="Educational illustration" 
+                              className="w-full h-auto max-h-64 object-cover"
+                              onError={(e) => {
+                                e.currentTarget.style.display = 'none';
+                              }}
+                            />
+                          </div>
+                        )}
+                        
+                        {/* Display fun fact */}
+                        {message.funFact && (
+                          <div className="mt-3 p-3 bg-purple-500/20 rounded-lg border border-purple-400/30">
+                            <div className="flex items-start gap-2">
+                              <Lightbulb className="h-4 w-4 text-yellow-400 mt-0.5 shrink-0" />
+                              <p className="text-sm text-purple-100">{message.funFact}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Display analogy */}
+                        {message.analogy && (
+                          <div className="mt-3 p-3 bg-cyan-500/20 rounded-lg border border-cyan-400/30">
+                            <div className="flex items-start gap-2">
+                              <Brain className="h-4 w-4 text-cyan-400 mt-0.5 shrink-0" />
+                              <p className="text-sm text-cyan-100">{message.analogy}</p>
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Display educational links */}
+                        {message.links && message.links.length > 0 && (
+                          <div className="mt-3">
+                            <p className="text-sm text-white/70 mb-2 flex items-center gap-1">
+                              <ExternalLink className="h-3 w-3" />
+                              Learn more:
+                            </p>
+                            <div className="space-y-2">
+                              {message.links.slice(0, 2).map((link, index) => (
+                                <a
+                                  key={index}
+                                  href={link.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="block p-2 bg-white/5 hover:bg-white/10 rounded-lg border border-white/10 hover:border-white/20 transition-colors"
+                                >
+                                  <div className="text-sm font-medium text-white truncate">{link.title}</div>
+                                  {link.snippet && (
+                                    <div className="text-xs text-white/60 mt-1 line-clamp-2">{link.snippet}</div>
+                                  )}
+                                  <div className="text-xs text-cyan-400 mt-1">{link.type.toUpperCase()}</div>
+                                </a>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {/* Display keywords */}
+                        {message.keywords && message.keywords.length > 0 && (
+                          <div className="mt-3">
+                            <div className="flex flex-wrap gap-1">
+                              {message.keywords.slice(0, 5).map((keyword, index) => (
+                                <span
+                                  key={index}
+                                  className="px-2 py-1 text-xs bg-white/10 text-white/80 rounded-full border border-white/20"
+                                >
+                                  {keyword}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </>
+                    )}
+                    
                     <span className="text-xs mt-2 block opacity-70">
                       {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>

@@ -1,6 +1,9 @@
 import { groq, GROQ_MODELS } from "@/lib/groq/client";
 import { AIProviderManager } from "@/lib/ai/ai-providers";
 import { ConversationMessage } from "@/lib/ai/context-manager";
+import { keywordExtractor } from '@/lib/utils/keyword-extractor';
+import { linkFetcher, LinkResult } from '@/lib/utils/link-fetcher';
+import { TutorResponseEnhanced, ImageGenerationOptions } from './types';
 
 export interface StudentProfile {
   gradeLevel: number;
@@ -206,6 +209,50 @@ export class EngagingTutorAgent {
   }
 
   /**
+   * Enhanced conversational response with hybrid capabilities
+   */
+  async generateEnhancedResponse(
+    message: string,
+    messages: ConversationMessage[],
+    profile?: StudentProfile
+  ): Promise<TutorResponseEnhanced> {
+    try {
+      console.log('🚀 Starting hybrid AI response generation');
+
+      // Step 1: Generate text explanation (primary)
+      const textResponse = await this.generateConversationalResponse(messages, profile);
+      
+      // Step 2: Extract keywords for content enhancement
+      const combinedText = `${message} ${textResponse}`;
+      const keywords = await keywordExtractor.extractKeywords(combinedText, profile?.gradeLevel || 8);
+      
+      // Step 3: Determine if visual content would be helpful
+      const shouldGenerateImage = this.shouldGenerateImage(textResponse, keywords, profile?.gradeLevel || 8);
+      
+      // Step 4: Parallel content generation
+      const [imageResult, links] = await Promise.all([
+        shouldGenerateImage ? this.generateEducationalImage(keywords, profile?.gradeLevel || 8) : Promise.resolve(null),
+        this.fetchEducationalLinks(keywords, profile?.gradeLevel || 8)
+      ]);
+
+      console.log(`✅ Hybrid response complete - Image: ${!!imageResult}, Links: ${links.length}, Keywords: ${keywords.length}`);
+
+      return {
+        content: textResponse,
+        imageUrl: imageResult?.imageUrl,
+        links: links.length > 0 ? links : undefined,
+        keywords: keywords.length > 0 ? keywords : undefined
+      };
+    } catch (error) {
+      console.error('❌ Enhanced response generation failed:', error);
+      
+      // Fallback to text-only response
+      const textResponse = await this.generateConversationalResponse(messages, profile);
+      return { content: textResponse };
+    }
+  }
+
+  /**
    * Generate response using conversation format
    */
   private async generateWithConversation(
@@ -267,6 +314,79 @@ Adjust your teaching style to match their grade level and learning preferences.`
         return `Tutor: ${msg.content}`;
       })
       .join('\n\n') + '\n\nTutor:';
+  }
+
+  /**
+   * Determine if an image would enhance the explanation
+   */
+  private shouldGenerateImage(textResponse: string, keywords: string[], gradeLevel: number): boolean {
+    // Heuristic checks for visual triggers
+    const visualTriggers = [
+      /visual|diagram|image|picture|chart|graph/i,
+      /structure|anatomy|process|cycle|system/i,
+      /how.*look|appearance|shape|form/i
+    ];
+
+    const hasVisualTrigger = visualTriggers.some(trigger => trigger.test(textResponse));
+    const hasScientificKeywords = keywords.some(keyword => 
+      ['cell', 'molecule', 'planet', 'atom', 'system', 'structure', 'process'].includes(keyword.toLowerCase())
+    );
+
+    // More likely to generate images for younger students (more visual learners)
+    const gradeBonus = gradeLevel < 8 ? 0.3 : 0.1;
+    const probability = (hasVisualTrigger ? 0.7 : 0) + (hasScientificKeywords ? 0.5 : 0) + gradeBonus;
+
+    console.log(`🎯 Image generation probability: ${probability} (Grade ${gradeLevel})`);
+    return probability > 0.5;
+  }
+
+  /**
+   * Generate educational image based on keywords
+   */
+  private async generateEducationalImage(keywords: string[], gradeLevel: number): Promise<{ imageUrl: string } | null> {
+    if (keywords.length === 0) return null;
+
+    const imagePrompt = this.buildImagePrompt(keywords, gradeLevel);
+    console.log(`🎨 Generating image: "${imagePrompt}"`);
+
+    const options: ImageGenerationOptions = {
+      width: 512,
+      height: 512,
+      gradeLevel,
+      style: gradeLevel < 8 ? 'illustration' : 'diagram'
+    };
+
+    const result = await this.aiProviderManager.generateImage(imagePrompt, options);
+    
+    // Convert ImageResult to expected format
+    if (result) {
+      return { imageUrl: result.url };
+    }
+    
+    return null;
+  }
+
+  /**
+   * Build educational image prompt
+   */
+  private buildImagePrompt(keywords: string[], gradeLevel: number): string {
+    const mainConcept = keywords.slice(0, 3).join(', ');
+    
+    if (gradeLevel < 8) {
+      return `Simple, colorful educational illustration of ${mainConcept}, kid-friendly, cartoon style, clear and easy to understand`;
+    } else {
+      return `Detailed scientific diagram of ${mainConcept}, educational illustration with labels, professional quality`;
+    }
+  }
+
+  /**
+   * Fetch educational links based on keywords
+   */
+  private async fetchEducationalLinks(keywords: string[], gradeLevel: number): Promise<LinkResult[]> {
+    if (keywords.length === 0) return [];
+
+    const searchTerm = keywords.slice(0, 2).join(' ');
+    return await linkFetcher.fetchRelevantLinks(searchTerm, gradeLevel, 2);
   }
 
   // Enhanced quick response with smart provider selection

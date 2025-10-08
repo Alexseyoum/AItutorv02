@@ -68,7 +68,9 @@ export async function POST(request: NextRequest) {
     if (history && Array.isArray(history) && history.length > 0) {
       console.log(`🗣️ Processing conversational chat with ${history.length} history messages`);
       
-      const response = await tutorAgent.generateConversationalResponse(
+      // Use enhanced response for full multimodal capabilities
+      const enhancedResponse = await tutorAgent.generateEnhancedResponse(
+        message,
         history,
         profile ? {
           gradeLevel: profile.gradeLevel,
@@ -80,23 +82,50 @@ export async function POST(request: NextRequest) {
       
       return NextResponse.json({ 
         type: "chat",
-        data: { message: response },
+        data: { 
+          message: enhancedResponse.content,
+          imageUrl: enhancedResponse.imageUrl,
+          links: enhancedResponse.links,
+          keywords: enhancedResponse.keywords,
+          funFact: enhancedResponse.funFact,
+          analogy: enhancedResponse.analogy
+        },
         meta: {
           historyLength: history.length,
-          contextOptimized: true
+          contextOptimized: true,
+          hasImage: !!enhancedResponse.imageUrl,
+          hasLinks: !!(enhancedResponse.links && enhancedResponse.links.length > 0)
         }
       });
     }
 
-    // Fallback to simple chat (backward compatibility)
-    const response = await tutorAgent.quickResponse(message);
+    // Fallback to simple chat (backward compatibility) - also use enhanced response
+    const enhancedResponse = await tutorAgent.generateEnhancedResponse(
+      message,
+      [],
+      profile ? {
+        gradeLevel: profile.gradeLevel,
+        learningStyle: profile.learningStyle,
+        interests: profile.interests,
+        pastEngagement: profile.pastEngagement || 0
+      } : undefined
+    );
     
     return NextResponse.json({ 
       type: "chat",
-      data: { message: response },
+      data: { 
+        message: enhancedResponse.content,
+        imageUrl: enhancedResponse.imageUrl,
+        links: enhancedResponse.links,
+        keywords: enhancedResponse.keywords,
+        funFact: enhancedResponse.funFact,
+        analogy: enhancedResponse.analogy
+      },
       meta: {
         historyLength: 0,
-        contextOptimized: false
+        contextOptimized: false,
+        hasImage: !!enhancedResponse.imageUrl,
+        hasLinks: !!(enhancedResponse.links && enhancedResponse.links.length > 0)
       }
     });
 

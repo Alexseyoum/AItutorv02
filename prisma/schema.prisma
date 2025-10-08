@@ -221,6 +221,11 @@ model ChatMessage {
   content   String
   type      String   // "user" or "ai"
   metadata  Json?
+
+  // New fields for hybrid implementation
+  imageUrl  String?  // Base64 or URL for generated images
+  links     Json?    // Array of { title: string, url: string, type: 'youtube' | 'wikipedia', snippet?: string }
+  keywords  String[] @default([]) // Extracted keywords for better search
   
   @@map("chat_messages")
 }

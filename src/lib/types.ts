@@ -6,7 +6,22 @@ export interface Message {
   content: string;
   type: "user" | "ai";
   timestamp: Date;
+  // Enhanced content support
+  imageUrl?: string;
+  links?: LinkResult[];
+  keywords?: string[];
+  funFact?: string;
+  analogy?: string;
   metadata?: any;
+}
+
+// Link result interface for educational resources
+export interface LinkResult {
+  title: string;
+  url: string;
+  type: 'youtube' | 'wikipedia' | 'educational';
+  snippet?: string;
+  relevanceScore?: number;
 }
 
 export interface StudentProfile {

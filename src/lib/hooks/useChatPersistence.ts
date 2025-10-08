@@ -85,7 +85,7 @@ export function useChatPersistence(initialTopic?: string) {
   const loadSession = async (sessionId: string) => {
     try {
       setIsLoading(true);
-      const response = await fetch(`/api/chat/sessions/${sessionId}`);
+      const response = await fetch(`/api/chat/sessions/${sessionId}/messages`);
       if (response.ok) {
         const data = await response.json();
         setCurrentSessionId(sessionId);
@@ -117,7 +117,7 @@ export function useChatPersistence(initialTopic?: string) {
     }
 
     try {
-      await fetch(`/api/chat/sessions/${currentSessionId}`, {
+      await fetch(`/api/chat/sessions/${currentSessionId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
