@@ -1,30 +1,34 @@
 import { LoginForm } from "@/components/login-form";
-import { ReturnButton } from "@/components/return-button";
 import { SignInOauthButton } from "@/components/sign-in-oauth-button";
-import { Brain } from "lucide-react";
+import { Brain, Sparkles, Heart } from "lucide-react";
 import Link from "next/link";
+import { Navigation } from "@/components/ui/navigation";
 
 export default function Page() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 relative overflow-hidden">
+      {/* Fun Background Elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-r from-yellow-300 to-orange-400 rounded-full opacity-10 animate-float"></div>
+        <div className="absolute bottom-20 right-20 w-24 h-24 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full opacity-10 animate-float delay-1000"></div>
+        <div className="absolute top-1/2 left-1/4 w-40 h-40 bg-gradient-to-r from-green-400 to-cyan-500 rounded-full opacity-10 animate-float delay-2000"></div>
+      </div>
+
       {/* Navigation */}
-      <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto">
-        <div className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-blue-600" />
-          <span className="text-2xl font-bold text-gray-900 dark:text-white">TutorByAI</span>
-        </div>
-        <ReturnButton href="/" label="Home" />
-      </nav>
+      <Navigation showBackButton={true} backLabel="Home" />
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-6 pt-12 pb-32">
-        <div className="bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm rounded-3xl p-8 border border-gray-200 dark:border-gray-700 shadow-xl">
+      <main className="relative z-10 max-w-md mx-auto px-6 pt-8 pb-20">
+        <div className="bg-white/90 dark:bg-gray-800/90 glass-strong rounded-3xl p-8 border border-white/30 shadow-2xl animate-scale-in">
           <div className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-2">
-              Welcome Back
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-500 to-purple-600 rounded-2xl mb-4 animate-pulse-glow">
+              <Sparkles className="w-8 h-8 text-white" />
+            </div>
+            <h1 className="text-h1 text-gray-900 dark:text-white mb-2">
+              Welcome Back! 🎉
             </h1>
-            <p className="text-gray-600 dark:text-gray-300">
-              Sign in to continue your learning journey
+            <p className="text-gray-600 dark:text-gray-300 text-readable">
+              Ready to continue your amazing learning journey?
             </p>
           </div>
 
@@ -32,12 +36,12 @@ export default function Page() {
             <LoginForm />
 
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Don&apos;t have an account?{" "}
+              Don't have an account?{" "}
               <Link 
                 href="/auth/register" 
-                className="text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 font-medium"
+                className="font-semibold gradient-text-primary hover:opacity-80 transition-all duration-150 ease-out"
               >
-                Create one here
+                Join the fun here! 🚀
               </Link>
             </p>
           </div>
@@ -47,7 +51,7 @@ export default function Page() {
               <div className="w-full border-t border-gray-200 dark:border-gray-700"></div>
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+              <span className="px-4 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400 font-medium">
                 Or continue with
               </span>
             </div>
@@ -56,6 +60,13 @@ export default function Page() {
           <div className="space-y-4">
             <SignInOauthButton provider="google" />
             <SignInOauthButton provider="github" />
+          </div>
+          
+          <div className="mt-6 text-center">
+            <div className="flex items-center justify-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+              <Heart className="w-3 h-3 text-red-500" />
+              <span>Safe, secure, and made for students</span>
+            </div>
           </div>
         </div>
       </main>

@@ -81,7 +81,9 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
     addMessage,
     createNewSession,
     loadSession,
-    setMessages
+    setMessages,
+    startNewChat,
+    sendConversation
   } = useChatPersistence(initialTopic);
 
   const [inputMessage, setInputMessage] = useState("");
@@ -99,12 +101,8 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
     scrollToBottom();
   }, [messages]);
 
-  // Create initial session if none exists
-  useEffect(() => {
-    if (!currentSessionId && !isPersistenceLoading) {
-      createNewSession();
-    }
-  }, [currentSessionId, isPersistenceLoading]);
+  // Note: Session will be created automatically when user sends their first message
+  // No need to create empty sessions on component mount
 
   const simulateTyping = () => {
     setIsTyping(true);
@@ -114,6 +112,10 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
   const sendMessage = async (messageText: string = inputMessage) => {
     if (!messageText.trim() || isLoading) return;
 
+    console.log('🚀 SEND: Starting to send message:', messageText.substring(0, 50) + '...');
+    console.log('🚀 SEND: Current session ID:', currentSessionId);
+    console.log('🚀 SEND: Current message count:', messages.length);
+
     const userMessage: Message = {
       id: Date.now().toString(),
       content: messageText,
@@ -121,7 +123,8 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
       timestamp: new Date()
     };
 
-    await addMessage(userMessage);
+    console.log('🚀 SEND: Created user message with ID:', userMessage.id);
+    
     setInputMessage("");
     setIsLoading(true);
     simulateTyping();
@@ -178,7 +181,14 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
         analogy: data.data.analogy
       };
 
-      await addMessage(aiMessage);
+      console.log('🚀 SEND: Created AI message with ID:', aiMessage.id);
+      
+      // Use the new sendConversation method to ensure both messages go to the same session
+      const success = await sendConversation(userMessage, aiMessage);
+      
+      if (!success) {
+        console.error('❌ SEND: Failed to save conversation properly');
+      }
 
       // Log context optimization results (development only)
       if (process.env.NODE_ENV === 'development' && data.meta) {
@@ -254,7 +264,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
           
           {/* New Chat Button */}
           <Button 
-            onClick={() => createNewSession()}
+            onClick={() => startNewChat()}
             variant="ghost" 
             size="sm" 
             className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
@@ -342,6 +352,28 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
 
             {/* Messages */}
             <div className="h-96 overflow-y-auto p-6 space-y-4 bg-gradient-to-b from-transparent to-black/10">
+              {/* Welcome state when no session exists */}
+              {!currentSessionId && messages.length === 0 && (
+                <div className="flex flex-col items-center justify-center h-full text-center">
+                  <div className="p-6 bg-purple-500/20 backdrop-blur-sm rounded-full border border-white/20 mb-6">
+                    <Bot className="h-12 w-12 text-purple-300" />
+                  </div>
+                  <h3 className="text-2xl font-bold text-white mb-3">
+                    {initialTopic 
+                      ? `Ready to explore ${initialTopic}?`
+                      : "Welcome to your AI Tutor!"
+                    }
+                  </h3>
+                  <p className="text-purple-200 max-w-md leading-relaxed">
+                    {initialTopic
+                      ? `I'm here to help you learn about ${initialTopic}. Ask me anything to get started!`
+                      : "I'm here to help you learn anything you're curious about. Send me your first message to begin our conversation!"
+                    }
+                  </p>
+                </div>
+              )}
+              
+              {/* Regular messages */}
               {messages.map((message) => (
                 <div
                   key={message.id}
@@ -465,12 +497,12 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Suggested Questions */}
-            {messages.length <= 1 && (
+            {/* Suggested Questions - Show when no session exists or very few messages */}
+            {(!currentSessionId || messages.length <= 1) && (
               <div className="p-6 bg-white/5 border-t border-white/20">
                 <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
                   <Sparkles className="h-5 w-5 text-cyan-400" />
-                  Try asking me about:
+                  {!currentSessionId ? "Start learning with:" : "Try asking me about:"}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {suggestedQuestions.map((question, index) => (
@@ -521,7 +553,10 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                   <Input
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Type your message or use voice input..."
+                    placeholder={!currentSessionId 
+                      ? "Ask me anything to start learning..."
+                      : "Type your message or use voice input..."
+                    }
                     disabled={isLoading}
                     className="h-14 rounded-2xl border-white/20 bg-white/10 backdrop-blur-sm text-white placeholder:text-gray-300 focus:border-cyan-400/50 focus:ring-2 focus:ring-cyan-400/20 pr-12"
                   />

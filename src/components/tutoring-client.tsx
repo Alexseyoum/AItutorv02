@@ -23,7 +23,10 @@ import {
   Star,
   TrendingUp,
   Clock,
-  Award
+  Award,
+  Calculator,
+  BookOpen,
+  UserCircle
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,32 +46,36 @@ interface TutoringClientProps {
 
 const featuredTopics = [
   {
-    title: "Artificial Intelligence",
-    description: "Explore the future of technology",
-    icon: Brain,
+    title: "Math Magic 🧙‍♂️",
+    description: "Make numbers your best friends!",
+    icon: Calculator,
     gradient: "from-purple-500 to-pink-500",
-    difficulty: "Intermediate"
+    difficulty: "Fun",
+    emoji: "🔢"
   },
   {
-    title: "Web Development",
-    description: "Build amazing websites",
+    title: "Science Adventures 🔬",
+    description: "Discover how the world works!",
     icon: Zap,
     gradient: "from-blue-500 to-cyan-500",
-    difficulty: "Beginner"
+    difficulty: "Cool",
+    emoji: "⚙️"
   },
   {
-    title: "Machine Learning",
-    description: "Teach computers to learn",
-    icon: TrendingUp,
+    title: "English Stories 📚",
+    description: "Read, write, and create amazing tales!",
+    icon: BookOpen,
     gradient: "from-green-500 to-teal-500",
-    difficulty: "Advanced"
+    difficulty: "Creative",
+    emoji: "✍️"
   },
   {
-    title: "Data Science",
-    description: "Uncover insights from data",
+    title: "History Heroes 🏰",
+    description: "Meet amazing people from the past!",
     icon: Target,
     gradient: "from-orange-500 to-red-500",
-    difficulty: "Intermediate"
+    difficulty: "Epic",
+    emoji: "🗺️"
   }
 ];
 
@@ -189,85 +196,103 @@ export default function TutoringClient({ user }: TutoringClientProps) {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      {/* Animated Background Elements */}
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+      {/* Enhanced Animated Background Elements */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
         <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
         <div className="absolute top-3/4 left-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        
+        {/* Additional floating elements for more depth */}
+        <div className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-r from-purple-400/20 to-pink-400/20 rounded-full animate-float"></div>
+        <div className="absolute bottom-20 left-20 w-24 h-24 bg-gradient-to-r from-cyan-400/20 to-blue-400/20 rounded-full animate-float delay-1000"></div>
+        <div className="absolute top-1/2 right-1/3 w-40 h-40 bg-gradient-to-r from-green-400/20 to-teal-400/20 rounded-full animate-float delay-500"></div>
       </div>
 
-      {/* Navigation */}
+      {/* Enhanced Navigation with Glassmorphism */}
       <nav className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-3">
           <div className="relative">
-            <Brain className="h-10 w-10 text-purple-400" />
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-cyan-400 rounded-full animate-ping"></div>
+            <Brain className="h-10 w-10 text-purple-400 animate-pulse" />
+            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full animate-bounce">
+              <div className="w-2 h-2 bg-white rounded-full mx-auto mt-1"></div>
+            </div>
           </div>
-          <span className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">
+          <span className="text-2xl font-bold gradient-text-primary">
             TutorByAI
           </span>
+          <div className="hidden sm:flex items-center gap-2 bg-white/10 glass border border-white/20 rounded-full px-3 py-1">
+            <span className="text-xs font-semibold text-purple-200">✨ AI Powered</span>
+          </div>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button 
             variant="ghost" 
             size="sm" 
             onClick={resetOnboarding}
-            className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20"
+            className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 transition-all duration-300 ease-bounce rounded-xl"
           >
             <Settings className="h-4 w-4 mr-2" />
             Settings
           </Button>
-          <Button asChild variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 backdrop-blur-sm border border-white/20">
-            <Link href="/profile">Profile</Link>
+          <Button asChild variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 transition-all duration-300 ease-bounce rounded-xl">
+            <Link href="/profile">
+              <UserCircle className="h-4 w-4 mr-2" />
+              Profile
+            </Link>
           </Button>
           <SignOutButton />
         </div>
       </nav>
 
-      {/* Main Content */}
+      {/* Enhanced Main Content */}
       <main className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
-        {/* Personalized Header */}
+        {/* Enhanced Personalized Header */}
         <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
-            Welcome back, <span className="bg-gradient-to-r from-purple-400 to-cyan-400 bg-clip-text text-transparent">{user.name?.split(' ')[0] || 'Student'}</span>! 🚀
-          </h1>
-          <p className="text-xl text-purple-200 mb-6">Ready to unlock new knowledge today?</p>
+          <div className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500/20 to-red-500/20 glass border border-orange-500/30 rounded-full px-4 py-2 mb-4">
+            <Flame className="w-5 h-5 text-orange-400" />
+            <span className="text-sm font-bold text-white">Streak: {streak} days! 🔥</span>
+          </div>
           
-          {/* Profile Tags */}
+          <h1 className="text-display text-white mb-4 animate-bounce-in">
+            Hey there, <span className="gradient-text-fun">{user.name?.split(' ')[0] || 'Champion'}</span>! 🎆
+          </h1>
+          <p className="text-xl text-purple-200 mb-6">What awesome thing do you want to learn today?</p>
+          
+          {/* Enhanced Profile Tags */}
           {studentProfile && (
             <div className="flex flex-wrap justify-center gap-3 mb-8">
-              <span className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-purple-200 font-medium hover:bg-white/20 transition-all cursor-pointer">
-                Grade {studentProfile.gradeLevel}
+              <span className="px-4 py-2 bg-white/10 glass border border-white/20 rounded-full text-purple-200 font-medium card-hover transition-all duration-300">
+                🎯 Grade {studentProfile.gradeLevel}
               </span>
-              <span className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-purple-200 font-medium hover:bg-white/20 transition-all cursor-pointer">
-                {studentProfile.learningStyle?.replace('_', ' ')} Learner
+              <span className="px-4 py-2 bg-white/10 glass border border-white/20 rounded-full text-purple-200 font-medium card-hover transition-all duration-300">
+                🧠 {studentProfile.learningStyle?.replace('_', ' ')} Learner
               </span>
               {studentProfile.interests?.slice(0, 2).map((interest, index) => (
-                <span key={index} className="px-4 py-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full text-purple-200 font-medium hover:bg-white/20 transition-all cursor-pointer">
-                  {interest}
+                <span key={index} className="px-4 py-2 bg-white/10 glass border border-white/20 rounded-full text-purple-200 font-medium card-hover transition-all duration-300">
+                  🌟 {interest}
                 </span>
               ))}
             </div>
           )}
         </div>
 
-        {/* Main Grid Layout */}
+        {/* Enhanced Main Grid Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column - Main Content */}
+          {/* Enhanced Left Column - Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            {/* Continue Your Journey */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl hover:shadow-3xl transition-all group">
+            {/* Enhanced Continue Your Journey */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl card-hover transition-all duration-300">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-white mb-2">Continue Your Journey</h3>
                   <p className="text-purple-200">Pick up where you left off</p>
                 </div>
-                <div className="text-cyan-400">
+                <div className="text-cyan-400 animate-pulse">
                   <Play className="h-8 w-8" />
                 </div>
               </div>
-              <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 rounded-2xl p-6 border border-white/10">
+              <div className="bg-gradient-to-r from-purple-500/20 to-cyan-500/20 glass rounded-2xl p-6 border border-white/10">
                 <div className="flex items-center justify-between">
                   <div>
                     <h4 className="text-lg font-semibold text-white mb-1">
@@ -282,7 +307,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                   </div>
                   <Button 
                     onClick={() => setShowChat(true)}
-                    className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white border-0 rounded-xl px-6"
+                    className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white border-0 rounded-xl px-6 transition-all duration-300 hover:scale-105"
                   >
                     {studentStats?.lastSession ? "Continue" : "Start"}
                   </Button>
@@ -290,12 +315,12 @@ export default function TutoringClient({ user }: TutoringClientProps) {
               </div>
             </div>
 
-            {/* Progress Tracker Widget */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+            {/* Enhanced Progress Tracker Widget */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl card-hover transition-all duration-300">
               <h3 className="text-2xl font-bold text-white mb-6">Your Progress</h3>
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {/* Learning Streak */}
+                {/* Enhanced Learning Streak */}
                 <div className="text-center">
                   <div className="relative inline-block">
                     <div className="w-20 h-20 rounded-full bg-gradient-to-r from-orange-400 to-red-500 flex items-center justify-center mb-3 mx-auto shadow-lg">
@@ -309,13 +334,13 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                   <p className="text-purple-200 text-sm">{streak} days in a row!</p>
                 </div>
 
-                {/* Weekly Progress */}
+                {/* Enhanced Weekly Progress */}
                 <div>
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-white font-medium">Weekly Goals</span>
                     <span className="text-cyan-400 font-bold">{weeklyProgress}%</span>
                   </div>
-                  <div className="w-full bg-white/20 rounded-full h-3 mb-2">
+                  <div className="w-full bg-white/20 rounded-full h-3 mb-2 overflow-hidden">
                     <div 
                       className="bg-gradient-to-r from-cyan-400 to-blue-500 h-3 rounded-full transition-all duration-1000"
                       style={{ width: `${weeklyProgress}%` }}
@@ -325,15 +350,15 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     {weeklyProgress >= 100 ? "Goal achieved! 🎉" : "Keep it up! You're doing great!"}
                   </p>
                   
-                  {/* Quick Stats */}
+                  {/* Enhanced Quick Stats */}
                   <div className="grid grid-cols-2 gap-2 mt-4">
-                    <div className="bg-white/5 rounded-lg p-2 text-center border border-white/10">
+                    <div className="bg-white/5 glass rounded-lg p-2 text-center border border-white/10 card-hover transition-all duration-300">
                       <div className="text-cyan-400 font-bold text-sm">
                         {studentStats?.problemsSolved || 0}
                       </div>
                       <div className="text-purple-200 text-xs">Problems</div>
                     </div>
-                    <div className="bg-white/5 rounded-lg p-2 text-center border border-white/10">
+                    <div className="bg-white/5 glass rounded-lg p-2 text-center border border-white/10 card-hover transition-all duration-300">
                       <div className="text-purple-400 font-bold text-sm">
                         {Math.round((studentStats?.totalStudyTime || 0) / 60)}h
                       </div>
@@ -342,8 +367,8 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                   </div>
                 </div>
 
-                {/* Achievement Badge */}
-                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 rounded-2xl p-4 border border-yellow-500/30">
+                {/* Enhanced Achievement Badge */}
+                <div className="bg-gradient-to-r from-yellow-500/20 to-orange-500/20 glass rounded-2xl p-4 border border-yellow-500/30">
                   <div className="flex items-center gap-3 mb-2">
                     <div className="p-2 bg-yellow-500/30 rounded-lg">
                       <Trophy className="h-5 w-5 text-yellow-300" />
@@ -359,14 +384,14 @@ export default function TutoringClient({ user }: TutoringClientProps) {
               </div>
             </div>
 
-            {/* Featured Topics Carousel */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+            {/* Enhanced Featured Topics Carousel */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl card-hover transition-all duration-300">
               <div className="flex items-center justify-between mb-6">
                 <div>
                   <h3 className="text-2xl font-bold text-white mb-2">Featured Topics</h3>
                   <p className="text-purple-200">Explore trending subjects</p>
                 </div>
-                <Button variant="ghost" size="sm" className="text-purple-200 hover:text-white">
+                <Button variant="ghost" size="sm" className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 rounded-xl transition-all duration-300">
                   View All <ChevronRight className="h-4 w-4 ml-1" />
                 </Button>
               </div>
@@ -378,11 +403,11 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     className="group relative overflow-hidden rounded-2xl bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-sm border border-white/20 p-6 hover:scale-105 transition-all duration-300 cursor-pointer"
                     onClick={() => handleTopicClick(topic.title)}
                   >
-                    <div className={`absolute inset-0 bg-gradient-to-br ${topic.gradient} opacity-10 group-hover:opacity-20 transition-opacity`}></div>
+                    <div className={`absolute inset-0 bg-gradient-to-br ${topic.gradient} opacity-10 group-hover:opacity-20 transition-opacity rounded-2xl`}></div>
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
                         <topic.icon className="h-8 w-8 text-white" />
-                        <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full">
+                        <span className="text-xs bg-white/20 text-white px-2 py-1 rounded-full border border-white/10">
                           {topic.difficulty}
                         </span>
                       </div>
@@ -395,15 +420,15 @@ export default function TutoringClient({ user }: TutoringClientProps) {
             </div>
           </div>
 
-          {/* Right Column - Quick Actions */}
+          {/* Enhanced Right Column - Quick Actions */}
           <div className="space-y-6">
-            {/* Quick Start Learning Cards */}
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+            {/* Enhanced Quick Start Learning Cards */}
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl card-hover transition-all duration-300">
               <h3 className="text-xl font-bold text-white mb-6">Quick Start</h3>
               
               <div className="grid grid-cols-1 gap-4">
-                {/* Explain Concept Card */}
-                <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all">
+                {/* Enhanced Explain Concept Card */}
+                <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-3">
                     <div className="p-2 bg-blue-500/30 rounded-lg">
                       <Lightbulb className="h-5 w-5 text-blue-300" />
@@ -434,16 +459,16 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     
                     <Button 
                       onClick={handleConceptExplain}
-                      className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-xl h-10"
+                      className="w-full bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white border-0 rounded-xl h-10 transition-all duration-300 hover:scale-105"
                     >
                       Explain
                     </Button>
                   </div>
                 </div>
 
-                {/* Practice Problems Card */}
+                {/* Enhanced Practice Problems Card */}
                 <div 
-                  className="bg-gradient-to-br from-green-500/20 to-teal-500/20 rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all cursor-pointer"
+                  className="bg-gradient-to-br from-green-500/20 to-teal-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300 cursor-pointer"
                   onClick={() => handleQuickAction("Practice Problems")}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -463,14 +488,14 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     />
                   </div>
                   
-                  <Button className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 rounded-xl h-10">
+                  <Button className="w-full bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white border-0 rounded-xl h-10 transition-all duration-300 hover:scale-105">
                     Start Practice
                   </Button>
                 </div>
 
-                {/* Homework Help Card */}
+                {/* Enhanced Homework Help Card */}
                 <div 
-                  className="bg-gradient-to-br from-orange-500/20 to-red-500/20 rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all cursor-pointer"
+                  className="bg-gradient-to-br from-orange-500/20 to-red-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300 cursor-pointer"
                   onClick={() => handleQuickAction("Homework Help")}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -480,20 +505,20 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     <h4 className="font-semibold text-white">Homework Help</h4>
                   </div>
                   <div className="flex gap-2">
-                    <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-xl h-8 text-xs">
+                    <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-xl h-8 text-xs transition-all duration-300 hover:scale-105">
                       <Camera className="h-3 w-3 mr-1" />
                       Photo
                     </Button>
-                    <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-xl h-8 text-xs">
+                    <Button variant="outline" size="sm" className="flex-1 bg-white/10 border-white/20 text-white hover:bg-white/20 rounded-xl h-8 text-xs transition-all duration-300 hover:scale-105">
                       <Upload className="h-3 w-3 mr-1" />
                       Upload
                     </Button>
                   </div>
                 </div>
 
-                {/* Study Suggestions Card */}
+                {/* Enhanced Study Suggestions Card */}
                 <div 
-                  className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all cursor-pointer"
+                  className="bg-gradient-to-br from-purple-500/20 to-pink-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300 cursor-pointer"
                   onClick={() => handleQuickAction("Study Suggestions")}
                 >
                   <div className="flex items-center gap-3 mb-3">
@@ -503,7 +528,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     <h4 className="font-semibold text-white">Study Suggestions</h4>
                   </div>
                   <p className="text-gray-300 text-sm mb-3">Personalized recommendations for you</p>
-                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 rounded-xl h-10">
+                  <Button className="w-full bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white border-0 rounded-xl h-10 transition-all duration-300 hover:scale-105">
                     Get Suggestions
                   </Button>
                 </div>
