@@ -108,7 +108,8 @@ export async function POST(
 
     console.log('✅ POST: User authenticated:', session.user.id);
 
-    const { content, type, metadata } = await request.json();
+    const body = await request.json();
+    const { content, type, metadata } = body;
     console.log('📝 POST: Message data received:', { 
       type, 
       contentLength: content?.length,
@@ -116,6 +117,15 @@ export async function POST(
       sessionId,
       userId: session.user.id
     });
+
+    // Validate required fields
+    if (!content || !type) {
+      console.log('❌ POST: Missing required fields - content or type');
+      return NextResponse.json(
+        { error: "Missing required fields: content and type are required" },
+        { status: 400 }
+      );
+    }
 
     // Verify session belongs to user
     console.log('🔍 POST: Verifying session ownership...');
@@ -136,11 +146,17 @@ export async function POST(
       
       if (sessionExists) {
         console.log('⚠️ POST: Session exists but belongs to different user:', sessionExists.userId);
+        return NextResponse.json(
+          { error: "Session not found or unauthorized access" },
+          { status: 403 }
+        );
       } else {
         console.log('❌ POST: Session does not exist in database');
+        return NextResponse.json(
+          { error: "Session not found" },
+          { status: 404 }
+        );
       }
-      
-      return NextResponse.json({ error: "Session not found" }, { status: 404 });
     }
 
     console.log('✅ POST: Found session, creating message...');
@@ -149,7 +165,7 @@ export async function POST(
         sessionId: sessionId,
         content,
         type,
-        metadata: metadata || null
+        metadata: metadata || undefined
       }
     });
 
@@ -168,17 +184,38 @@ export async function POST(
     console.log('📊 POST: Total messages in session after save:', totalMessages);
 
     // Update session's updatedAt timestamp
-    await prisma.chatSession.update({
-      where: { id: sessionId },
-      data: { updatedAt: new Date() }
-    });
+    try {
+      await prisma.chatSession.update({
+        where: { id: sessionId },
+        data: { updatedAt: new Date() }
+      });
+      console.log('✅ POST: Session timestamp updated');
+    } catch (updateError) {
+      console.error('⚠️ POST: Failed to update session timestamp:', updateError);
+      // Don't fail the whole operation if timestamp update fails
+    }
 
-    console.log('✅ POST: Session timestamp updated');
     return NextResponse.json({ message });
   } catch (error: unknown) {
-    console.error("Error saving message:", error);
+    console.error("❌ Error saving message:", error);
+    
+    // More detailed error handling
+    if (error instanceof Error) {
+      console.error("Error name:", error.name);
+      console.error("Error message:", error.message);
+      if ('code' in error) {
+        console.error("Error code:", (error as any).code);
+      }
+      if ('meta' in error) {
+        console.error("Error meta:", (error as any).meta);
+      }
+    }
+    
     return NextResponse.json(
-      { error: "Failed to save message" },
+      { 
+        error: "Failed to save message",
+        details: error instanceof Error ? error.message : "Unknown error"
+      },
       { status: 500 }
     );
   }

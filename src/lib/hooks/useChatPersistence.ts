@@ -5,6 +5,7 @@ import { Message } from '@/lib/types';
 interface ChatSession {
   id: string;
   title?: string;
+  displayTitle?: string;
   topic?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -159,6 +160,22 @@ export function useChatPersistence(initialTopic?: string) {
         console.error('❌ SAVE: Failed to save message:', response.status, response.statusText);
         const errorText = await response.text();
         console.error('SAVE: Error details:', errorText);
+        
+        // Show user-friendly error message
+        let errorMessage = 'Failed to save message';
+        try {
+          const errorData = JSON.parse(errorText);
+          if (errorData.details) {
+            errorMessage += `: ${errorData.details}`;
+          }
+        } catch (e) {
+          // If parsing fails, use the raw error text
+          if (errorText) {
+            errorMessage += `: ${errorText}`;
+          }
+        }
+        
+        toast.error(errorMessage);
         return false;
       } else {
         const result = await response.json();
@@ -167,6 +184,7 @@ export function useChatPersistence(initialTopic?: string) {
       }
     } catch (error) {
       console.error('❌ SAVE: Exception while saving message:', error);
+      toast.error('Network error while saving message');
       return false;
     }
   }, []);

@@ -7,8 +7,21 @@
     "dev:turbo": "prisma generate && next dev --turbopack --port 3001",
     "build": "prisma generate && next build",
     "build:turbo": "prisma generate && next build --turbopack",
+    "build:analyze": "ANALYZE=true npm run build",
     "start": "next start",
-    "lint": "eslint"
+    "start:prod": "NODE_ENV=production next start",
+    "lint": "eslint",
+    "lint:fix": "eslint --fix",
+    "type-check": "tsc --noEmit",
+    "pre-deploy": "npm run lint && npm run type-check && npm run build",
+    "deploy-db": "tsx scripts/deploy-db.ts",
+    "health-check": "curl -f http://localhost:3000/api/health || exit 1",
+    "postbuild": "echo '✅ Build completed successfully!'",
+    "db:generate": "prisma generate",
+    "db:push": "prisma db push",
+    "db:studio": "prisma studio",
+    "db:reset": "prisma migrate reset",
+    "validate-env": "tsx src/lib/env-validation.ts"
   },
   "dependencies": {
     "@huggingface/inference": "^2.8.1",

@@ -361,7 +361,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                 {!sidebarCollapsed && sidebarVisible && (
                   <div className="ml-3 min-w-0 flex-1">
                     <div className="font-medium text-sm truncate text-slate-900 dark:text-slate-100">
-                      {session.title || "Untitled Chat"}
+                      {session.displayTitle || session.title || "Untitled Chat"}
                     </div>
                     <div className="text-xs text-slate-500 dark:text-slate-400 truncate">
                       {new Date(session.updatedAt).toLocaleDateString()}
