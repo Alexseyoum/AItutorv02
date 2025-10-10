@@ -1,6 +1,7 @@
 // This would be the new marketing page at /marketing or /about
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { Brain, Users, Zap, BookOpen, ArrowRight, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { GetStartedButton } from "@/components/get-started-button";
@@ -18,10 +19,11 @@ export default async function Marketing() {
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-blue-600" />
+          <Brain className="h-8 w-8 text-blue-600 dark:text-purple-400" />
           <span className="text-2xl font-bold text-gray-900 dark:text-white">TutorByAI</span>
         </div>
         <div className="flex items-center gap-4">
+          <ModeToggle className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white" />
           <Button variant="ghost" asChild>
             <Link href="/auth/login">Sign In</Link>
           </Button>

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { ModeToggle } from "@/components/ui/mode-toggle";
 import { toast } from "sonner";
 import { OnboardingData, StudentProfile, LEARNING_STYLES, DIFFICULTY_LEVELS } from "@/lib/types";
 
@@ -97,12 +98,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         return (
           <div className="space-y-6">
             <div>
-              <Label htmlFor="gradeLevel" className="text-base font-medium">Grade Level *</Label>
+              <Label htmlFor="gradeLevel" className="text-base font-medium text-gray-700 dark:text-gray-300">Grade Level *</Label>
               <select
                 id="gradeLevel"
                 value={formData.gradeLevel}
                 onChange={(e) => setFormData(prev => ({ ...prev, gradeLevel: parseInt(e.target.value) }))}
-                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full mt-2 p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
               >
                 {[...Array(12)].map((_, i) => (
                   <option key={i + 1} value={i + 1}>Grade {i + 1}</option>
@@ -111,7 +112,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </div>
 
             <div>
-              <Label htmlFor="age" className="text-base font-medium">Age (optional)</Label>
+              <Label htmlFor="age" className="text-base font-medium text-gray-700 dark:text-gray-300">Age (optional)</Label>
               <Input
                 id="age"
                 type="number"
@@ -120,18 +121,18 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 value={formData.age || ""}
                 onChange={(e) => setFormData(prev => ({ ...prev, age: e.target.value ? parseInt(e.target.value) : undefined }))}
                 placeholder="Enter your age"
-                className="mt-2"
+                className="mt-2 h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
 
             <div>
-              <Label htmlFor="school" className="text-base font-medium">School (optional)</Label>
+              <Label htmlFor="school" className="text-base font-medium text-gray-700 dark:text-gray-300">School (optional)</Label>
               <Input
                 id="school"
                 value={formData.school}
                 onChange={(e) => setFormData(prev => ({ ...prev, school: e.target.value }))}
                 placeholder="Enter your school name"
-                className="mt-2"
+                className="mt-2 h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
             </div>
           </div>
@@ -141,7 +142,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         return (
           <div className="space-y-6">
             <div>
-              <Label className="text-base font-medium">Subjects you're studying</Label>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Subjects you're studying</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                 {SUBJECTS_OPTIONS.map((subject) => (
                   <button
@@ -153,8 +154,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     }))}
                     className={`p-2 text-sm rounded-lg border transition-colors ${
                       formData.subjects.includes(subject)
-                        ? "bg-blue-100 border-blue-300 text-blue-700"
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                        ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                        : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                     }`}
                   >
                     {subject}
@@ -164,16 +165,16 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </div>
 
             <div>
-              <Label htmlFor="learningGoals" className="text-base font-medium">Learning Goals</Label>
+              <Label htmlFor="learningGoals" className="text-base font-medium text-gray-700 dark:text-gray-300">Learning Goals</Label>
               <textarea
                 id="learningGoals"
                 placeholder="What do you want to achieve? (e.g., improve math skills, prepare for exams, understand science better)"
                 value={learningGoalsText}
                 onChange={(e) => setLearningGoalsText(e.target.value)}
-                className="w-full mt-2 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full mt-2 p-3 border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400"
                 rows={3}
               />
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                 Separate multiple goals with commas
               </p>
             </div>
@@ -184,7 +185,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         return (
           <div className="space-y-6">
             <div>
-              <Label className="text-base font-medium">How do you learn best?</Label>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">How do you learn best?</Label>
               <div className="grid grid-cols-1 gap-3 mt-3">
                 {Object.entries(LEARNING_STYLES).map(([key, value]) => (
                   <button
@@ -193,12 +194,12 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     onClick={() => setFormData(prev => ({ ...prev, learningStyle: value }))}
                     className={`p-3 text-left rounded-lg border transition-colors ${
                       formData.learningStyle === value
-                        ? "bg-blue-100 border-blue-300 text-blue-700"
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                        ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                        : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                     }`}
                   >
                     <div className="font-medium">{key.replace('_', ' ')}</div>
-                    <div className="text-sm text-gray-600 mt-1">
+                    <div className="text-sm text-gray-600 dark:text-gray-400 mt-1">
                       {key === 'VISUAL' && "Pictures, diagrams, and visual aids"}
                       {key === 'AUDITORY' && "Listening and discussing"}
                       {key === 'KINESTHETIC' && "Hands-on activities and movement"}
@@ -211,7 +212,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </div>
 
             <div>
-              <Label className="text-base font-medium">Difficulty Level</Label>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Difficulty Level</Label>
               <div className="grid grid-cols-3 gap-3 mt-3">
                 {Object.entries(DIFFICULTY_LEVELS).map(([key, value]) => (
                   <button
@@ -220,8 +221,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     onClick={() => setFormData(prev => ({ ...prev, difficultyLevel: value }))}
                     className={`p-3 text-center rounded-lg border transition-colors ${
                       formData.difficultyLevel === value
-                        ? "bg-blue-100 border-blue-300 text-blue-700"
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                        ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                        : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                     }`}
                   >
                     {key}
@@ -231,7 +232,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </div>
 
             <div>
-              <Label className="text-base font-medium">Your Interests</Label>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Your Interests</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                 {INTERESTS_OPTIONS.map((interest) => (
                   <button
@@ -243,8 +244,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     }))}
                     className={`p-2 text-sm rounded-lg border transition-colors ${
                       formData.interests.includes(interest)
-                        ? "bg-blue-100 border-blue-300 text-blue-700"
-                        : "bg-gray-50 border-gray-200 hover:bg-gray-100"
+                        ? "bg-blue-100 dark:bg-blue-900/30 border-blue-300 dark:border-blue-600 text-blue-700 dark:text-blue-300"
+                        : "bg-gray-50 dark:bg-gray-700 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-600"
                     }`}
                   >
                     {interest}
@@ -261,8 +262,13 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full bg-white rounded-xl shadow-lg p-8">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 flex items-center justify-center p-4">
+      {/* Theme Toggle - Fixed position */}
+      <div className="fixed top-6 right-6 z-50">
+        <ModeToggle className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm border border-white/30 dark:border-gray-700/30 shadow-lg" />
+      </div>
+
+      <div className="max-w-2xl w-full bg-white/90 dark:bg-gray-800/90 glass-strong rounded-xl shadow-lg border border-white/30 dark:border-gray-700/30 p-8">
         <div className="mb-8">
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-3xl font-bold text-gray-900">Welcome! 🎓</h1>

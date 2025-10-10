@@ -1,5 +1,6 @@
 import { Brain } from "lucide-react";
 import { Button } from "./button";
+import { ModeToggle } from "./mode-toggle";
 import Link from "next/link";
 
 interface NavigationProps {
@@ -9,6 +10,7 @@ interface NavigationProps {
   backLabel?: string;
   authButtonText?: string;
   authButtonHref?: string;
+  showThemeToggle?: boolean;
   children?: React.ReactNode;
 }
 
@@ -19,6 +21,7 @@ export function Navigation({
   backLabel = "Home",
   authButtonText = "Sign In",
   authButtonHref = "/auth/login",
+  showThemeToggle = true,
   children
 }: NavigationProps) {
   return (
@@ -41,6 +44,10 @@ export function Navigation({
         )}
         
         {children}
+        
+        {showThemeToggle && (
+          <ModeToggle className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white" />
+        )}
         
         {showAuthButton && (
           <Button variant="outline" asChild>
