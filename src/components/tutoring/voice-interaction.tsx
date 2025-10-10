@@ -160,8 +160,8 @@ export default function VoiceInteraction({
         className={`
           transition-all duration-200 ${
           isListening 
-            ? 'bg-red-500/20 border-red-400 text-red-300 hover:bg-red-500/30' 
-            : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+            ? 'bg-red-50 dark:bg-red-900/20 border-red-300 dark:border-red-700 text-red-600 dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-900/30' 
+            : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
         }`}
         disabled={isSpeaking}
       >
@@ -186,8 +186,8 @@ export default function VoiceInteraction({
         className={`
           transition-all duration-200 ${
           isSpeaking 
-            ? 'bg-blue-500/20 border-blue-400 text-blue-300 hover:bg-blue-500/30' 
-            : 'bg-white/10 border-white/20 text-white hover:bg-white/20'
+            ? 'bg-blue-50 dark:bg-blue-900/20 border-blue-300 dark:border-blue-700 text-blue-600 dark:text-blue-300 hover:bg-blue-100 dark:hover:bg-blue-900/30' 
+            : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
         }`}
         disabled={isListening}
       >
