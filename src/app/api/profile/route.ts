@@ -29,7 +29,8 @@ export async function GET(request: NextRequest) {
         difficultyLevel: true,
         sessionDuration: true,
         interests: true,
-        pastEngagement: true
+        pastEngagement: true,
+        isInterestedInSATPrep: true
       }
     });
 
@@ -52,7 +53,8 @@ export async function GET(request: NextRequest) {
         sessionDuration: user.sessionDuration,
         interests: user.interests,
         pastEngagement: user.pastEngagement || 0,
-        isOnboarded: user.isOnboarded
+        isOnboarded: user.isOnboarded,
+        isInterestedInSATPrep: user.isInterestedInSATPrep || false
       }
     });
 
@@ -89,7 +91,8 @@ export async function PUT(request: NextRequest) {
       difficultyLevel,
       sessionDuration,
       interests,
-      pastEngagement
+      pastEngagement,
+      isInterestedInSATPrep
     } = body;
 
     // Validate required fields
@@ -129,7 +132,8 @@ export async function PUT(request: NextRequest) {
         sessionDuration: sessionDuration ? parseInt(sessionDuration) : null,
         interests: interests || [],
         pastEngagement: pastEngagement || 0,
-        isOnboarded: true
+        isOnboarded: true,
+        isInterestedInSATPrep: isInterestedInSATPrep !== undefined ? isInterestedInSATPrep : false
       },
       select: {
         id: true,
@@ -143,7 +147,8 @@ export async function PUT(request: NextRequest) {
         difficultyLevel: true,
         sessionDuration: true,
         interests: true,
-        pastEngagement: true
+        pastEngagement: true,
+        isInterestedInSATPrep: true
       }
     });
 
@@ -159,7 +164,8 @@ export async function PUT(request: NextRequest) {
         sessionDuration: updatedUser.sessionDuration,
         interests: updatedUser.interests,
         pastEngagement: updatedUser.pastEngagement || 0,
-        isOnboarded: updatedUser.isOnboarded
+        isOnboarded: updatedUser.isOnboarded,
+        isInterestedInSATPrep: updatedUser.isInterestedInSATPrep || false
       }
     });
 

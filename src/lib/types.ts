@@ -36,6 +36,7 @@ export interface StudentProfile {
   interests: string[];
   pastEngagement: number;
   isOnboarded: boolean;
+  isInterestedInSATPrep?: boolean;
 }
 
 export interface OnboardingData {
@@ -48,6 +49,60 @@ export interface OnboardingData {
   difficultyLevel: string;
   sessionDuration?: number;
   interests: string[];
+  isInterestedInSATPrep?: boolean;
+}
+
+// SAT Study Plan Interface
+export interface SATStudyPlan {
+  id: string;
+  timeline: '3-month' | '6-month' | '1-year' | 'custom';
+  focusAreas: {
+    math: string[];
+    reading: string[];
+    writing: string[];
+  };
+  weeklySchedule: {
+    [week: number]: {
+      math: string[];
+      reading: string[];
+      writing: string[];
+      practiceTest: boolean;
+    };
+  };
+  resourceRecommendations: {
+    books: string[];
+    websites: string[];
+    practiceTests: string[];
+  };
+  aiGeneratedPlan?: any; // AI-generated plan structure
+  createdAt: Date;
+  // Progress tracking fields
+  completedWeeks?: number[]; // Array of completed week numbers
+  completedTasks?: Record<string, Record<string, boolean>>; // Completed tasks by week and day
+}
+
+// SAT Practice Session Interface
+export interface SATPracticeSession {
+  id: string;
+  section: 'math' | 'reading' | 'writing' | 'full';
+  score?: number;
+  maxScore?: number;
+  answers?: any;
+  timeSpent?: number;
+  completedAt?: Date;
+  createdAt: Date;
+}
+
+// SAT Diagnostic Result Interface
+export interface SATDiagnosticResult {
+  id: string;
+  mathScore?: number;
+  readingScore?: number;
+  writingScore?: number;
+  totalScore?: number;
+  strengths?: string[];
+  weaknesses?: string[];
+  createdAt: Date;
 }
 
 // Enum constants for client-side use

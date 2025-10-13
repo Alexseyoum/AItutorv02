@@ -1,10 +1,10 @@
 import { auth } from "@/lib/auth";
 import { redirect } from "next/navigation";
 import { headers } from "next/headers";
-import TutoringClient from "@/components/tutoring-client";
+import SATPrepClient from "@/components/tutoring/sat-prep-client";
 import { prisma } from "@/lib/prisma";
 
-export default async function TutoringPage() {
+export default async function SATPrepPage() {
   const headersList = await headers();
   const session = await auth.api.getSession({
     headers: headersList
@@ -34,9 +34,9 @@ export default async function TutoringPage() {
     }
   });
 
-  // If we couldn't fetch the user, redirect to login
-  if (!user) {
-    redirect('/auth/login');
+  // If we couldn't fetch the user or user is not interested in SAT prep or not in high school, redirect to main tutoring
+  if (!user || !user.isInterestedInSATPrep || (user.gradeLevel && user.gradeLevel < 9)) {
+    redirect('/tutoring');
   }
 
   const profileData = {
@@ -52,9 +52,9 @@ export default async function TutoringPage() {
       interests: user.interests,
       pastEngagement: user.pastEngagement || 0,
       isOnboarded: user.isOnboarded,
-      isInterestedInSATPrep: user.isInterestedInSATPrep || false
+      isInterestedInSATPrep: user.isInterestedInSATPrep
     }
   };
 
-  return <TutoringClient user={session.user} profile={profileData.profile} />;
+  return <SATPrepClient user={session.user} profile={profileData.profile} />;
 }

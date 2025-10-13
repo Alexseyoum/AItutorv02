@@ -42,6 +42,7 @@ interface User {
 
 interface TutoringClientProps {
   user: User;
+  profile?: StudentProfile;
 }
 
 const featuredTopics = [
@@ -79,8 +80,8 @@ const featuredTopics = [
   }
 ];
 
-export default function TutoringClient({ user }: TutoringClientProps) {
-  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(null);
+export default function TutoringClient({ user, profile }: TutoringClientProps) {
+  const [studentProfile, setStudentProfile] = useState<StudentProfile | null>(profile || null);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [showChat, setShowChat] = useState(false);
@@ -91,23 +92,20 @@ export default function TutoringClient({ user }: TutoringClientProps) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch profile and stats in parallel
-        const [profileResponse, statsResponse] = await Promise.all([
-          fetch("/api/profile"),
-          fetch("/api/student-stats")
-        ]);
-        
-        if (!profileResponse.ok) {
-          throw new Error("Failed to fetch profile");
+        // If profile wasn't passed in, fetch it
+        if (!profile) {
+          const profileResponse = await fetch("/api/profile");
+          if (profileResponse.ok) {
+            const profileData = await profileResponse.json();
+            setStudentProfile(profileData.profile);
+            setShowOnboarding(!profileData.profile.isOnboarded);
+          }
+        } else {
+          setShowOnboarding(!profile.isOnboarded);
         }
 
-        const profileData = await profileResponse.json();
-        const profile = profileData.profile;
-        
-        setStudentProfile(profile);
-        setShowOnboarding(!profile.isOnboarded);
-
-        // Set stats if available
+        // Fetch stats
+        const statsResponse = await fetch("/api/student-stats");
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
           setStudentStats(statsData.stats);
@@ -123,7 +121,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
     };
 
     fetchData();
-  }, []);
+  }, [profile]);
 
   const handleOnboardingComplete = (profile: StudentProfile) => {
     setStudentProfile(profile);
@@ -427,6 +425,27 @@ export default function TutoringClient({ user }: TutoringClientProps) {
               <h3 className="text-xl font-bold text-white mb-6">Quick Start</h3>
               
               <div className="grid grid-cols-1 gap-4">
+
+                {/* SAT Prep Card - Only shown for high school students interested in SAT prep */}
+                {studentProfile && studentProfile.isInterestedInSATPrep && studentProfile.gradeLevel && studentProfile.gradeLevel >= 9 && (
+                  <div 
+                    className="bg-gradient-to-br from-yellow-500/20 to-orange-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300 cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="p-2 bg-yellow-500/30 rounded-lg">
+                        <Target className="h-5 w-5 text-yellow-300" />
+                      </div>
+                      <h4 className="font-semibold text-white">SAT Preparation</h4>
+                    </div>
+                    <p className="text-gray-300 text-sm mb-3">Personalized SAT study plan and practice tests</p>
+                    <Button asChild className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white border-0 rounded-xl h-10 transition-all duration-300 hover:scale-105">
+                      <Link href="/tutoring/sat-prep">
+                        Access Dashboard
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+
                 {/* Enhanced Explain Concept Card */}
                 <div className="bg-gradient-to-br from-blue-500/20 to-purple-500/20 glass rounded-2xl p-4 border border-white/10 group hover:scale-105 transition-all duration-300">
                   <div className="flex items-center gap-3 mb-3">
@@ -532,6 +551,7 @@ export default function TutoringClient({ user }: TutoringClientProps) {
                     Get Suggestions
                   </Button>
                 </div>
+
               </div>
             </div>
           </div>

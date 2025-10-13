@@ -85,6 +85,7 @@ model User {
   sessionDuration     Int?          // in minutes
   interests           String[]      @default([])
   pastEngagement      Float?        @default(0)
+  isInterestedInSATPrep Boolean?    @default(false)
 
   sessions      Session[]
   accounts      Account[]
@@ -93,6 +94,15 @@ model User {
   streak        LearningStreak?
   achievements  Achievement[]
   chatSessions  ChatSession[]
+  satStudyPlans SATStudyPlan[]
+  satPracticeSessions SATPracticeSession[]
+  satDiagnosticResults SATDiagnosticResult[]
+  
+  // Question bank relations
+  generatedQuestions Question[] @relation("UserGeneratedQuestions")
+  mockExams MockExam[]
+  mockAttempts MockAttempt[]
+  topicMasteries TopicMastery[]
 
   @@map("users")
 }
@@ -228,4 +238,126 @@ model ChatMessage {
   keywords  String[] @default([]) // Extracted keywords for better search
   
   @@map("chat_messages")
+}
+
+model SATStudyPlan {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  timeline    String   // "3-month", "6-month", "1-year"
+  focusAreas  Json     // Store as JSON: { math: string[], reading: string[], writing: string[] }
+  weeklySchedule Json  // Store weekly schedule as JSON
+  resourceRecommendations Json // Store recommended resources as JSON
+  aiGeneratedPlan Json? // Store the raw AI-generated plan
+  
+  // Progress tracking fields
+  completedWeeks  Int[]    @default([]) // Array of completed week numbers
+  completedTasks  Json     @default("{}") // Store completed tasks by week and day
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("sat_study_plans")
+}
+
+model SATPracticeSession {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  section     String   // "math", "reading", "writing", "full"
+  score       Int?
+  maxScore    Int?     // Maximum possible score for this section
+  answers     Json?    // Store student answers and question details
+  timeSpent   Int?     // Time spent in seconds
+  
+  completedAt DateTime? @default(now())
+  createdAt   DateTime @default(now())
+
+  @@map("sat_practice_sessions")
+}
+
+model SATDiagnosticResult {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  mathScore        Int?
+  readingScore     Int?
+  writingScore     Int?
+  totalScore       Int?
+  
+  strengths   Json?    // Store as JSON array of strong areas
+  weaknesses  Json?    // Store as JSON array of weak areas
+  
+  createdAt   DateTime @default(now())
+
+  @@map("sat_diagnostic_results")
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  topic       String
+  subject     String
+  difficulty  String
+  question    String
+  choices     Json     // Store as JSON array of strings
+  answer      String
+  explanation String
+  source      String   @default("generated") // "generated" or "official"
+  status      String   @default("pending_review") // "pending_review", "approved", "rejected"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userGeneratedBy String?
+  user            User?    @relation("UserGeneratedQuestions", fields: [userGeneratedBy], references: [id], onDelete: SetNull)
+  
+  @@map("questions")
+}
+
+model MockExam {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal        String   // "SAT", "GRADE_LEVEL", etc.
+  grade       Int
+  sections    Json     // Store exam sections with questions
+  totalTime   Int      // Total time in minutes
+  createdAt   DateTime @default(now())
+  
+  attempts    MockAttempt[]
+  
+  @@map("mock_exams")
+}
+
+model MockAttempt {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mockExamId  String
+  mockExam    MockExam @relation(fields: [mockExamId], references: [id], onDelete: Cascade)
+  answers     Json     // Store user answers and time spent
+  scored      Json     // Store scoring results
+  summary     Json     // Store attempt summary
+  startedAt   DateTime
+  finishedAt  DateTime
+  createdAt   DateTime @default(now())
+  
+  @@map("mock_attempts")
+}
+
+model TopicMastery {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic       String
+  correct     Int      @default(0)
+  total       Int      @default(0)
+  lastSeenAt  DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  @@map("topic_mastery")
+  @@unique([userId, topic])
 }

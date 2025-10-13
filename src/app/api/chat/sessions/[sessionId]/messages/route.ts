@@ -66,7 +66,7 @@ export async function GET(
         where: { userId: session.user.id },
         select: { id: true, title: true, createdAt: true, _count: { select: { messages: true } } }
       });
-      console.log('📋 GET: All user sessions:', userSessions.map(s => ({
+      console.log('📋 GET: All user sessions:', userSessions.map((s: any) => ({
         id: s.id,
         title: s.title,
         messageCount: s._count.messages,
@@ -74,7 +74,7 @@ export async function GET(
       })));
     } else {
       console.log('📋 GET: Message summary:');
-      chatSession.messages.forEach((msg, index) => {
+      chatSession.messages.forEach((msg: { type: string; content: string; createdAt: Date }, index: number) => {
         console.log(`  ${index + 1}. ${msg.type}: ${msg.content.substring(0, 50)}... (${msg.createdAt})`);
       });
     }

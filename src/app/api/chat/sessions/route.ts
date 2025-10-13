@@ -2,6 +2,12 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
+// Remove the incorrect import
+// import { ChatSession, ChatMessage } from "@prisma/client";
+
+// Define the types based on the Prisma schema
+type ChatSession = Awaited<ReturnType<typeof prisma.chatSession.findMany>>[number];
+type ChatMessage = Awaited<ReturnType<typeof prisma.chatMessage.findMany>>[number];
 
 export async function GET(request: NextRequest) {
   try {
@@ -36,16 +42,19 @@ export async function GET(request: NextRequest) {
     });
 
     // Enhance session data with better titles
-    const enhancedSessions = chatSessions.map(session => {
-      let displayTitle = session.title || "Untitled Chat";
+    const enhancedSessions = chatSessions.map((chatSession: ChatSession & { 
+      _count: { messages: number },
+      messages: ChatMessage[]
+    }) => {
+      let displayTitle = chatSession.title || "Untitled Chat";
       
       // If we have a topic, use that as the title
-      if (session.topic) {
-        displayTitle = session.topic;
+      if (chatSession.topic) {
+        displayTitle = chatSession.topic;
       } 
       // If we have a first message, use the first few words as title
-      else if (session.messages && session.messages.length > 0) {
-        const firstMessage = session.messages[0];
+      else if (chatSession.messages && chatSession.messages.length > 0) {
+        const firstMessage = chatSession.messages[0];
         if (firstMessage.content) {
           // Get first 40 characters and add ellipsis if needed
           displayTitle = firstMessage.content.length > 40 
@@ -55,14 +64,16 @@ export async function GET(request: NextRequest) {
       }
       
       return {
-        ...session,
+        ...chatSession,
         displayTitle
       };
     });
 
     console.log('📋 SESSIONS: Found', chatSessions.length, 'sessions');
-    chatSessions.forEach((session, index) => {
-      console.log(`  ${index + 1}. ${session.id} - "${session.title}" - ${session._count.messages} messages`);
+    chatSessions.forEach((chatSession: ChatSession & { 
+      _count: { messages: number }
+    }, index) => {
+      console.log(`  ${index + 1}. ${chatSession.id} - "${chatSession.title}" - ${chatSession._count.messages} messages`);
     });
 
     return NextResponse.json({ sessions: enhancedSessions });

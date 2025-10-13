@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Bell, Search, User, BookOpen, Settings, LogOut, Home } from "lucide-react";
+import { Menu, Bell, Search, User, BookOpen, Settings, LogOut, Home, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
 
@@ -14,33 +14,46 @@ interface DashboardLayoutProps {
     avatar?: string;
     role?: string;
   };
+  profile?: {
+    gradeLevel?: number;
+    isInterestedInSATPrep?: boolean;
+  };
 }
 
-const navigationItems = [
-  {
-    label: "Dashboard",
-    href: "/dashboard",
-    icon: Home,
-  },
-  {
-    label: "AI Tutor",
-    href: "/tutoring",
-    icon: BookOpen,
-  },
-  {
-    label: "Profile",
-    href: "/profile",
-    icon: User,
-  },
-  {
-    label: "Settings",
-    href: "/settings",
-    icon: Settings,
-  },
-];
-
-export function DashboardLayout({ children, user }: DashboardLayoutProps) {
+export function DashboardLayout({ children, user, profile }: DashboardLayoutProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // Add SAT Prep to navigation if user is in high school and interested
+  const showSATPrep = profile?.gradeLevel && profile.gradeLevel >= 9 && profile.isInterestedInSATPrep;
+
+  const navigationItems = [
+    {
+      label: "Dashboard",
+      href: "/dashboard",
+      icon: Home,
+    },
+    {
+      label: "AI Tutor",
+      href: "/tutoring",
+      icon: BookOpen,
+    },
+    // Conditionally add SAT Prep for high school students interested in it
+    ...(showSATPrep ? [{
+      label: "SAT Prep",
+      href: "/tutoring/sat-prep",
+      icon: Target,
+    }] : []),
+    {
+      label: "Profile",
+      href: "/profile",
+      icon: User,
+    },
+    {
+      label: "Settings",
+      href: "/settings",
+      icon: Settings,
+    },
+  ];
 
   return (
     <div className="flex h-screen bg-background">

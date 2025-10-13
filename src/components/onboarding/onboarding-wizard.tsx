@@ -15,7 +15,8 @@ interface OnboardingWizardProps {
 const steps = [
   "Basic Information",
   "Academic Interests", 
-  "Learning Preferences"
+  "Learning Preferences",
+  "SAT Preparation" // New step for SAT prep
 ];
 
 const SUBJECTS_OPTIONS = [
@@ -28,6 +29,25 @@ const INTERESTS_OPTIONS = [
   "Technology", "Sports", "Music", "Art", "Reading", "Gaming",
   "Science", "History", "Travel", "Cooking", "Movies", "Nature"
 ];
+
+// Grade-dependent questions
+const GRADE_LEVEL_QUESTIONS = {
+  elementary: [
+    "What's your favorite subject?",
+    "Do you like reading stories or solving puzzles more?",
+    "What do you want to be when you grow up?"
+  ],
+  middle_school: [
+    "Which subjects are you most confident in?",
+    "Do you prefer group projects or individual work?",
+    "What are your academic goals this year?"
+  ],
+  high_school: [
+    "Are you planning to take any AP/IB classes?",
+    "What colleges are you interested in?",
+    "Do you need help with SAT/ACT preparation?"
+  ]
+};
 
 export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
   const [currentStep, setCurrentStep] = useState(0);
@@ -42,7 +62,8 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
     learningStyle: LEARNING_STYLES.MIXED,
     difficultyLevel: DIFFICULTY_LEVELS.INTERMEDIATE,
     sessionDuration: 30,
-    interests: []
+    interests: [],
+    isInterestedInSATPrep: false
   });
 
   const toggleArrayItem = (array: string[], item: string) => {
@@ -134,6 +155,28 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                 placeholder="Enter your school name"
                 className="mt-2 h-12 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-xl bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               />
+            </div>
+
+            {/* Show grade-dependent questions */}
+            <div>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">
+                {formData.gradeLevel <= 5 ? "Elementary School Questions" : 
+                 formData.gradeLevel <= 8 ? "Middle School Questions" : 
+                 "High School Questions"}
+              </Label>
+              <div className="mt-3 space-y-4">
+                {(formData.gradeLevel <= 5 ? GRADE_LEVEL_QUESTIONS.elementary :
+                  formData.gradeLevel <= 8 ? GRADE_LEVEL_QUESTIONS.middle_school : 
+                  GRADE_LEVEL_QUESTIONS.high_school).map((question, index) => (
+                  <div key={index}>
+                    <Label className="text-gray-600 dark:text-gray-400">{question}</Label>
+                    <Input
+                      placeholder="Your answer..."
+                      className="mt-1 h-10 border-gray-200 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                    />
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         );
@@ -256,10 +299,105 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
           </div>
         );
 
+      case 3: // SAT Preparation step (only for high school students)
+        if (formData.gradeLevel < 9) {
+          // Skip this step for non-high school students
+          return (
+            <div className="text-center py-8">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">No Additional Setup Needed</h3>
+              <p className="text-gray-600">
+                You're all set! Since you're in elementary or middle school, there's no additional setup needed.
+              </p>
+            </div>
+          );
+        }
+        
+        return (
+          <div className="space-y-6">
+            <div className="text-center">
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">SAT Preparation</h3>
+              <p className="text-gray-600">
+                Since you're in high school, would you like to include SAT preparation in your learning plan?
+              </p>
+            </div>
+            
+            <div className="flex flex-col items-center space-y-4">
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, isInterestedInSATPrep: true }))}
+                className={`w-full max-w-md p-6 rounded-xl border-2 transition-all ${
+                  formData.isInterestedInSATPrep
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
+                }`}
+              >
+                <div className="flex items-center">
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
+                    formData.isInterestedInSATPrep 
+                      ? "border-blue-500 bg-blue-500" 
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}>
+                    {formData.isInterestedInSATPrep && (
+                      <div className="w-3 h-3 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Yes, I'm interested in SAT prep</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      Get personalized SAT study plans, practice tests, and college prep resources
+                    </div>
+                  </div>
+                </div>
+              </button>
+              
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, isInterestedInSATPrep: false }))}
+                className={`w-full max-w-md p-6 rounded-xl border-2 transition-all ${
+                  formData.isInterestedInSATPrep === false
+                    ? "border-blue-500 bg-blue-50 dark:bg-blue-900/20"
+                    : "border-gray-200 dark:border-gray-700 hover:border-blue-300 dark:hover:border-blue-700"
+                }`}
+              >
+                <div className="flex items-center">
+                  <div className={`flex-shrink-0 w-6 h-6 rounded-full border-2 flex items-center justify-center mr-4 ${
+                    formData.isInterestedInSATPrep === false 
+                      ? "border-blue-500 bg-blue-500" 
+                      : "border-gray-300 dark:border-gray-600"
+                  }`}>
+                    {formData.isInterestedInSATPrep === false && (
+                      <div className="w-3 h-3 rounded-full bg-white"></div>
+                    )}
+                  </div>
+                  <div className="text-left">
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Not right now</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                      You can always enable SAT prep later in your profile settings
+                    </div>
+                  </div>
+                </div>
+              </button>
+            </div>
+            
+            {formData.isInterestedInSATPrep && (
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+                <h4 className="font-medium text-blue-800 dark:text-blue-200 mb-2">Great choice!</h4>
+                <p className="text-sm text-blue-700 dark:text-blue-300">
+                  We'll help you prepare for the SAT with personalized study plans, practice questions, 
+                  and resources from official sources like Khan Academy and College Board.
+                </p>
+              </div>
+            )}
+          </div>
+        );
+
       default:
         return null;
     }
   };
+
+  // Check if we should skip the SAT prep step for non-high school students
+  const shouldSkipSATStep = currentStep === 3 && formData.gradeLevel < 9;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-900 dark:via-purple-900 dark:to-blue-900 flex items-center justify-center p-4">
@@ -293,6 +431,9 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             {currentStep === 0 && "Let's start with some basic information about you"}
             {currentStep === 1 && "Tell us about your academic interests and goals"}
             {currentStep === 2 && "How do you prefer to learn?"}
+            {currentStep === 3 && formData.gradeLevel >= 9 
+              ? "Would you like SAT preparation resources?" 
+              : "Finalizing your profile"}
           </p>
           {renderStep()}
         </div>
@@ -316,9 +457,16 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             </Button>
           ) : (
             <Button
-              onClick={() => setCurrentStep(prev => Math.min(steps.length - 1, prev + 1))}
+              onClick={() => {
+                if (shouldSkipSATStep) {
+                  // Skip to completion if not in high school
+                  handleSubmit();
+                } else {
+                  setCurrentStep(prev => Math.min(steps.length - 1, prev + 1));
+                }
+              }}
             >
-              Next
+              {shouldSkipSATStep ? "Complete Setup" : "Next"}
             </Button>
           )}
         </div>
