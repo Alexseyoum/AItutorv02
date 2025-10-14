@@ -1,7 +1,4 @@
-import {
-  DeleteUserButton,
-  PlaceholderDeleteUserButton,
-} from "@/components/delete-user-button";
+import { BanUserButton, PlaceholderBanUserButton } from "@/components/delete-user-button";
 import { ReturnHomeButton } from "@/components/return-home-button";
 import { UserRoleSelect } from "@/components/user-role-select";
 import { ModeToggle } from "@/components/ui/mode-toggle";
@@ -100,9 +97,9 @@ export default async function Page() {
                   </td>
                   <td className="px-4 py-2 text-center">
                     {user.role === "USER" ? (
-                      <DeleteUserButton userId={user.id} />
+                      <BanUserButton userId={user.id} isBanned={user.banned} />
                     ) : (
-                      <PlaceholderDeleteUserButton />
+                      <PlaceholderBanUserButton />
                     )}
                   </td>
                 </tr>
