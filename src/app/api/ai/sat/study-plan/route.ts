@@ -150,7 +150,7 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         completedWeeks: completedWeeks || existingPlan.completedWeeks,
-        completedTasks: completedTasks as any || existingPlan.completedTasks // Fix the type issue
+        completedTasks: completedTasks || existingPlan.completedTasks
       }
     });
 
@@ -194,7 +194,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get current completed tasks
-    let currentTasks = existingPlan.completedTasks as Record<string, Record<string, boolean>> || {};
+    const currentTasks = existingPlan.completedTasks as Record<string, Record<string, boolean>> || {};
     
     // Update the specific task completion status
     if (completed) {
@@ -205,9 +205,10 @@ export async function PATCH(request: NextRequest) {
       currentTasks[week][task] = true;
       
       // Add week to completed weeks if not already there
-      let completedWeeks: number[] = existingPlan.completedWeeks || [];
+      const completedWeeks: number[] = existingPlan.completedWeeks || [];
       if (!completedWeeks.includes(week)) {
-        completedWeeks = [...completedWeeks, week].sort((a, b) => a - b);
+        completedWeeks.push(week);
+        completedWeeks.sort((a, b) => a - b);
       }
     } else {
       // Mark task as not completed
@@ -218,8 +219,7 @@ export async function PATCH(request: NextRequest) {
       // Remove week from completed weeks if no tasks are left for that week
       if (currentTasks[week] && Object.keys(currentTasks[week]).length === 0) {
         delete currentTasks[week];
-        let completedWeeks: number[] = existingPlan.completedWeeks || [];
-        completedWeeks = completedWeeks.filter((w: number) => w !== week);
+        const completedWeeks: number[] = (existingPlan.completedWeeks || []).filter((w: number) => w !== week);
       }
     }
 
@@ -227,7 +227,7 @@ export async function PATCH(request: NextRequest) {
     const updatedPlan = await prisma.sATStudyPlan.update({
       where: { id },
       data: {
-        completedTasks: currentTasks as any, // Fix the type issue
+        completedTasks: currentTasks,
         completedWeeks: Object.keys(currentTasks).map(Number).sort((a, b) => a - b)
       }
     });
@@ -278,10 +278,6 @@ interface WeeklyScheduleItem {
   reading: string[];
   writing: string[];
   practiceTest: boolean;
-}
-
-interface WeeklySchedule {
-  [week: number]: WeeklyScheduleItem;
 }
 
 // Change the return type to be compatible with Prisma's Json type
