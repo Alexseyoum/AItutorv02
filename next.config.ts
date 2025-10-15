@@ -61,7 +61,29 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://openrouter.ai https://api-inference.huggingface.co https://www.googleapis.com https://en.wikipedia.org https://satsuite.collegeboard.org https://www.khanacademy.org https://api.vercel.com https://*.sentry.io; frame-src 'self' https://accounts.google.com https://github.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';",
+          },
+        ],
+      },
+      {
+        source: '/api/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'no-cache, no-store, must-revalidate',
+          },
+          {
+            key: 'Expires',
+            value: '0',
+          },
+        ],
+      },
+      {
+        source: '/_next/static/:path*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=31536000, immutable',
           },
         ],
       },
@@ -91,14 +113,6 @@ const nextConfig: NextConfig = {
         tls: false,
       };
     }
-    
-    // Exclude problematic directories
-    config.resolve.modules = [
-      ...config.resolve.modules.filter((module: string) => 
-        !module.includes('Application Data') && 
-        !module.includes('AppData')
-      )
-    ];
     
     return config;
   },

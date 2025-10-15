@@ -4,7 +4,9 @@ import type { auth } from "@/lib/auth";
 import { ac, roles } from "@/lib/permissions";
 
 export const authClient = createAuthClient({
-    baseURL: process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3001/api/auth",
+    baseURL: typeof window !== 'undefined' ? 
+      (process.env.NEXT_PUBLIC_BETTER_AUTH_URL || "http://localhost:3001") : 
+      (process.env.BETTER_AUTH_URL || "http://localhost:3001"),
      plugins: [inferAdditionalFields<typeof auth>(), adminClient({ ac, roles })],
 })
 

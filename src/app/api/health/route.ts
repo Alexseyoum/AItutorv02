@@ -50,14 +50,30 @@ export async function GET() {
     const tutorAgent = new EngagingTutorAgent();
     const providers = tutorAgent.getAvailableProviders();
     
+    // Check primary provider (Groq)
+    const primaryProviderHealthy = providers.includes('groq');
+    
+    // Check fallback providers
+    const fallbackProviders = [];
+    if (providers.includes('huggingface')) {
+      fallbackProviders.push('huggingface');
+    }
+    if (providers.includes('openrouter')) {
+      fallbackProviders.push('openrouter');
+    }
+    
     if (providers.length > 0) {
-      // Test a simple AI response
+      // Test a simple AI response with primary provider
       const testResponse = await tutorAgent.quickResponse("Health check test - respond with 'OK'");
-      healthChecks.checks.ai_providers = testResponse.toLowerCase().includes('ok');
+      const responseHealthy = testResponse.toLowerCase().includes('ok');
+      
+      healthChecks.checks.ai_providers = responseHealthy;
       healthChecks.details.ai_providers = {
         status: 'available',
-        providers,
-        testResponse: testResponse.substring(0, 50)
+        primary: primaryProviderHealthy ? 'groq' : null,
+        fallbacks: fallbackProviders,
+        totalAvailable: providers.length,
+        testResponse: testResponse.substring(0, 50) + (testResponse.length > 50 ? '...' : '')
       };
       console.log('✅ AI Providers: Healthy');
     } else {
