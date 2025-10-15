@@ -5,6 +5,19 @@ import { auth } from "@/lib/auth";
 
 export async function POST(request: NextRequest) {
   try {
+    // Check if image generation is enabled
+    const imageGenerationEnabled = process.env.ENABLE_IMAGE_GENERATION === 'true';
+    
+    if (!imageGenerationEnabled) {
+      return NextResponse.json(
+        { 
+          error: "Image generation is temporarily disabled", 
+          message: "Image generation will be available when premium LLMs are integrated" 
+        },
+        { status: 503 }
+      );
+    }
+
     const session = await auth.api.getSession({
       headers: request.headers
     });

@@ -105,6 +105,29 @@ export async function GET() {
     };
   }
 
+  // Add memory usage monitoring
+  try {
+    const memoryUsage = process.memoryUsage();
+    healthChecks.details.memory = {
+      rss: Math.round(memoryUsage.rss / 1024 / 1024), // MB
+      heapTotal: Math.round(memoryUsage.heapTotal / 1024 / 1024), // MB
+      heapUsed: Math.round(memoryUsage.heapUsed / 1024 / 1024), // MB
+      external: Math.round(memoryUsage.external / 1024 / 1024), // MB
+    };
+    
+    // Check if memory usage is within reasonable limits (less than 80% of max)
+    const maxMemory = parseInt(process.env.NODE_OPTIONS?.match(/--max-old-space-size=(\d+)/)?.[1] || '0') || 1024;
+    const memoryUsagePercent = (memoryUsage.heapUsed / (maxMemory * 1024 * 1024)) * 100;
+    
+    if (memoryUsagePercent > 80) {
+      console.warn(`⚠️ High memory usage: ${memoryUsagePercent.toFixed(2)}%`);
+    }
+    
+    console.log(`🧠 Memory usage: ${healthChecks.details.memory.heapUsed}MB / ${maxMemory}MB (${memoryUsagePercent.toFixed(2)}%)`);
+  } catch (error) {
+    console.error('❌ Memory monitoring failed:', error);
+  }
+
   // Determine overall health status
   const allHealthy = Object.values(healthChecks.checks).every(check => check === true);
   healthChecks.status = allHealthy ? 'healthy' : 'degraded';

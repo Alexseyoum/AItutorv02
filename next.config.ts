@@ -63,6 +63,14 @@ const nextConfig: NextConfig = {
       };
     }
     
+    // Exclude problematic directories
+    config.resolve.modules = [
+      ...config.resolve.modules.filter((module: string) => 
+        !module.includes('Application Data') && 
+        !module.includes('AppData')
+      )
+    ];
+    
     return config;
   },
 };

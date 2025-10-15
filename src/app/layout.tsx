@@ -14,9 +14,8 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadataBase = new URL('https://tutorbyai.com');
-
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tutorbyai.com'),
   title: {
     default: "TutorByAI - Your Personal AI Learning Companion",
     template: "%s | TutorByAI"

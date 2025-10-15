@@ -278,6 +278,14 @@ export class AIProviderManager {
   }
 
   async generateImage(prompt: string, options: ImageGenerationOptions = {}): Promise<ImageResult | null> {
+    // Check if image generation is enabled via environment variable
+    const imageGenerationEnabled = process.env.ENABLE_IMAGE_GENERATION === 'true';
+    
+    if (!imageGenerationEnabled) {
+      console.log('🖼️ Image generation is disabled. Set ENABLE_IMAGE_GENERATION=true to enable.');
+      return null;
+    }
+
     const imageProviders = this.providers.filter(provider => 
       provider.isAvailable() && provider.generateImage
     );

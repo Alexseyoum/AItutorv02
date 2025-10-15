@@ -4,6 +4,7 @@ import { ConversationMessage } from "@/lib/ai/context-manager";
 import { keywordExtractor } from '@/lib/utils/keyword-extractor';
 import { linkFetcher, LinkResult } from '@/lib/utils/link-fetcher';
 import { TutorResponseEnhanced, ImageGenerationOptions } from './types';
+import { cache } from '@/lib/utils/cache';
 
 export interface StudentProfile {
   gradeLevel: number;
@@ -62,6 +63,14 @@ export class EngagingTutorAgent {
     concept: string,
     profile: StudentProfile
   ): Promise<TutorResponse> {
+    // Create cache key based on inputs
+    const cacheKey = `explanation:${concept}:${JSON.stringify(profile)}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached explanation for: ${concept}`);
+      return cachedResponse;
+    }
+
     const prompt = `
       Think step-by-step: For a ${profile.learningStyle || 'mixed'} learner in grade ${profile.gradeLevel}, explain ${concept}.
       
@@ -86,17 +95,23 @@ export class EngagingTutorAgent {
       // Extract JSON from response if it's wrapped in text
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const result = JSON.parse(jsonMatch[0]);
+        cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+        return result;
       }
-      return JSON.parse(response);
+      const result = JSON.parse(response);
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     } catch (error) {
       console.error("JSON parsing error:", error);
       // Fallback response as specified in memory
-      return {
+      const result = {
         explanation: response.substring(0, 300) + "...",
         funFact: "💡 Did you know? The brain learns better when information is presented in multiple ways!",
         analogy: "Think of learning like building a puzzle - each concept is a piece that helps complete the picture!"
       };
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     }
   }
 
@@ -105,6 +120,14 @@ export class EngagingTutorAgent {
     timeAvailable: number,
     profile: StudentProfile
   ): Promise<string> {
+    // Create cache key based on inputs
+    const cacheKey = `study-method:${topic}:${timeAvailable}:${JSON.stringify(profile)}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached study method for: ${topic}`);
+      return cachedResponse;
+    }
+
     const prompt = `
       Suggest a fun, effective study method for a grade ${profile.gradeLevel} student 
       to learn about ${topic} in ${timeAvailable} minutes.
@@ -120,10 +143,20 @@ export class EngagingTutorAgent {
       - Maximum 150 words
     `;
 
-    return await this.generateWithPrompt(prompt, 300);
+    const result = await this.generateWithPrompt(prompt, 300);
+    cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+    return result;
   }
 
   async generateFunFact(subject: string, currentTopic: string): Promise<string> {
+    // Create cache key based on inputs
+    const cacheKey = `fun-fact:${subject}:${currentTopic}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached fun fact for: ${currentTopic}`);
+      return cachedResponse;
+    }
+
     const prompt = `
       Share a surprising and relevant fun fact about ${currentTopic} in ${subject} 
       that would amaze a high school student. Make it shocking and memorable!
@@ -136,10 +169,20 @@ export class EngagingTutorAgent {
       Example format: "Did you know? [surprising fact]! 🚀"
     `;
 
-    return await this.generateWithPrompt(prompt, 100);
+    const result = await this.generateWithPrompt(prompt, 100);
+    cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+    return result;
   }
 
   async generateEncouragement(progress: number, streak: number): Promise<string> {
+    // Create cache key based on inputs
+    const cacheKey = `encouragement:${progress}:${streak}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached encouragement for progress: ${progress}% streak: ${streak}`);
+      return cachedResponse;
+    }
+
     const prompt = `
       Give a brief, authentic motivational message to a student who has:
       - Made ${progress}% progress in their current topic
@@ -153,10 +196,20 @@ export class EngagingTutorAgent {
       - Add an encouraging emoji
     `;
 
-    return await this.generateWithPrompt(prompt, 80);
+    const result = await this.generateWithPrompt(prompt, 80);
+    cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+    return result;
   }
 
   async generateMicroQuiz(concept: string, difficulty: 'easy' | 'medium' | 'hard'): Promise<QuizQuestion | null> {
+    // Create cache key based on inputs
+    const cacheKey = `quiz:${concept}:${difficulty}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached quiz for: ${concept}`);
+      return cachedResponse;
+    }
+
     const prompt = `
       Create a quick 1-question multiple choice quiz about ${concept} at ${difficulty} difficulty level for high school students.
       
@@ -174,9 +227,13 @@ export class EngagingTutorAgent {
     try {
       const jsonMatch = response.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
-        return JSON.parse(jsonMatch[0]);
+        const result = JSON.parse(jsonMatch[0]);
+        cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+        return result;
       }
-      return JSON.parse(response);
+      const result = JSON.parse(response);
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     } catch (error) {
       console.error("Quiz JSON parsing error:", error);
       return null;
@@ -190,6 +247,14 @@ export class EngagingTutorAgent {
     messages: ConversationMessage[],
     profile?: StudentProfile
   ): Promise<string> {
+    // Create cache key based on inputs
+    const cacheKey = `convo-response:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached conversational response`);
+      return cachedResponse;
+    }
+
     try {
       // Build context-aware prompt with student profile
       const systemMessage = this.buildSystemPrompt(profile);
@@ -201,7 +266,9 @@ export class EngagingTutorAgent {
       ];
 
       // Use the AI provider manager with conversation format
-      return await this.generateWithConversation(conversationMessages);
+      const result = await this.generateWithConversation(conversationMessages);
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     } catch (error) {
       console.error("Conversational response error:", error);
       return "I'm having trouble understanding the context. Could you rephrase your question?";
@@ -216,6 +283,14 @@ export class EngagingTutorAgent {
     messages: ConversationMessage[],
     profile?: StudentProfile
   ): Promise<TutorResponseEnhanced> {
+    // Create cache key based on inputs
+    const cacheKey = `enhanced-response:${message}:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached enhanced response`);
+      return cachedResponse;
+    }
+
     try {
       console.log('🚀 Starting hybrid AI response generation');
 
@@ -237,18 +312,23 @@ export class EngagingTutorAgent {
 
       console.log(`✅ Hybrid response complete - Image: ${!!imageResult}, Links: ${links.length}, Keywords: ${keywords.length}`);
 
-      return {
+      const result = {
         content: textResponse,
         imageUrl: imageResult?.imageUrl,
         links: links.length > 0 ? links : undefined,
         keywords: keywords.length > 0 ? keywords : undefined
       };
+      
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     } catch (error) {
       console.error('❌ Enhanced response generation failed:', error);
       
       // Fallback to text-only response
       const textResponse = await this.generateConversationalResponse(messages, profile);
-      return { content: textResponse };
+      const result = { content: textResponse };
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     }
   }
 
@@ -344,7 +424,15 @@ Adjust your teaching style to match their grade level and learning preferences.`
    * Generate educational image based on keywords
    */
   private async generateEducationalImage(keywords: string[], gradeLevel: number): Promise<{ imageUrl: string } | null> {
-    if (keywords.length === 0) return null;
+    // Check if image generation is enabled
+    const imageGenerationEnabled = process.env.ENABLE_IMAGE_GENERATION === 'true';
+    
+    if (!imageGenerationEnabled || keywords.length === 0) {
+      if (!imageGenerationEnabled) {
+        console.log('🖼️ Image generation is disabled. Set ENABLE_IMAGE_GENERATION=true to enable.');
+      }
+      return null;
+    }
 
     const imagePrompt = this.buildImagePrompt(keywords, gradeLevel);
     console.log(`🎨 Generating image: "${imagePrompt}"`);
@@ -391,11 +479,21 @@ Adjust your teaching style to match their grade level and learning preferences.`
 
   // Enhanced quick response with smart provider selection
   async quickResponse(prompt: string): Promise<string> {
+    // Create cache key based on inputs
+    const cacheKey = `quick-response:${prompt}`;
+    const cachedResponse = cache.get(cacheKey);
+    if (cachedResponse) {
+      console.log(`✅ Returning cached quick response`);
+      return cachedResponse;
+    }
+
     try {
       console.log("🚀 Quick response requested");
       
       // Use the AI provider manager for quick responses
-      return await this.aiProviderManager.generateWithFallback(prompt, 150);
+      const result = await this.aiProviderManager.generateWithFallback(prompt, 150);
+      cache.set(cacheKey, result, 300000); // Cache for 5 minutes
+      return result;
     } catch (error: unknown) {
       console.error("Quick response error:", error);
       return "I'm having trouble responding right now. Could you try again?";

@@ -4,9 +4,16 @@ import { auth } from "@/lib/auth";
 import { StudentAnalytics } from "@/lib/student-analytics";
 import { ActivityType } from "@/generated/prisma";
 import { contextManager } from "@/lib/ai/context-manager";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {
   try {
+    // Apply rate limiting
+    const rateLimitResult = rateLimit(request, 10, 60000);
+    if (rateLimitResult.exceeded) {
+      return new Response('Too Many Requests', { status: 429 });
+    }
+
     // Check authentication
     const session = await auth.api.getSession({
       headers: request.headers

@@ -19,7 +19,7 @@ export const GetStartedButton = () => {
     );
   }
 
-  const href = session ? "/" : "/auth/login";
+  const href = session ? "/tutoring" : "/auth/login";
   const text = session ? "Continue Learning" : "Start Learning";
 
   return (
