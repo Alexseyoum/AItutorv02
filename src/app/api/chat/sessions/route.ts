@@ -2,8 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import { prisma } from "@/lib/prisma";
-// Remove the incorrect import
-// import { ChatSession, ChatMessage } from "@prisma/client";
 
 // Define the types based on the Prisma schema
 type ChatSession = Awaited<ReturnType<typeof prisma.chatSession.findMany>>[number];

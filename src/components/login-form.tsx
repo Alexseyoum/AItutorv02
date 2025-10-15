@@ -94,7 +94,7 @@ export const LoginForm = () => {
         ) : (
           <>
             <LogIn className="w-5 h-5" />
-            Let's Go! 🚀
+            Let's Go! &#x1F680;
           </>
         )}
       </Button>

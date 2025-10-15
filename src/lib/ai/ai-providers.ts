@@ -46,7 +46,7 @@ class GroqProvider implements AIProvider {
 
 class HuggingFaceProvider implements AIProvider {
   name = 'huggingface';
-  private hf?: any; // Will be initialized when needed
+  private hf?: import('@huggingface/inference').HfInference; // Will be initialized when needed
   
   async generateResponse(prompt: string, maxTokens: number = 500): Promise<string> {
     if (!this.hf) {
@@ -106,7 +106,7 @@ class HuggingFaceProvider implements AIProvider {
           try {
             buffer = await result.arrayBuffer();
           } catch (blobError) {
-            Logger.warn('Direct blob conversion failed, trying alternative approach', blobError as Error);
+            Logger.error('Direct blob conversion failed, trying alternative approach', blobError as Error);
             
             // Method 2: Stream-based conversion
             const reader = new FileReader();
@@ -118,7 +118,7 @@ class HuggingFaceProvider implements AIProvider {
           }
         } else if (result && typeof result === 'object' && 'arrayBuffer' in result) {
           // Method 3: Response-like object
-          buffer = await result.arrayBuffer();
+          buffer = await (result as { arrayBuffer: () => Promise<ArrayBuffer> }).arrayBuffer();
         } else {
           throw new Error(`Unexpected result type: ${typeof result}`);
         }

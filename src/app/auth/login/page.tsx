@@ -41,7 +41,7 @@ export default function Page() {
                 href="/auth/register" 
                 className="font-semibold gradient-text-primary hover:opacity-80 transition-all duration-150 ease-out"
               >
-                Join the fun here! 🚀
+                Join the fun here! &#x1F680;
               </Link>
             </p>
           </div>

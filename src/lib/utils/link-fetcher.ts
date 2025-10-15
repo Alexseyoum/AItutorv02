@@ -65,7 +65,7 @@ export class LinkFetcher {
       
       const data = await response.json();
       
-      return data.items?.map((item: any) => ({
+      return data.items?.map((item: { snippet: { title: string; description: string }; id: { videoId: string } }) => ({
         title: item.snippet.title,
         url: `https://www.youtube.com/watch?v=${item.id.videoId}`,
         type: 'youtube' as const,

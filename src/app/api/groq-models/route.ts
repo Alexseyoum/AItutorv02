@@ -1,5 +1,15 @@
 import { NextResponse } from "next/server";
 
+interface GroqModel {
+  id: string;
+  // Add other properties as needed
+  [key: string]: unknown;
+}
+
+interface GroqModelsResponse {
+  data: GroqModel[];
+}
+
 export async function GET() {
   try {
     if (!process.env.GROQ_API_KEY) {
@@ -19,8 +29,8 @@ export async function GET() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
 
-    const data = await response.json();
-    const modelIds = data.data.map((model: any) => model.id);
+    const data: GroqModelsResponse = await response.json();
+    const modelIds = data.data.map((model: GroqModel) => model.id);
     
     return NextResponse.json({
       success: true,
@@ -29,12 +39,12 @@ export async function GET() {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching Groq models:", error);
     
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : "Unknown error",
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }

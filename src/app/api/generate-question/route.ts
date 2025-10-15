@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Add metadata (timestamps, IDs)
-    const finalized = data.questions.map((q: any, i: number) => ({
+    const finalized = data.questions.map((q: { id?: string; topic: string; subject: string; difficulty: string; question: string; choices: string[]; answer: string; explanation: string }, i: number) => ({
       ...q,
       id: q.id || `gen_${Date.now()}_${i}`,
       createdAt: new Date().toISOString(),
@@ -171,15 +171,15 @@ export async function POST(request: NextRequest) {
     }));
 
     return NextResponse.json({ success: true, questions: finalized });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Question generation failed:", error);
     return NextResponse.json(
       { 
         success: false, 
         message: "Failed to generate questions", 
-        error: error.message,
+        error: error instanceof Error ? error.message : "Unknown error",
         // Don't expose internal details in production
-        ...(process.env.NODE_ENV === "development" ? { stack: error.stack } : {})
+        ...(process.env.NODE_ENV === "development" ? { stack: error instanceof Error ? error.stack : undefined } : {})
       },
       { status: 500 }
     );
@@ -219,10 +219,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, questions });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to fetch questions:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch questions", error: error.message },
+      { success: false, message: "Failed to fetch questions", error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

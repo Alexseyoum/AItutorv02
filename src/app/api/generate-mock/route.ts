@@ -31,7 +31,13 @@ export async function POST(request: NextRequest) {
       id: `mock_${Date.now()}`,
       goal,
       grade,
-      sections: [] as any[],
+      sections: [] as Array<{
+        name: string;
+        subject: string;
+        time_limit_minutes: number;
+        question_count: number;
+        questions: any[];
+      }>,
       total_time: 0,
       createdAt: new Date().toISOString(),
     };
@@ -52,7 +58,7 @@ export async function POST(request: NextRequest) {
           if (count <= 0) continue;
 
           // Try fetch existing questions from DB
-          let existing = await prisma.question.findMany({
+          const existing = await prisma.question.findMany({
             where: {
               topic: { contains: topic, mode: "insensitive" },
               subject: { equals: subject },
@@ -98,10 +104,10 @@ export async function POST(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, exam: savedExam });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Mock exam generation failed:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to generate mock exam", error: error.message },
+      { success: false, message: "Failed to generate mock exam", error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

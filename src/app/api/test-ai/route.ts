@@ -14,12 +14,12 @@ export async function GET() {
       timestamp: new Date().toISOString()
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("AI test error:", error);
     
     return NextResponse.json({
       success: false,
-      error: error.message,
+      error: error instanceof Error ? error.message : "Unknown error",
       timestamp: new Date().toISOString()
     }, { status: 500 });
   }

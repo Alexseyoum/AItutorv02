@@ -1,14 +1,14 @@
 class Cache {
-  private store = new Map<string, { value: any; expiry: number }>();
+  private store = new Map<string, { value: unknown; expiry: number }>();
   
-  set(key: string, value: any, ttl: number = 300000) { // 5 minutes default
+  set<T>(key: string, value: T, ttl: number = 300000) { // 5 minutes default
     this.store.set(key, {
       value,
       expiry: Date.now() + ttl
     });
   }
   
-  get(key: string) {
+  get<T>(key: string): T | null {
     const item = this.store.get(key);
     if (!item) return null;
     
@@ -17,7 +17,7 @@ class Cache {
       return null;
     }
     
-    return item.value;
+    return item.value as T;
   }
 }
 

@@ -40,6 +40,31 @@ interface User {
   name?: string;
 }
 
+// Add this interface for student stats
+interface StudentStats {
+  currentStreak: number;
+  longestStreak: number;
+  weeklyProgress: number;
+  weeklyActivities: number;
+  weeklyStudyTime: number;
+  totalActivities: number;
+  monthlyActivities: number;
+  problemsSolved: number;
+  totalStudyTime: number;
+  completedAchievements: number;
+  lastSession: {
+    topic: string;
+    date: string;
+    duration: number;
+    progress: number;
+  } | null;
+  dailyAverage: number;
+  subjectBreakdown: {
+    subject: string;
+    count: number;
+  }[];
+}
+
 interface TutoringClientProps {
   user: User;
   profile?: StudentProfile;
@@ -87,7 +112,22 @@ export default function TutoringClient({ user, profile }: TutoringClientProps) {
   const [showChat, setShowChat] = useState(false);
   const [conceptInput, setConceptInput] = useState("");
   const [currentTopic, setCurrentTopic] = useState<string>("");
-  const [studentStats, setStudentStats] = useState<any>(null);
+  // Update this line to use the proper type with a default value
+  const [studentStats, setStudentStats] = useState<StudentStats>({
+    currentStreak: 0,
+    longestStreak: 0,
+    weeklyProgress: 0,
+    weeklyActivities: 0,
+    weeklyStudyTime: 0,
+    totalActivities: 0,
+    monthlyActivities: 0,
+    problemsSolved: 0,
+    totalStudyTime: 0,
+    completedAchievements: 0,
+    lastSession: null,
+    dailyAverage: 0,
+    subjectBreakdown: []
+  });
 
   useEffect(() => {
     const fetchData = async () => {
@@ -108,6 +148,7 @@ export default function TutoringClient({ user, profile }: TutoringClientProps) {
         const statsResponse = await fetch("/api/student-stats");
         if (statsResponse.ok) {
           const statsData = await statsResponse.json();
+          // Update the state with the fetched stats
           setStudentStats(statsData.stats);
         }
         

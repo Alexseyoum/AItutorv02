@@ -5,7 +5,7 @@
  * @param {Number} timeSpentSeconds - time spent on this question
  * @returns {Object} { correct: boolean, points: 1|0, topic, difficulty, timeSpentSeconds }
  */
-export function scoreQuestion(question: any, userAnswer: string, timeSpentSeconds: number) {
+export function scoreQuestion(question: { id: string; answer: string; topic: string; difficulty: string }, userAnswer: string, timeSpentSeconds: number) {
   // Normalize answers (trim, uppercase)
   const normalize = (s: string) => (s || "").toString().trim().toUpperCase();
   const correct = normalize(userAnswer) === normalize(question.answer);
@@ -19,18 +19,34 @@ export function scoreQuestion(question: any, userAnswer: string, timeSpentSecond
   };
 }
 
+interface ScoredQuestion {
+  points: number;
+  timeSpentSeconds: number;
+  topic: string;
+  difficulty: string;
+}
+
+interface AggregatedResults {
+  totalQuestions: number;
+  totalCorrect: number;
+  accuracy: number;
+  avgTimePerQuestion: number;
+  byTopic: Record<string, { correct: number; total: number; accuracy: number }>;
+  byDifficulty: Record<string, { correct: number; total: number; accuracy: number }>;
+}
+
 /**
  * Aggregate section and exam results
  * @param {Array} scoredQuestions - array of scored question objects
  */
-export function aggregateResults(scoredQuestions: any[]) {
-  const result = {
+export function aggregateResults(scoredQuestions: ScoredQuestion[]): AggregatedResults {
+  const result: AggregatedResults = {
     totalQuestions: scoredQuestions.length,
     totalCorrect: 0,
     accuracy: 0,
     avgTimePerQuestion: 0,
-    byTopic: {} as Record<string, any>,     // topic -> { correct, total, accuracy }
-    byDifficulty: {} as Record<string, any>,// difficulty -> { correct, total, accuracy }
+    byTopic: {},     // topic -> { correct, total, accuracy }
+    byDifficulty: {},// difficulty -> { correct, total, accuracy }
   };
 
   let totalTime = 0;

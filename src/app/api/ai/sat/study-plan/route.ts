@@ -87,6 +87,7 @@ export async function POST(request: NextRequest) {
           reading: getReadingFocusAreas(gradeLevel),
           writing: getWritingFocusAreas(gradeLevel)
         },
+        // Fix the type issue by using proper typing
         weeklySchedule: generateWeeklySchedule(timeline || "6-month"),
         resourceRecommendations: {
           books: [
@@ -149,7 +150,7 @@ export async function PUT(request: NextRequest) {
       where: { id },
       data: {
         completedWeeks: completedWeeks || existingPlan.completedWeeks,
-        completedTasks: completedTasks || existingPlan.completedTasks
+        completedTasks: completedTasks as any || existingPlan.completedTasks // Fix the type issue
       }
     });
 
@@ -193,7 +194,7 @@ export async function PATCH(request: NextRequest) {
     }
 
     // Get current completed tasks
-    let currentTasks = existingPlan.completedTasks as Record<string, any> || {};
+    let currentTasks = existingPlan.completedTasks as Record<string, Record<string, boolean>> || {};
     
     // Update the specific task completion status
     if (completed) {
@@ -204,7 +205,7 @@ export async function PATCH(request: NextRequest) {
       currentTasks[week][task] = true;
       
       // Add week to completed weeks if not already there
-      let completedWeeks = existingPlan.completedWeeks || [];
+      let completedWeeks: number[] = existingPlan.completedWeeks || [];
       if (!completedWeeks.includes(week)) {
         completedWeeks = [...completedWeeks, week].sort((a, b) => a - b);
       }
@@ -217,7 +218,7 @@ export async function PATCH(request: NextRequest) {
       // Remove week from completed weeks if no tasks are left for that week
       if (currentTasks[week] && Object.keys(currentTasks[week]).length === 0) {
         delete currentTasks[week];
-        let completedWeeks = existingPlan.completedWeeks || [];
+        let completedWeeks: number[] = existingPlan.completedWeeks || [];
         completedWeeks = completedWeeks.filter((w: number) => w !== week);
       }
     }
@@ -226,7 +227,7 @@ export async function PATCH(request: NextRequest) {
     const updatedPlan = await prisma.sATStudyPlan.update({
       where: { id },
       data: {
-        completedTasks: currentTasks,
+        completedTasks: currentTasks as any, // Fix the type issue
         completedWeeks: Object.keys(currentTasks).map(Number).sort((a, b) => a - b)
       }
     });
@@ -272,12 +273,24 @@ function getWritingFocusAreas(gradeLevel: number): string[] {
   }
 }
 
-function generateWeeklySchedule(timeline: string): any {
+interface WeeklyScheduleItem {
+  math: string[];
+  reading: string[];
+  writing: string[];
+  practiceTest: boolean;
+}
+
+interface WeeklySchedule {
+  [week: number]: WeeklyScheduleItem;
+}
+
+// Change the return type to be compatible with Prisma's Json type
+function generateWeeklySchedule(timeline: string): Record<string, any> {
   const weeks = timeline === "3-month" ? 12 : timeline === "6-month" ? 24 : 52;
-  const schedule: any = {};
+  const schedule: Record<string, any> = {};
   
   for (let i = 1; i <= weeks; i++) {
-    schedule[i] = {
+    schedule[i.toString()] = {
       math: i % 2 === 0 ? ["Practice Problems"] : ["Concept Review"],
       reading: i % 3 === 0 ? ["Passage Analysis"] : ["Vocabulary"],
       writing: i % 4 === 0 ? ["Essay Practice"] : ["Grammar Drills"],

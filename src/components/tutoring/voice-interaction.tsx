@@ -27,7 +27,8 @@ export default function VoiceInteraction({
 
   useEffect(() => {
     // Check if Web Speech API is supported
-    const SpeechRecog = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    const SpeechRecog = (window as unknown as { SpeechRecognition: typeof SpeechRecognition }).SpeechRecognition || 
+                        (window as unknown as { webkitSpeechRecognition: typeof SpeechRecognition }).webkitSpeechRecognition;
     const speechSynthesis = window.speechSynthesis;
     
     if (SpeechRecog && speechSynthesis) {

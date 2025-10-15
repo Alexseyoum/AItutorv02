@@ -89,10 +89,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, questions });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Failed to fetch questions:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch questions", error: error.message },
+      { success: false, message: "Failed to fetch questions", error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

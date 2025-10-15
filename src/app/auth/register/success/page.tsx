@@ -15,7 +15,7 @@ export default function Page() {
             <h1 className="text-3xl font-bold text-green-600 dark:text-green-400 mb-4">🎉 Registration Successful!</h1>
             
             <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
-              <h2 className="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-2">What's Next?</h2>
+              <h2 className="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-2">What&#39;s Next?</h2>
               <ol className="text-left text-blue-700 dark:text-blue-300 space-y-2">
                 <li className="flex items-center">
                   <span className="bg-blue-600 dark:bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm mr-3">1</span>
@@ -37,7 +37,7 @@ export default function Page() {
             </div>
 
             <p className="text-gray-600 dark:text-gray-300 mb-6">
-              Didn't receive the email? Check your spam folder or contact support.
+              Didn&#39;t receive the email? Check your spam folder or contact support.
             </p>
           </div>
 

@@ -22,14 +22,14 @@ export async function GET() {
       model: "llama3-70b-8192"
     });
 
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Groq test error:", error);
     
     return NextResponse.json({
       success: false,
-      error: error.message,
-      status: error.status,
-      errorDetails: error.error,
+      error: error instanceof Error ? error.message : "Unknown error",
+      status: error instanceof Error ? (error as { status?: number }).status : undefined,
+      errorDetails: error instanceof Error ? (error as { error?: unknown }).error : undefined,
       hasApiKey: !!process.env.GROQ_API_KEY
     }, { status: 500 });
   }

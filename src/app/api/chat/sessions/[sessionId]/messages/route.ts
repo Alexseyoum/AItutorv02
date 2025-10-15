@@ -66,7 +66,7 @@ export async function GET(
         where: { userId: session.user.id },
         select: { id: true, title: true, createdAt: true, _count: { select: { messages: true } } }
       });
-      console.log('📋 GET: All user sessions:', userSessions.map((s: any) => ({
+      console.log('📋 GET: All user sessions:', userSessions.map((s: { id: string; title: string | null; createdAt: Date; _count: { messages: number } }) => ({
         id: s.id,
         title: s.title,
         messageCount: s._count.messages,
@@ -204,10 +204,10 @@ export async function POST(
       console.error("Error name:", error.name);
       console.error("Error message:", error.message);
       if ('code' in error) {
-        console.error("Error code:", (error as any).code);
+        console.error("Error code:", (error as { code?: string }).code);
       }
       if ('meta' in error) {
-        console.error("Error meta:", (error as any).meta);
+        console.error("Error meta:", (error as { meta?: unknown }).meta);
       }
     }
     

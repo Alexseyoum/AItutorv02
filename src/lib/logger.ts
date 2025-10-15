@@ -1,5 +1,5 @@
 export class Logger {
-  static error(message: string, error?: Error, context?: Record<string, any>) {
+  static error(message: string, error?: Error, context?: Record<string, unknown>) {
     console.error(JSON.stringify({
       timestamp: new Date().toISOString(),
       level: 'error',
@@ -13,7 +13,7 @@ export class Logger {
     }));
   }
   
-  static info(message: string, context?: Record<string, any>) {
+  static info(message: string, context?: Record<string, unknown>) {
     console.info(JSON.stringify({
       timestamp: new Date().toISOString(),
       level: 'info',
@@ -22,7 +22,7 @@ export class Logger {
     }));
   }
   
-  static warn(message: string, context?: Record<string, any>) {
+  static warn(message: string, context?: Record<string, unknown>) {
     console.warn(JSON.stringify({
       timestamp: new Date().toISOString(),
       level: 'warn',

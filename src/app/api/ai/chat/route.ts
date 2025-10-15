@@ -3,7 +3,6 @@ import { EngagingTutorAgent } from "@/lib/ai/tutor-engine";
 import { auth } from "@/lib/auth";
 import { StudentAnalytics } from "@/lib/student-analytics";
 import { ActivityType } from "@/generated/prisma";
-import { contextManager } from "@/lib/ai/context-manager";
 import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request: NextRequest) {

@@ -143,7 +143,7 @@ export async function GET(request: NextRequest) {
     if (studyPlans.length > 0) {
       const latestPlan = studyPlans[0];
       // Type assertion to tell TypeScript that aiGeneratedPlan is an object with weeks property
-      const aiPlan = latestPlan.aiGeneratedPlan as { weeks?: any[] } | null;
+      const aiPlan = latestPlan.aiGeneratedPlan as { weeks?: unknown[] } | null;
       if (aiPlan && aiPlan.weeks) {
         const totalWeeks = aiPlan.weeks.length;
         const completedWeeks = latestPlan.completedWeeks?.length || 0;

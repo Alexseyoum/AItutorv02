@@ -165,8 +165,8 @@ export async function POST(request: NextRequest) {
     };
 
     return NextResponse.json(response);
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error("submit-mock error:", err);
-    return NextResponse.json({ success: false, message: err.message }, { status: 500 });
+    return NextResponse.json({ success: false, message: err instanceof Error ? err.message : "Unknown error" }, { status: 500 });
   }
 }

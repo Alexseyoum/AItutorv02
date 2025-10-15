@@ -4,12 +4,54 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { EngagingTutorAgent } from "@/lib/ai/tutor-engine";
 
+// Define proper types for our health check response
+interface HealthCheckDetails {
+  database?: {
+    status: string;
+    userCount?: number;
+    connectionTime?: number;
+    error?: string;
+  };
+  ai_providers?: {
+    status: string;
+    primary: string | null;
+    fallbacks: string[];
+    totalAvailable: number;
+    testResponse: string;
+    error?: string;
+  };
+  auth?: {
+    status: string;
+    providers: string[];
+    error?: string;
+  };
+  memory?: {
+    rss: number;
+    heapTotal: number;
+    heapUsed: number;
+    external: number;
+  };
+}
+
+interface HealthCheckResponse {
+  timestamp: string;
+  status: 'healthy' | 'degraded';
+  version: string;
+  environment: string | undefined;
+  checks: {
+    database: boolean;
+    ai_providers: boolean;
+    auth: boolean;
+  };
+  details: HealthCheckDetails;
+}
+
 /**
  * Production Health Check Endpoint
  * Verifies all critical systems are operational
  */
 export async function GET() {
-  const healthChecks = {
+  const healthChecks: HealthCheckResponse = {
     timestamp: new Date().toISOString(),
     status: 'healthy',
     version: process.env.CUSTOM_BUILD_ID || 'unknown',
@@ -19,7 +61,7 @@ export async function GET() {
       ai_providers: false,
       auth: false,
     },
-    details: {} as Record<string, any>
+    details: {}
   };
 
   try {
@@ -85,6 +127,10 @@ export async function GET() {
     healthChecks.checks.ai_providers = false;
     healthChecks.details.ai_providers = {
       status: 'error',
+      primary: null,
+      fallbacks: [],
+      totalAvailable: 0,
+      testResponse: '',
       error: error instanceof Error ? error.message : 'Unknown error'
     };
   }
@@ -117,6 +163,7 @@ export async function GET() {
     healthChecks.checks.auth = false;
     healthChecks.details.auth = {
       status: 'error',
+      providers: [],
       error: error instanceof Error ? error.message : 'Unknown error'
     };
   }

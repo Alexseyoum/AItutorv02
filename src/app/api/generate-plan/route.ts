@@ -4,6 +4,34 @@ import { studyPlanPrompt } from "@/lib/prompts/studyPlanPrompt";
 import { callLLM } from "@/lib/utils/llmClient";
 import { prisma } from "@/lib/prisma";
 
+interface PlanResource {
+  title: string;
+  url?: string;
+}
+
+interface DailyPlanTask {
+  task: string;
+}
+
+interface PlanWeek {
+  focus: string;
+  daily_plan: DailyPlanTask[];
+  resources: PlanResource[];
+}
+
+interface GeneratedPlan {
+  weeks: PlanWeek[];
+}
+
+interface WeeklySchedule {
+  [week: number]: {
+    math: string[];
+    reading: string[];
+    writing: string[];
+    practiceTest: boolean;
+  };
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
@@ -46,7 +74,7 @@ export async function POST(request: NextRequest) {
     const startIdx = llmResponse.indexOf("{");
     const endIdx = llmResponse.lastIndexOf("}");
     const jsonPart = llmResponse.slice(startIdx, endIdx + 1);
-    const plan = JSON.parse(jsonPart);
+    const plan: GeneratedPlan = JSON.parse(jsonPart);
 
     // Save the plan to the database
     const savedPlan = await prisma.sATStudyPlan.create({
@@ -58,36 +86,36 @@ export async function POST(request: NextRequest) {
           reading: plan.weeks[0]?.focus.includes("Reading") ? [plan.weeks[0].focus] : ["Reading Comprehension"],
           writing: plan.weeks[0]?.focus.includes("Writing") ? [plan.weeks[0].focus] : ["Writing Basics"],
         },
-        weeklySchedule: plan.weeks.reduce((acc: any, week: any, index: number) => {
+        weeklySchedule: plan.weeks.reduce((acc: WeeklySchedule, week: PlanWeek, index: number) => {
           acc[index + 1] = {
-            math: week.daily_plan.filter((task: any) => task.task.includes("Math")).map((task: any) => task.task),
-            reading: week.daily_plan.filter((task: any) => task.task.includes("Reading")).map((task: any) => task.task),
-            writing: week.daily_plan.filter((task: any) => task.task.includes("Writing")).map((task: any) => task.task),
-            practiceTest: week.daily_plan.some((task: any) => task.task.includes("mock") || task.task.includes("test")),
+            math: week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("Math")).map((task: DailyPlanTask) => task.task),
+            reading: week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("Reading")).map((task: DailyPlanTask) => task.task),
+            writing: week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("Writing")).map((task: DailyPlanTask) => task.task),
+            practiceTest: week.daily_plan.some((task: DailyPlanTask) => task.task.includes("mock") || task.task.includes("test")),
           };
           return acc;
-        }, {}),
+        }, {}) as any,
         resourceRecommendations: {
-          books: plan.weeks.flatMap((week: any) => 
-            week.resources.filter((r: any) => r.title.toLowerCase().includes("book")).map((r: any) => r.title)
+          books: plan.weeks.flatMap((week: PlanWeek) => 
+            week.resources.filter((r: PlanResource) => r.title.toLowerCase().includes("book")).map((r: PlanResource) => r.title)
           ),
-          websites: plan.weeks.flatMap((week: any) => 
-            week.resources.filter((r: any) => r.url).map((r: any) => r.url)
+          websites: plan.weeks.flatMap((week: PlanWeek) => 
+            week.resources.filter((r: PlanResource) => r.url).map((r: PlanResource) => r.url || "")
           ),
-          practiceTests: plan.weeks.flatMap((week: any) => 
-            week.daily_plan.filter((task: any) => task.task.includes("mock") || task.task.includes("test"))
-              .map((task: any) => task.task)
+          practiceTests: plan.weeks.flatMap((week: PlanWeek) => 
+            week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("mock") || task.task.includes("test"))
+              .map((task: DailyPlanTask) => task.task)
           ),
         },
-        aiGeneratedPlan: plan,
+        aiGeneratedPlan: JSON.parse(JSON.stringify(plan)),
       },
     });
 
     return NextResponse.json({ success: true, plan: savedPlan });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error generating plan:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to generate plan", error: error.message },
+      { success: false, message: "Failed to generate plan", error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }
@@ -118,10 +146,10 @@ export async function GET(request: NextRequest) {
     });
 
     return NextResponse.json({ success: true, plan: studyPlan });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Error fetching plan:", error);
     return NextResponse.json(
-      { success: false, message: "Failed to fetch plan", error: error.message },
+      { success: false, message: "Failed to fetch plan", error: error instanceof Error ? error.message : "Unknown error" },
       { status: 500 }
     );
   }

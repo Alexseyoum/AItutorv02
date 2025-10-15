@@ -200,7 +200,7 @@ export default async function Home() {
           <div className="mb-8">
             <h2 className="text-h1 text-gray-900 dark:text-white mb-4">
               Ready to Make Learning 
-              <span className="gradient-text-fun">Super Fun</span>? 🎉
+              <span className="gradient-text-fun">Super Fun</span>? &#x1F389;
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
               Join thousands of students who are already having fun while getting smarter every day!
@@ -237,7 +237,7 @@ export default async function Home() {
               <span className="text-xl font-bold gradient-text-primary">TutorByAI</span>
             </div>
             <div className="text-sm text-gray-400">
-              © 2025 TutorByAI. Making learning fun for everyone! 🚀
+              &#169; 2025 TutorByAI. Making learning fun for everyone! &#x1F680;
             </div>
           </div>
         </div>

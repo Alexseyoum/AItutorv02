@@ -66,7 +66,7 @@ export class EngagingTutorAgent {
   ): Promise<TutorResponse> {
     // Create cache key based on inputs
     const cacheKey = `explanation:${concept}:${JSON.stringify(profile)}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<TutorResponse>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached explanation for: ${concept}`, { concept });
       return cachedResponse;
@@ -123,7 +123,7 @@ export class EngagingTutorAgent {
   ): Promise<string> {
     // Create cache key based on inputs
     const cacheKey = `study-method:${topic}:${timeAvailable}:${JSON.stringify(profile)}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<string>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached study method for: ${topic}`, { topic });
       return cachedResponse;
@@ -152,7 +152,7 @@ export class EngagingTutorAgent {
   async generateFunFact(subject: string, currentTopic: string): Promise<string> {
     // Create cache key based on inputs
     const cacheKey = `fun-fact:${subject}:${currentTopic}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<string>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached fun fact for: ${currentTopic}`, { currentTopic });
       return cachedResponse;
@@ -178,7 +178,7 @@ export class EngagingTutorAgent {
   async generateEncouragement(progress: number, streak: number): Promise<string> {
     // Create cache key based on inputs
     const cacheKey = `encouragement:${progress}:${streak}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<string>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached encouragement for progress: ${progress}% streak: ${streak}`, { progress, streak });
       return cachedResponse;
@@ -205,7 +205,7 @@ export class EngagingTutorAgent {
   async generateMicroQuiz(concept: string, difficulty: 'easy' | 'medium' | 'hard'): Promise<QuizQuestion | null> {
     // Create cache key based on inputs
     const cacheKey = `quiz:${concept}:${difficulty}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<QuizQuestion>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached quiz for: ${concept}`, { concept, difficulty });
       return cachedResponse;
@@ -250,7 +250,7 @@ export class EngagingTutorAgent {
   ): Promise<string> {
     // Create cache key based on inputs
     const cacheKey = `convo-response:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<string>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached conversational response`);
       return cachedResponse;
@@ -286,7 +286,7 @@ export class EngagingTutorAgent {
   ): Promise<TutorResponseEnhanced> {
     // Create cache key based on inputs
     const cacheKey = `enhanced-response:${message}:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<TutorResponseEnhanced>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached enhanced response`);
       return cachedResponse;
@@ -486,7 +486,7 @@ Adjust your teaching style to match their grade level and learning preferences.`
   async quickResponse(prompt: string): Promise<string> {
     // Create cache key based on inputs
     const cacheKey = `quick-response:${prompt}`;
-    const cachedResponse = cache.get(cacheKey);
+    const cachedResponse = cache.get<string>(cacheKey);
     if (cachedResponse) {
       Logger.info(`✅ Returning cached quick response`);
       return cachedResponse;
