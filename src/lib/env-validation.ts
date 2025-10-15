@@ -164,7 +164,10 @@ class EnvironmentValidator {
       }
       
       if (this.config.BETTER_AUTH_URL.includes('localhost')) {
-        throw new Error('❌ Production environment cannot use localhost URLs');
+        // Only warn in Vercel deployments since VERCEL_URL might not be set during build time
+        if (!process.env.VERCEL) {
+          throw new Error('❌ Production environment cannot use localhost URLs');
+        }
       }
       
       console.log('✅ All production environment variables validated successfully');

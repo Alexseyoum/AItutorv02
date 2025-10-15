@@ -90,8 +90,6 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
     addMessage,
     createNewSession,
     loadSession,
-    setMessages,
-    startNewChat,
     sendConversation
   } = useChatPersistence(initialTopic);
 
@@ -256,7 +254,17 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
     }
   };
 
-
+  // Create a wrapper function for starting a new chat
+  const startNewChat = () => {
+    console.log('🔄 Starting new chat session...');
+    createNewSession().then((sessionId) => {
+      if (sessionId) {
+        console.log('✅ New chat session created:', sessionId);
+      } else {
+        console.error('❌ Failed to create new chat session');
+      }
+    });
+  };
 
   return (
     <div className="h-screen bg-slate-50 dark:bg-slate-900 flex overflow-hidden relative">
@@ -648,8 +656,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                     </div>
                   </div>
                 </div>
-              ))
-              }
+              ))}
               
               {isTyping && (
                 <div className="mr-auto max-w-4xl">

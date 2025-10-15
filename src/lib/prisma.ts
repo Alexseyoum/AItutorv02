@@ -77,3 +77,8 @@ export async function executeWithRetry<T>(
   
   throw new Error("All retry attempts failed");
 }
+
+// Graceful shutdown for Vercel serverless functions
+process.on('beforeExit', async () => {
+  await prisma.$disconnect();
+});
