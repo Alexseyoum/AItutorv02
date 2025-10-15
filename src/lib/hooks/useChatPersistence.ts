@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { toast } from 'sonner';
 import { Message } from '@/lib/types';
+import { Logger } from '@/lib/logger';
 
 interface ChatSession {
   id: string;
@@ -37,26 +38,26 @@ export function useChatPersistence(initialTopic?: string) {
       if (response.ok) {
         const data = await response.json();
         setSessions(data.sessions);
-        console.log('✅ Loaded chat sessions:', data.sessions.length);
+        Logger.info('✅ Loaded chat sessions', { count: data.sessions.length });
       } else {
-        console.error('❌ Failed to load sessions:', response.status, response.statusText);
+        Logger.error('❌ Failed to load sessions', new Error(`HTTP ${response.status}: ${response.statusText}`));
       }
     } catch (error) {
-      console.error('Failed to load chat sessions:', error);
+      Logger.error('Failed to load chat sessions', error as Error);
     }
   }, []);
 
   const createNewSession = useCallback(async (title?: string) => {
     // Prevent multiple simultaneous session creation
     if (sessionCreationInProgress.current) {
-      console.log('🔄 Session creation already in progress, skipping...');
+      Logger.info('🔄 Session creation already in progress, skipping...');
       return null;
     }
 
     try {
       sessionCreationInProgress.current = true;
       setIsLoading(true);
-      console.log('🆕 Creating new session...');
+      Logger.info('🆕 Creating new session...');
       
       const response = await fetch('/api/chat/sessions', {
         method: 'POST',
@@ -69,19 +70,19 @@ export function useChatPersistence(initialTopic?: string) {
 
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Created new session:', data.session.id);
+        Logger.info('✅ Created new session', { sessionId: data.session.id });
         setCurrentSessionId(data.session.id);
         setMessages([]);
         await loadChatSessions();
         return data.session.id;
       } else {
-        console.error('❌ Failed to create session:', response.status, response.statusText);
+        Logger.error('❌ Failed to create session', new Error(`HTTP ${response.status}: ${response.statusText}`));
         const errorText = await response.text();
-        console.error('Create session error details:', errorText);
+        Logger.error('Create session error details', new Error(errorText));
         return null;
       }
     } catch (error) {
-      console.error('Failed to create session:', error);
+      Logger.error('Failed to create session', error as Error);
       toast.error('Failed to create new chat session');
       return null;
     } finally {
@@ -94,14 +95,14 @@ export function useChatPersistence(initialTopic?: string) {
     try {
       setIsLoading(true);
       setIsLoadingExistingSession(true);
-      console.log('🔍 Loading session:', sessionId);
+      Logger.info('🔍 Loading session', { sessionId });
       
       const response = await fetch(`/api/chat/sessions/${sessionId}/messages`);
-      console.log('📡 Response status:', response.status);
+      Logger.info('📡 Response status', { status: response.status });
       
       if (response.ok) {
         const data = await response.json();
-        console.log('📦 Response data structure:', {
+        Logger.info('📦 Response data structure', {
           hasSession: !!data.session,
           messageCount: data.session?.messages?.length || 0,
           sessionId: data.session?.id
@@ -122,20 +123,20 @@ export function useChatPersistence(initialTopic?: string) {
           keywords: msg.keywords
         }));
         
-        console.log('✅ Converted messages:', convertedMessages.length, 'messages');
+        Logger.info('✅ Converted messages', { count: convertedMessages.length });
         setMessages(convertedMessages);
         
         if (convertedMessages.length === 0) {
-          console.log('ℹ️ No messages found in session, this might be expected for new sessions');
+          Logger.info('ℹ️ No messages found in session, this might be expected for new sessions');
         }
       } else {
-        console.error('❌ Response not OK:', response.status, response.statusText);
+        Logger.error('❌ Response not OK', new Error(`HTTP ${response.status}: ${response.statusText}`));
         const errorText = await response.text();
-        console.error('Error details:', errorText);
+        Logger.error('Error details', new Error(errorText));
         toast.error('Failed to load chat session');
       }
     } catch (error) {
-      console.error('Failed to load session:', error);
+      Logger.error('Failed to load session', error as Error);
       toast.error('Failed to load chat session');
     } finally {
       setIsLoading(false);
@@ -145,7 +146,11 @@ export function useChatPersistence(initialTopic?: string) {
 
   const saveMessageToSession = useCallback(async (message: Message, sessionId: string) => {
     try {
-      console.log('💾 SAVE: Saving message to session:', sessionId, 'Type:', message.type, 'Content length:', message.content.length);
+      Logger.info('💾 SAVE: Saving message to session', { 
+        sessionId, 
+        type: message.type, 
+        contentLength: message.content.length 
+      });
       const response = await fetch(`/api/chat/sessions/${sessionId}/messages`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -157,9 +162,9 @@ export function useChatPersistence(initialTopic?: string) {
       });
 
       if (!response.ok) {
-        console.error('❌ SAVE: Failed to save message:', response.status, response.statusText);
+        Logger.error('❌ SAVE: Failed to save message', new Error(`HTTP ${response.status}: ${response.statusText}`));
         const errorText = await response.text();
-        console.error('SAVE: Error details:', errorText);
+        Logger.error('SAVE: Error details', new Error(errorText));
         
         // Show user-friendly error message
         let errorMessage = 'Failed to save message';
@@ -179,11 +184,11 @@ export function useChatPersistence(initialTopic?: string) {
         return false;
       } else {
         const result = await response.json();
-        console.log('✅ SAVE: Message saved successfully, ID:', result.message?.id);
+        Logger.info('✅ SAVE: Message saved successfully', { messageId: result.message?.id });
         return true;
       }
     } catch (error) {
-      console.error('❌ SAVE: Exception while saving message:', error);
+      Logger.error('❌ SAVE: Exception while saving message', error as Error);
       toast.error('Network error while saving message');
       return false;
     }
@@ -192,30 +197,32 @@ export function useChatPersistence(initialTopic?: string) {
   // New method to ensure session exists and return session ID
   const ensureSession = useCallback(async (): Promise<string | null> => {
     if (currentSessionId) {
-      console.log('🎯 ENSURE: Using existing session:', currentSessionId);
+      Logger.info('🎯 ENSURE: Using existing session', { sessionId: currentSessionId });
       return currentSessionId;
     }
     
-    console.log('🎯 ENSURE: No session exists, creating new one...');
+    Logger.info('🎯 ENSURE: No session exists, creating new one...');
     const newSessionId = await createNewSession();
-    console.log('🎯 ENSURE: New session created:', newSessionId);
+    Logger.info('🎯 ENSURE: New session created', { sessionId: newSessionId });
     return newSessionId;
   }, [currentSessionId, createNewSession]);
 
   const addMessage = useCallback(async (message: Message, forceSessionId?: string) => {
-    console.log('🐈 ADD: Starting to add message:', message.type, message.content.substring(0, 50) + '...');
+    Logger.info('🐈 ADD: Starting to add message', { 
+      type: message.type, 
+      contentPreview: message.content.substring(0, 50) + '...' 
+    });
     
     // First add to local state immediately for UI responsiveness
     setMessages(prev => {
-      console.log('🐈 ADD: Adding to local state, previous count:', prev.length);
+      Logger.info('🐈 ADD: Adding to local state', { previousCount: prev.length });
       return [...prev, message];
     });
     
-    // Use forced session ID or current session
-    const sessionId = forceSessionId || currentSessionId;
-    
+    // Then save to backend session
+    const sessionId = forceSessionId || await ensureSession();
     if (!sessionId) {
-      console.error('❌ ADD: No session ID available for message save');
+      Logger.error('❌ ADD: No session ID available for message save');
       toast.error('Failed to save message - no active session');
       return null;
     }
@@ -224,10 +231,10 @@ export function useChatPersistence(initialTopic?: string) {
     const saveSuccess = await saveMessageToSession(message, sessionId);
     
     if (!saveSuccess) {
-      console.error('❌ ADD: Message save failed, but keeping in UI for now');
+      Logger.error('❌ ADD: Message save failed, but keeping in UI for now');
       toast.error('Failed to save message - it may not persist');
     } else {
-      console.log('✅ ADD: Message successfully saved to backend');
+      Logger.info('✅ ADD: Message successfully saved to backend');
     }
     
     // Refresh sessions list to update the last activity timestamp
@@ -239,39 +246,39 @@ export function useChatPersistence(initialTopic?: string) {
 
   // New method specifically for sending a conversation (user message + AI response)
   const sendConversation = useCallback(async (userMessage: Message, aiMessage: Message) => {
-    console.log('💬 CONVERSATION: Starting conversation flow...');
+    Logger.info('💬 CONVERSATION: Starting conversation flow...');
     
     // Ensure we have a session before doing anything
     const sessionId = await ensureSession();
     if (!sessionId) {
-      console.error('❌ CONVERSATION: Failed to ensure session exists');
+      Logger.error('❌ CONVERSATION: Failed to ensure session exists');
       toast.error('Failed to create chat session');
       return false;
     }
     
-    console.log('💬 CONVERSATION: Using session:', sessionId);
+    Logger.info('💬 CONVERSATION: Using session', { sessionId });
     
     // Add both messages to UI immediately
     setMessages(prev => {
-      console.log('💬 CONVERSATION: Adding both messages to UI, previous count:', prev.length);
+      Logger.info('💬 CONVERSATION: Adding both messages to UI', { previousCount: prev.length });
       return [...prev, userMessage, aiMessage];
     });
     
     // Save user message first
-    console.log('💬 CONVERSATION: Saving user message...');
+    Logger.info('💬 CONVERSATION: Saving user message...');
     const userSaveSuccess = await saveMessageToSession(userMessage, sessionId);
     
     if (!userSaveSuccess) {
-      console.error('❌ CONVERSATION: Failed to save user message');
+      Logger.error('❌ CONVERSATION: Failed to save user message');
       toast.error('Failed to save your message');
     }
     
     // Save AI message second
-    console.log('💬 CONVERSATION: Saving AI message...');
+    Logger.info('💬 CONVERSATION: Saving AI message...');
     const aiSaveSuccess = await saveMessageToSession(aiMessage, sessionId);
     
     if (!aiSaveSuccess) {
-      console.error('❌ CONVERSATION: Failed to save AI message');
+      Logger.error('❌ CONVERSATION: Failed to save AI message');
       toast.error('Failed to save AI response');
     }
     
@@ -279,44 +286,54 @@ export function useChatPersistence(initialTopic?: string) {
     await loadChatSessions();
     
     const success = userSaveSuccess && aiSaveSuccess;
-    console.log('💬 CONVERSATION: Conversation save result:', success);
+    Logger.info('💬 CONVERSATION: Conversation save result', { success });
     return success;
   }, [ensureSession, saveMessageToSession, loadChatSessions]);
 
+  // Delete a session
   const deleteSession = useCallback(async (sessionId: string) => {
     try {
-      // TODO: Implement delete endpoint
-      toast.success('Session deleted');
-      await loadChatSessions();
-      if (currentSessionId === sessionId) {
-        setCurrentSessionId(null);
-        setMessages([]);
+      Logger.info('🗑️ Deleting session', { sessionId });
+      
+      const response = await fetch(`/api/chat/sessions/${sessionId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.ok) {
+        Logger.info('✅ Session deleted successfully', { sessionId });
+        await loadChatSessions();
+        
+        // If we just deleted the current session, clear it
+        if (currentSessionId === sessionId) {
+          setCurrentSessionId(null);
+          setMessages([]);
+        }
+        
+        toast.success('Chat session deleted');
+        return true;
+      } else {
+        Logger.error('❌ Failed to delete session', new Error(`HTTP ${response.status}: ${response.statusText}`));
+        toast.error('Failed to delete chat session');
+        return false;
       }
     } catch (error) {
-      console.error('Failed to delete session:', error);
-      toast.error('Failed to delete session');
+      Logger.error('Failed to delete session', error as Error);
+      toast.error('Network error while deleting session');
+      return false;
     }
   }, [currentSessionId, loadChatSessions]);
-
-  const startNewChat = useCallback(() => {
-    console.log('🆕 Starting new chat (UI only - no session created yet)');
-    setCurrentSessionId(null);
-    setMessages([]);
-    // Note: Actual session will be created when user sends first message
-  }, []);
 
   return {
     currentSessionId,
     messages,
-    sessions,
     isLoading,
-    setMessages,
+    sessions,
+    isLoadingExistingSession,
+    loadSession,
     addMessage,
     sendConversation,
     createNewSession,
-    loadSession,
     deleteSession,
-    loadChatSessions,
-    startNewChat
+    loadChatSessions
   };
 }

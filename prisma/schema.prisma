@@ -105,6 +105,8 @@ model User {
   topicMasteries TopicMastery[]
 
   @@map("users")
+  @@index([email])
+  @@index([createdAt])
 }
 
 model Session {
@@ -173,6 +175,9 @@ model StudentActivity {
   metadata  Json?         // flexible data storage
   
   @@map("student_activities")
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
 }
 
 model LearningStreak {
@@ -219,6 +224,9 @@ model ChatSession {
   messages  ChatMessage[]
   
   @@map("chat_sessions")
+  @@index([userId])
+  @@index([isActive])
+  @@index([createdAt])
 }
 
 model ChatMessage {

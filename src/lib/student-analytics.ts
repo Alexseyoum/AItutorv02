@@ -1,5 +1,6 @@
 import { prisma, executeWithRetry } from "@/lib/prisma";
 import { ActivityType, AchievementCategory } from "@/generated/prisma";
+import { Logger } from "@/lib/logger";
 
 export class StudentAnalytics {
   
@@ -38,7 +39,7 @@ export class StudentAnalytics {
 
       return activity;
     } catch (error) {
-      console.error("Error tracking student activity:", error);
+      Logger.error("Error tracking student activity", error as Error, { userId, type, options });
       throw error;
     }
   }
@@ -116,7 +117,7 @@ export class StudentAnalytics {
       }
       // If lastActivityDate === today, streak was already updated today
     } catch (error) {
-      console.error("Error updating learning streak:", error);
+      Logger.error("Error updating learning streak", error as Error, { userId });
       // Don't throw - let the main operation continue
     }
   }
@@ -173,7 +174,7 @@ export class StudentAnalytics {
         }
       }
     } catch (error) {
-      console.error("Error checking achievements:", error);
+      Logger.error("Error checking achievements", error as Error, { userId, activityType, options });
     }
   }
 
@@ -199,29 +200,81 @@ export class StudentAnalytics {
             completed: true
           }
         });
-        
-        console.log(`Achievement awarded: ${achievement.title} to user ${userId}`);
+
       }
     } catch (error) {
-      console.error("Error awarding achievement:", error);
+      Logger.error("Error awarding achievement", error as Error, { userId, achievement });
     }
   }
 
   static async getUserStats(userId: string) {
-    const [totalActivities, problemsSolved, streak] = await executeWithRetry(async () =>
-      Promise.all([
-        prisma.studentActivity.count({ where: { userId } }),
-        prisma.studentActivity.count({ 
-          where: { userId, type: ActivityType.PROBLEM_SOLVED } 
-        }),
-        prisma.learningStreak.findUnique({ where: { userId } })
-      ])
-    );
+    try {
+      const [activities, streak, achievements, problemsSolved] = await Promise.all([
+        executeWithRetry(async () => 
+          prisma.studentActivity.count({ where: { userId } })
+        ),
+        executeWithRetry(async () => 
+          prisma.learningStreak.findUnique({ where: { userId } })
+        ),
+        executeWithRetry(async () => 
+          prisma.achievement.count({ where: { userId } })
+        ),
+        executeWithRetry(async () => 
+          prisma.studentActivity.count({
+            where: { 
+              userId,
+              type: ActivityType.PROBLEM_SOLVED
+            }
+          })
+        )
+      ]);
 
-    return {
-      totalActivities,
-      problemsSolved,
-      currentStreak: streak?.currentStreak || 0
-    };
+      return {
+        totalActivities: activities,
+        currentStreak: streak?.currentStreak || 0,
+        longestStreak: streak?.longestStreak || 0,
+        achievements: achievements,
+        problemsSolved: problemsSolved
+      };
+    } catch (error) {
+      Logger.error("Error getting user stats", error as Error, { userId });
+      return {
+        totalActivities: 0,
+        currentStreak: 0,
+        longestStreak: 0,
+        achievements: 0,
+        problemsSolved: 0
+      };
+    }
+  }
+
+  static async getLeaderboard(limit: number = 10) {
+    try {
+      const leaderboard = await executeWithRetry(async () => 
+        prisma.learningStreak.findMany({
+          take: limit,
+          orderBy: { currentStreak: 'desc' },
+          include: {
+            user: {
+              select: {
+                name: true,
+                image: true
+              }
+            }
+          }
+        })
+      );
+
+      return leaderboard.map(streak => ({
+        userId: streak.userId,
+        userName: streak.user?.name || 'Anonymous',
+        userImage: streak.user?.image,
+        currentStreak: streak.currentStreak,
+        longestStreak: streak.longestStreak
+      }));
+    } catch (error) {
+      Logger.error("Error getting leaderboard", error as Error, { limit });
+      return [];
+    }
   }
 }

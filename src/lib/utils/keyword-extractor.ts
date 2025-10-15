@@ -1,5 +1,6 @@
 // src/lib/utils/keyword-extractor.ts
 import { AIProviderManager } from '@/lib/ai/ai-providers';
+import { Logger } from '@/lib/logger';
 
 export class KeywordExtractor {
   private aiManager: AIProviderManager;
@@ -13,11 +14,11 @@ export class KeywordExtractor {
     try {
       const groqKeywords = await this.extractWithGroq(text, gradeLevel);
       if (groqKeywords.length > 0) {
-        console.log('🔤 Keywords extracted with Groq:', groqKeywords);
+        Logger.info('🔤 Keywords extracted with Groq', { keywords: groqKeywords });
         return groqKeywords;
       }
     } catch (error) {
-      console.log('❌ Groq keyword extraction failed, falling back to regex');
+      Logger.info('❌ Groq keyword extraction failed, falling back to regex');
     }
 
     // Fallback to regex-based extraction
@@ -54,7 +55,7 @@ export class KeywordExtractor {
       .filter(term => !stopWords.has(term.toLowerCase()))
       .slice(0, 5);
     
-    console.log('🔍 Regex-extracted keywords:', filtered);
+    Logger.info('🔍 Regex-extracted keywords', { keywords: filtered });
     return filtered;
   }
 }

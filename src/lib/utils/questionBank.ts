@@ -1,6 +1,8 @@
 /**
  * Generate questions using the API
  */
+import { Logger } from '@/lib/logger';
+
 export async function generateQuestions(params: {
   grade?: number;
   topic: string;
@@ -54,7 +56,7 @@ export async function generateQuestions(params: {
     } catch (error) {
       attempts++;
       if (attempts >= maxAttempts) {
-        console.error("Question generation failed after", maxAttempts, "attempts:", error);
+        Logger.error("Question generation failed after", error as Error, { attempts: maxAttempts, params });
         // Re-throw with more context
         if (error instanceof Error) {
           throw new Error(`Question generation failed: ${error.message}`);
@@ -97,7 +99,7 @@ export async function createMockExam(params: {
 
     return data.exam;
   } catch (error) {
-    console.error("Mock exam generation failed:", error);
+    Logger.error("Mock exam generation failed", error as Error, { params });
     throw error;
   }
 }
@@ -134,7 +136,7 @@ export async function submitMockExam(params: {
 
     return data;
   } catch (error) {
-    console.error("Mock exam submission failed:", error);
+    Logger.error("Mock exam submission failed", error as Error, { examId: params.examId });
     throw error;
   }
 }

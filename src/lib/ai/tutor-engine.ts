@@ -5,6 +5,7 @@ import { keywordExtractor } from '@/lib/utils/keyword-extractor';
 import { linkFetcher, LinkResult } from '@/lib/utils/link-fetcher';
 import { TutorResponseEnhanced, ImageGenerationOptions } from './types';
 import { cache } from '@/lib/utils/cache';
+import { Logger } from '@/lib/logger';
 
 export interface StudentProfile {
   gradeLevel: number;
@@ -38,7 +39,7 @@ export class EngagingTutorAgent {
       // First try the new AI provider manager with fallbacks
       return await this.aiProviderManager.generateWithFallback(prompt, maxTokens);
     } catch (error) {
-      console.error("All AI providers failed:", error);
+      Logger.error("All AI providers failed", error as Error, { prompt });
       
       // Ultimate fallback - try direct Groq call
       try {
@@ -52,7 +53,7 @@ export class EngagingTutorAgent {
 
         return completion.choices[0]?.message?.content || "I'm having trouble thinking right now. Can you try again?";
       } catch (groqError) {
-        console.error("Even direct Groq failed:", groqError);
+        Logger.error("Even direct Groq failed", groqError as Error, { prompt });
         return "I'm currently unavailable. Please try again in a moment!";
       }
     }
@@ -67,7 +68,7 @@ export class EngagingTutorAgent {
     const cacheKey = `explanation:${concept}:${JSON.stringify(profile)}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached explanation for: ${concept}`);
+      Logger.info(`✅ Returning cached explanation for: ${concept}`, { concept });
       return cachedResponse;
     }
 
@@ -103,7 +104,7 @@ export class EngagingTutorAgent {
       cache.set(cacheKey, result, 300000); // Cache for 5 minutes
       return result;
     } catch (error) {
-      console.error("JSON parsing error:", error);
+      Logger.error("JSON parsing error", error as Error, { response });
       // Fallback response as specified in memory
       const result = {
         explanation: response.substring(0, 300) + "...",
@@ -124,7 +125,7 @@ export class EngagingTutorAgent {
     const cacheKey = `study-method:${topic}:${timeAvailable}:${JSON.stringify(profile)}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached study method for: ${topic}`);
+      Logger.info(`✅ Returning cached study method for: ${topic}`, { topic });
       return cachedResponse;
     }
 
@@ -153,7 +154,7 @@ export class EngagingTutorAgent {
     const cacheKey = `fun-fact:${subject}:${currentTopic}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached fun fact for: ${currentTopic}`);
+      Logger.info(`✅ Returning cached fun fact for: ${currentTopic}`, { currentTopic });
       return cachedResponse;
     }
 
@@ -179,7 +180,7 @@ export class EngagingTutorAgent {
     const cacheKey = `encouragement:${progress}:${streak}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached encouragement for progress: ${progress}% streak: ${streak}`);
+      Logger.info(`✅ Returning cached encouragement for progress: ${progress}% streak: ${streak}`, { progress, streak });
       return cachedResponse;
     }
 
@@ -206,7 +207,7 @@ export class EngagingTutorAgent {
     const cacheKey = `quiz:${concept}:${difficulty}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached quiz for: ${concept}`);
+      Logger.info(`✅ Returning cached quiz for: ${concept}`, { concept, difficulty });
       return cachedResponse;
     }
 
@@ -235,7 +236,7 @@ export class EngagingTutorAgent {
       cache.set(cacheKey, result, 300000); // Cache for 5 minutes
       return result;
     } catch (error) {
-      console.error("Quiz JSON parsing error:", error);
+      Logger.error("Quiz JSON parsing error", error as Error, { response });
       return null;
     }
   }
@@ -251,7 +252,7 @@ export class EngagingTutorAgent {
     const cacheKey = `convo-response:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached conversational response`);
+      Logger.info(`✅ Returning cached conversational response`);
       return cachedResponse;
     }
 
@@ -270,7 +271,7 @@ export class EngagingTutorAgent {
       cache.set(cacheKey, result, 300000); // Cache for 5 minutes
       return result;
     } catch (error) {
-      console.error("Conversational response error:", error);
+      Logger.error("Conversational response error", error as Error, { messages, profile });
       return "I'm having trouble understanding the context. Could you rephrase your question?";
     }
   }
@@ -287,12 +288,12 @@ export class EngagingTutorAgent {
     const cacheKey = `enhanced-response:${message}:${JSON.stringify(messages)}:${JSON.stringify(profile)}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached enhanced response`);
+      Logger.info(`✅ Returning cached enhanced response`);
       return cachedResponse;
     }
 
     try {
-      console.log('🚀 Starting hybrid AI response generation');
+      Logger.info('🚀 Starting hybrid AI response generation', { message, messagesCount: messages.length });
 
       // Step 1: Generate text explanation (primary)
       const textResponse = await this.generateConversationalResponse(messages, profile);
@@ -310,7 +311,11 @@ export class EngagingTutorAgent {
         this.fetchEducationalLinks(keywords, profile?.gradeLevel || 8)
       ]);
 
-      console.log(`✅ Hybrid response complete - Image: ${!!imageResult}, Links: ${links.length}, Keywords: ${keywords.length}`);
+      Logger.info(`✅ Hybrid response complete - Image: ${!!imageResult}, Links: ${links.length}, Keywords: ${keywords.length}`, { 
+        hasImage: !!imageResult, 
+        linksCount: links.length, 
+        keywordsCount: keywords.length 
+      });
 
       const result = {
         content: textResponse,
@@ -322,7 +327,7 @@ export class EngagingTutorAgent {
       cache.set(cacheKey, result, 300000); // Cache for 5 minutes
       return result;
     } catch (error) {
-      console.error('❌ Enhanced response generation failed:', error);
+      Logger.error('❌ Enhanced response generation failed', error as Error, { message, messages, profile });
       
       // Fallback to text-only response
       const textResponse = await this.generateConversationalResponse(messages, profile);
@@ -351,7 +356,7 @@ export class EngagingTutorAgent {
 
       return completion.choices[0]?.message?.content || "I'm having trouble thinking right now. Can you try again?";
     } catch (error) {
-      console.error("Groq conversation failed:", error);
+      Logger.error("Groq conversation failed", error as Error, { messages });
       
       // Fallback to prompt-based approach for other providers
       const conversationPrompt = this.convertConversationToPrompt(messages);
@@ -416,7 +421,7 @@ Adjust your teaching style to match their grade level and learning preferences.`
     const gradeBonus = gradeLevel < 8 ? 0.3 : 0.1;
     const probability = (hasVisualTrigger ? 0.7 : 0) + (hasScientificKeywords ? 0.5 : 0) + gradeBonus;
 
-    console.log(`🎯 Image generation probability: ${probability} (Grade ${gradeLevel})`);
+    Logger.info(`🎯 Image generation probability: ${probability} (Grade ${gradeLevel})`, { probability, gradeLevel });
     return probability > 0.5;
   }
 
@@ -429,13 +434,13 @@ Adjust your teaching style to match their grade level and learning preferences.`
     
     if (!imageGenerationEnabled || keywords.length === 0) {
       if (!imageGenerationEnabled) {
-        console.log('🖼️ Image generation is disabled. Set ENABLE_IMAGE_GENERATION=true to enable.');
+        Logger.info('🖼️ Image generation is disabled. Set ENABLE_IMAGE_GENERATION=true to enable.');
       }
       return null;
     }
 
     const imagePrompt = this.buildImagePrompt(keywords, gradeLevel);
-    console.log(`🎨 Generating image: "${imagePrompt}"`);
+    Logger.info(`🎨 Generating image: "${imagePrompt}"`, { imagePrompt });
 
     const options: ImageGenerationOptions = {
       width: 512,
@@ -483,19 +488,19 @@ Adjust your teaching style to match their grade level and learning preferences.`
     const cacheKey = `quick-response:${prompt}`;
     const cachedResponse = cache.get(cacheKey);
     if (cachedResponse) {
-      console.log(`✅ Returning cached quick response`);
+      Logger.info(`✅ Returning cached quick response`);
       return cachedResponse;
     }
 
     try {
-      console.log("🚀 Quick response requested");
+      Logger.info("🚀 Quick response requested", { prompt });
       
       // Use the AI provider manager for quick responses
       const result = await this.aiProviderManager.generateWithFallback(prompt, 150);
       cache.set(cacheKey, result, 300000); // Cache for 5 minutes
       return result;
     } catch (error: unknown) {
-      console.error("Quick response error:", error);
+      Logger.error("Quick response error", error as Error, { prompt });
       return "I'm having trouble responding right now. Could you try again?";
     }
   }

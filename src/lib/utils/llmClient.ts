@@ -1,5 +1,6 @@
 import { groq, GROQ_MODELS } from "@/lib/groq/client";
 import { GroqModel } from "@/lib/groq/client";
+import { Logger } from "@/lib/logger";
 
 export async function callLLM(prompt: string, model: GroqModel = GROQ_MODELS.LLAMA3_70B) {
   try {
@@ -15,7 +16,7 @@ export async function callLLM(prompt: string, model: GroqModel = GROQ_MODELS.LLA
 
     return response.choices[0].message.content || "";
   } catch (error) {
-    console.error("Error calling LLM:", error);
+    Logger.error("Error calling LLM", error as Error, { prompt, model });
     throw new Error("Failed to generate response from AI model");
   }
 }

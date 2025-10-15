@@ -1,4 +1,6 @@
 // src/lib/utils/link-fetcher.ts
+import { Logger } from '@/lib/logger';
+
 export interface LinkResult {
   title: string;
   url: string;
@@ -10,7 +12,7 @@ export interface LinkResult {
 export class LinkFetcher {
   async fetchRelevantLinks(topic: string, gradeLevel: number, maxPerSource: number = 2): Promise<LinkResult[]> {
     const refinedQuery = this.refineQueryForGrade(topic, gradeLevel);
-    console.log(`🔗 Fetching links for: "${refinedQuery}" (Grade ${gradeLevel})`);
+    Logger.info(`🔗 Fetching links for: "${refinedQuery}" (Grade ${gradeLevel})`, { topic, gradeLevel, refinedQuery });
 
     const [wikiLinks, youtubeLinks] = await Promise.all([
       this.fetchWikipediaLinks(refinedQuery, maxPerSource),
@@ -44,14 +46,14 @@ export class LinkFetcher {
         }];
       }
     } catch (error) {
-      console.error('Wikipedia fetch error:', error);
+      Logger.error('Wikipedia fetch error', error as Error, { query });
     }
     return [];
   }
 
   private async fetchYouTubeLinks(query: string, maxResults: number): Promise<LinkResult[]> {
     if (!process.env.YOUTUBE_API_KEY) {
-      console.log('📺 YouTube API key not available');
+      Logger.info('📺 YouTube API key not available');
       return [];
     }
 
@@ -71,7 +73,7 @@ export class LinkFetcher {
         relevanceScore: 0.7
       })) || [];
     } catch (error) {
-      console.error('YouTube fetch error:', error);
+      Logger.error('YouTube fetch error', error as Error, { query, maxResults });
       return [];
     }
   }

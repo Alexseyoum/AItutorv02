@@ -1,6 +1,7 @@
 // src/lib/ai/ai-providers.ts
 import { groq, GROQ_MODELS } from "@/lib/groq/client";
 import { ImageGenerationOptions, ImageResult } from "./types";
+import { Logger } from "@/lib/logger";
 
 const AI_PROVIDERS = {
   primary: 'groq',           // ✅ Always free
@@ -33,7 +34,7 @@ class GroqProvider implements AIProvider {
 
       return completion.choices[0]?.message?.content || "I'm having trouble thinking right now.";
     } catch (error) {
-      console.error(`${this.name} provider error:`, error);
+      Logger.error(`${this.name} provider error`, error as Error, { prompt, maxTokens });
       throw error;
     }
   }
@@ -63,7 +64,7 @@ class HuggingFaceProvider implements AIProvider {
 
       return result.choices[0]?.message?.content || "I'm processing your request.";
     } catch (error) {
-      console.error(`${this.name} provider error:`, error);
+      Logger.error(`${this.name} provider error`, error as Error, { prompt, maxTokens });
       throw error;
     }
   }
@@ -78,7 +79,7 @@ class HuggingFaceProvider implements AIProvider {
       // Enhance prompt based on grade level and style
       const enhancedPrompt = this.enhanceImagePrompt(prompt, options);
       
-      console.log(`🎨 HuggingFace: Generating image with prompt: "${enhancedPrompt}"`);
+      Logger.info(`🎨 HuggingFace: Generating image with prompt: "${enhancedPrompt}"`, { prompt, enhancedPrompt });
       
       // Add timeout and error handling for the API call
       const controller = new AbortController();
@@ -105,7 +106,7 @@ class HuggingFaceProvider implements AIProvider {
           try {
             buffer = await result.arrayBuffer();
           } catch (blobError) {
-            console.warn('Direct blob conversion failed, trying alternative approach:', blobError);
+            Logger.warn('Direct blob conversion failed, trying alternative approach', blobError as Error);
             
             // Method 2: Stream-based conversion
             const reader = new FileReader();
@@ -126,7 +127,7 @@ class HuggingFaceProvider implements AIProvider {
         const base64 = Buffer.from(buffer).toString('base64');
         const dataUrl = `data:image/png;base64,${base64}`;
 
-        console.log(`✅ HuggingFace: Image generated successfully, size: ${buffer.byteLength} bytes`);
+        Logger.info(`✅ HuggingFace: Image generated successfully, size: ${buffer.byteLength} bytes`, { size: buffer.byteLength });
 
         return {
           url: dataUrl,
@@ -140,7 +141,7 @@ class HuggingFaceProvider implements AIProvider {
       }
       
     } catch (error) {
-      console.error(`❌ HuggingFace image generation error:`, error);
+      Logger.error(`❌ HuggingFace image generation error`, error as Error, { prompt, options });
       
       // Provide more specific error information
       if (error instanceof Error) {
@@ -184,7 +185,7 @@ class HuggingFaceProvider implements AIProvider {
   isAvailable(): boolean {
     const hasToken = !!process.env.HUGGINGFACE_TOKEN;
     if (!hasToken) {
-      console.warn('⚠️ HuggingFace provider: HUGGINGFACE_TOKEN environment variable not set');
+      Logger.warn('⚠️ HuggingFace provider: HUGGINGFACE_TOKEN environment variable not set');
     }
     return hasToken;
   }

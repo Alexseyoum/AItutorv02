@@ -1,5 +1,12 @@
 import type { NextConfig } from "next";
 
+// Bundle analyzer
+const withBundleAnalyzer = process.env.ANALYZE === 'true' 
+  ? require('@next/bundle-analyzer')({
+      enabled: process.env.ANALYZE === 'true',
+    })
+  : (config: NextConfig) => config;
+
 const nextConfig: NextConfig = {
   // Production optimizations
   poweredByHeader: false,
@@ -10,6 +17,16 @@ const nextConfig: NextConfig = {
   images: {
     formats: ['image/webp', 'image/avif'],
     minimumCacheTTL: 31536000, // 1 year
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'avatars.githubusercontent.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'lh3.googleusercontent.com',
+      },
+    ],
   },
   
   // Security headers
@@ -18,6 +35,10 @@ const nextConfig: NextConfig = {
       {
         source: '/(.*)',
         headers: [
+          {
+            key: 'Strict-Transport-Security',
+            value: 'max-age=63072000; includeSubDomains; preload',
+          },
           {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
@@ -33,6 +54,14 @@ const nextConfig: NextConfig = {
           {
             key: 'Referrer-Policy',
             value: 'strict-origin-when-cross-origin',
+          },
+          {
+            key: 'Permissions-Policy',
+            value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self'; frame-ancestors 'none';",
           },
         ],
       },
@@ -75,4 +104,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withBundleAnalyzer(nextConfig);

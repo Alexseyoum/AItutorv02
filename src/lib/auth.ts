@@ -7,6 +7,7 @@ import { normalizeName, VALID_DOMAINS } from "./utils";
 import { admin } from "better-auth/plugins";
 import { ac, roles } from "@/lib/permissions";
 import { sendEmailAction } from "@/actions/send-email.action";
+import { Logger } from "@/lib/logger";
 
 
 // Validate environment variables
@@ -21,12 +22,10 @@ const validateEnvVars = () => {
   
   const missing = required.filter(key => !process.env[key]);
   if (missing.length > 0) {
-    console.error('Missing environment variables:', missing);
+    Logger.error('Missing environment variables', new Error(`Missing required environment variables: ${missing.join(', ')}`), { missing });
     throw new Error(`Missing required environment variables: ${missing.join(', ')}`);
   }
 };
-
-;
 
 validateEnvVars();
 

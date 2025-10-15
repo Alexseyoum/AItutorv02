@@ -1,4 +1,5 @@
 import { PrismaClient } from "@/generated/prisma";
+import { Logger } from "@/lib/logger";
 
 const globalForPrisma = global as unknown as { prisma: PrismaClient };
 
@@ -20,17 +21,17 @@ async function connectWithRetry(retries = 3, delay = 2000): Promise<void> {
   for (let i = 0; i < retries; i++) {
     try {
       await prisma.$connect();
-      console.log("✅ Database connected successfully");
+      Logger.info("✅ Database connected successfully");
       return;
     } catch (error) {
-      console.error(`❌ Database connection attempt ${i + 1} failed:`, error);
+      Logger.error(`❌ Database connection attempt ${i + 1} failed`, error as Error);
       
       if (i === retries - 1) {
-        console.error("🚫 All database connection attempts failed");
+        Logger.error("🚫 All database connection attempts failed", error as Error);
         throw error;
       }
       
-      console.log(`⏳ Retrying in ${delay}ms...`);
+      Logger.info(`⏳ Retrying in ${delay}ms...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
@@ -38,7 +39,7 @@ async function connectWithRetry(retries = 3, delay = 2000): Promise<void> {
 
 // Initialize connection with retry logic
 connectWithRetry().catch((error) => {
-  console.error("Failed to establish database connection:", error);
+  Logger.error("Failed to establish database connection", error as Error);
 });
 
 // Add a helper function for executing queries with retry
@@ -61,13 +62,13 @@ export async function executeWithRetry<T>(
         throw error;
       }
 
-      console.log(`🔄 Retrying database operation (attempt ${i + 2}/${retries})...`);
+      Logger.info(`🔄 Retrying database operation (attempt ${i + 2}/${retries})...`);
       
       // Try to reconnect
       try {
         await prisma.$connect();
       } catch (connectError) {
-        console.log("Reconnection failed, continuing with retry...");
+        Logger.info("Reconnection failed, continuing with retry...");
       }
       
       await new Promise(resolve => setTimeout(resolve, delay));
