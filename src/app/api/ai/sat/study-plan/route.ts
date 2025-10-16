@@ -280,10 +280,16 @@ interface WeeklyScheduleItem {
   practiceTest: boolean;
 }
 
+// Add the new interface for the adjusted schedule
+interface AdjustedWeeklyScheduleItem extends WeeklyScheduleItem {
+  weekNumber: number;
+  completed?: boolean;
+}
+
 // Change the return type to be compatible with Prisma's Json type
-function generateWeeklySchedule(timeline: string): Record<string, any> {
+function generateWeeklySchedule(timeline: string) {
   const weeks = timeline === "3-month" ? 12 : timeline === "6-month" ? 24 : 52;
-  const schedule: Record<string, any> = {};
+  const schedule: Record<string, WeeklyScheduleItem> = {};
   
   for (let i = 1; i <= weeks; i++) {
     schedule[i.toString()] = {
@@ -294,5 +300,6 @@ function generateWeeklySchedule(timeline: string): Record<string, any> {
     };
   }
   
-  return schedule;
+  // Use JSON serialization to ensure compatibility with Prisma's JSON type
+  return JSON.parse(JSON.stringify(schedule));
 }

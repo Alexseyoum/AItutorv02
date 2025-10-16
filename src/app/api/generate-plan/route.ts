@@ -4,6 +4,22 @@ import { studyPlanPrompt } from "@/lib/prompts/studyPlanPrompt";
 import { callLLM } from "@/lib/utils/llmClient";
 import { prisma } from "@/lib/prisma";
 
+// Add the interface for the study plan request
+interface StudyPlanRequest {
+  studentName?: string;
+  grade?: number;
+  goals?: string[];
+  baselineScores?: Record<string, unknown> | null;
+  weeklyHours?: number;
+  targetDate?: string | null;
+  learningStyle?: string;
+  subject: string;
+  topics: string[];
+  timeframe: string;
+  style: string;
+  currentLevel: string;
+}
+
 interface PlanResource {
   title: string;
   url?: string;
@@ -23,14 +39,18 @@ interface GeneratedPlan {
   weeks: PlanWeek[];
 }
 
-interface WeeklySchedule {
-  [week: number]: {
-    math: string[];
-    reading: string[];
-    writing: string[];
-    practiceTest: boolean;
-  };
+interface WeeklyScheduleItem {
+  math: string[];
+  reading: string[];
+  writing: string[];
+  practiceTest: boolean;
 }
+
+interface WeeklySchedule {
+  [week: number]: WeeklyScheduleItem;
+}
+
+// Define types for the plan generation process
 
 export async function POST(request: NextRequest) {
   try {
@@ -74,7 +94,17 @@ export async function POST(request: NextRequest) {
     const startIdx = llmResponse.indexOf("{");
     const endIdx = llmResponse.lastIndexOf("}");
     const jsonPart = llmResponse.slice(startIdx, endIdx + 1);
-    const plan: GeneratedPlan = JSON.parse(jsonPart);
+    // Parse and validate the generated plan structure
+    let plan: GeneratedPlan;
+    try {
+      plan = JSON.parse(jsonPart);
+      if (!plan.weeks || !Array.isArray(plan.weeks)) {
+        throw new Error('Invalid plan structure: missing or invalid weeks array');
+      }
+    } catch (parseError) {
+      console.error('Failed to parse generated plan:', parseError);
+      throw new Error('AI response format is invalid');
+    }
 
     // Save the plan to the database
     const savedPlan = await prisma.sATStudyPlan.create({
@@ -86,7 +116,7 @@ export async function POST(request: NextRequest) {
           reading: plan.weeks[0]?.focus.includes("Reading") ? [plan.weeks[0].focus] : ["Reading Comprehension"],
           writing: plan.weeks[0]?.focus.includes("Writing") ? [plan.weeks[0].focus] : ["Writing Basics"],
         },
-        weeklySchedule: plan.weeks.reduce((acc: WeeklySchedule, week: PlanWeek, index: number) => {
+        weeklySchedule: JSON.parse(JSON.stringify(plan.weeks.reduce((acc: WeeklySchedule, week: PlanWeek, index: number) => {
           acc[index + 1] = {
             math: week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("Math")).map((task: DailyPlanTask) => task.task),
             reading: week.daily_plan.filter((task: DailyPlanTask) => task.task.includes("Reading")).map((task: DailyPlanTask) => task.task),
@@ -94,7 +124,7 @@ export async function POST(request: NextRequest) {
             practiceTest: week.daily_plan.some((task: DailyPlanTask) => task.task.includes("mock") || task.task.includes("test")),
           };
           return acc;
-        }, {}) as any,
+        }, {}))),
         resourceRecommendations: {
           books: plan.weeks.flatMap((week: PlanWeek) => 
             week.resources.filter((r: PlanResource) => r.title.toLowerCase().includes("book")).map((r: PlanResource) => r.title)

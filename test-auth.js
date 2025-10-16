@@ -1,6 +1,6 @@
 // Test to check if we can get a session from the auth API
-const { PrismaClient } = require('./src/generated/prisma');
-const { auth } = require('./src/lib/auth');
+import { PrismaClient } from './src/generated/prisma';
+import { auth } from './src/lib/auth';
 
 async function test() {
   try {

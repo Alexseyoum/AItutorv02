@@ -593,7 +593,7 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
           {/* Section Selection */}
           <div className="text-center mb-12">
             <h2 className="text-2xl font-bold text-white mb-4">Choose a Practice Section</h2>
-            <p className="text-purple-200 mb-8">Select the SAT section you'd like to practice</p>
+            <p className="text-purple-200 mb-8">Select the SAT section you&#39;d like to practice</p>
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <Card 

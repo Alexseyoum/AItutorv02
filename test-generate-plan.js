@@ -1,9 +1,9 @@
 // Since we need authentication to test the API endpoint,
 // let's create a simple test to verify the API structure is correct
-const fs = require('fs');
+import { readFileSync } from 'fs';
 
 // Read the API route file to verify its structure
-const apiRouteContent = fs.readFileSync('./src/app/api/generate-plan/route.ts', 'utf8');
+const apiRouteContent = readFileSync('./src/app/api/generate-plan/route.ts', 'utf8');
 
 // Check if the file contains the expected structure
 const hasPOST = apiRouteContent.includes('export async function POST');
@@ -27,7 +27,7 @@ if (hasPOST && hasGET && hasAuth && hasPrompt && hasLLM) {
 }
 
 // Check the prompt file
-const promptContent = fs.readFileSync('./src/lib/prompts/studyPlanPrompt.ts', 'utf8');
+const promptContent = readFileSync('./src/lib/prompts/studyPlanPrompt.ts', 'utf8');
 const hasPromptTemplate = promptContent.includes('studyPlanPrompt');
 const hasJSONOutput = promptContent.includes('MUST BE VALID JSON');
 
@@ -37,7 +37,7 @@ console.log('Has studyPlanPrompt function:', hasPromptTemplate);
 console.log('Has JSON output instruction:', hasJSONOutput);
 
 // Check the LLM client
-const llmContent = fs.readFileSync('./src/lib/utils/llmClient.ts', 'utf8');
+const llmContent = readFileSync('./src/lib/utils/llmClient.ts', 'utf8');
 const hasCallLLM = llmContent.includes('callLLM');
 const hasGroq = llmContent.includes('groq');
 

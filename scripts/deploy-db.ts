@@ -19,7 +19,7 @@ const prisma = new PrismaClient({
 });
 
 interface DeploymentOptions {
-  environment: 'development' | 'production' | 'staging';
+  environment: 'development' | 'production' | 'test' | 'staging';
   skipGenerate?: boolean;
   skipPush?: boolean;
   validateOnly?: boolean;
@@ -161,9 +161,14 @@ class DatabaseDeployer {
     
     for (const table of essentialTables) {
       try {
-        // Use dynamic access to avoid TypeScript issues
-        const count = await (prisma as any)[table.model].count();
-        console.log(`  ✅ ${table.name}: ${count} records`);
+        // Use dynamic access with proper typing
+        const model = (prisma as any)[table.model];
+        if (model && typeof model.count === 'function') {
+          const count = await model.count();
+          console.log(`  ✅ ${table.name}: ${count} records`);
+        } else {
+          console.warn(`  ⚠️ ${table.name}: Model not found or invalid`);
+        }
       } catch (error) {
         console.warn(`  ⚠️ ${table.name}: Could not verify (${error})`);
       }
@@ -230,7 +235,7 @@ class DatabaseDeployer {
 // CLI Interface
 async function main() {
   const args = process.argv.slice(2);
-  const environment = (args.find(arg => arg.startsWith('--env='))?.split('=')[1] || 'production') as any;
+  const environment = (args.find(arg => arg.startsWith('--env='))?.split('=')[1] || 'production') as 'production' | 'development' | 'test' | 'staging';
   const skipGenerate = args.includes('--skip-generate');
   const skipPush = args.includes('--skip-push');
   const validateOnly = args.includes('--validate-only');

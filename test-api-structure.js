@@ -1,12 +1,12 @@
-const fs = require('fs');
+import { readFileSync, existsSync } from 'fs';
 
 console.log('🧪 Testing Generate Study Plan API Implementation\n');
 
 // Test 1: Check API Route Structure
 console.log('1. Checking API Route Structure...');
 const apiRoutePath = './src/app/api/generate-plan/route.ts';
-if (fs.existsSync(apiRoutePath)) {
-  const apiRouteContent = fs.readFileSync(apiRoutePath, 'utf8');
+if (existsSync(apiRoutePath)) {
+  const apiRouteContent = readFileSync(apiRoutePath, 'utf8');
   const checks = {
     'POST endpoint': apiRouteContent.includes('export async function POST'),
     'GET endpoint': apiRouteContent.includes('export async function GET'),
@@ -27,8 +27,8 @@ if (fs.existsSync(apiRoutePath)) {
 // Test 2: Check Prompt File
 console.log('\n2. Checking Prompt File...');
 const promptPath = './src/lib/prompts/studyPlanPrompt.ts';
-if (fs.existsSync(promptPath)) {
-  const promptContent = fs.readFileSync(promptPath, 'utf8');
+if (existsSync(promptPath)) {
+  const promptContent = readFileSync(promptPath, 'utf8');
   const checks = {
     'studyPlanPrompt function': promptContent.includes('studyPlanPrompt'),
     'JSON output instruction': promptContent.includes('MUST BE VALID JSON'),
@@ -47,8 +47,8 @@ if (fs.existsSync(promptPath)) {
 // Test 3: Check LLM Client
 console.log('\n3. Checking LLM Client...');
 const llmPath = './src/lib/utils/llmClient.ts';
-if (fs.existsSync(llmPath)) {
-  const llmContent = fs.readFileSync(llmPath, 'utf8');
+if (existsSync(llmPath)) {
+  const llmContent = readFileSync(llmPath, 'utf8');
   const checks = {
     'callLLM function': llmContent.includes('callLLM'),
     'Groq integration': llmContent.includes('groq'),
@@ -65,8 +65,8 @@ if (fs.existsSync(llmPath)) {
 // Test 4: Check SAT Prep Client Component
 console.log('\n4. Checking SAT Prep Client Component...');
 const clientPath = './src/components/tutoring/sat-prep-client.tsx';
-if (fs.existsSync(clientPath)) {
-  const clientContent = fs.readFileSync(clientPath, 'utf8');
+if (existsSync(clientPath)) {
+  const clientContent = readFileSync(clientPath, 'utf8');
   const checks = {
     'generateStudyPlan function': clientContent.includes('generateStudyPlan'),
     'API call to /api/generate-plan': clientContent.includes('/api/generate-plan'),

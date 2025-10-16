@@ -4,6 +4,15 @@ import { callLLM } from "@/lib/utils/llmClient";
 import { mockExamBlueprintPrompt } from "@/lib/prompts/mockExamPrompt";
 import { prisma } from "@/lib/prisma";
 
+// Add the interface for the mock request
+interface MockRequest {
+  goal?: string;
+  grade?: number;
+  subject: string;
+  difficulty: string;
+  questionCount: number;
+}
+
 export async function POST(request: NextRequest) {
   try {
     const session = await auth.api.getSession({
@@ -36,7 +45,7 @@ export async function POST(request: NextRequest) {
         subject: string;
         time_limit_minutes: number;
         question_count: number;
-        questions: any[];
+        questions: Array<unknown>;
       }>,
       total_time: 0,
       createdAt: new Date().toISOString(),
@@ -98,7 +107,7 @@ export async function POST(request: NextRequest) {
         userId: session.user.id,
         goal,
         grade,
-        sections: exam.sections,
+        sections: JSON.parse(JSON.stringify(exam.sections)),
         totalTime: exam.total_time
       }
     });

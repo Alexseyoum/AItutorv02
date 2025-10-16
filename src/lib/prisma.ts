@@ -51,7 +51,7 @@ export async function executeWithRetry<T>(
   for (let i = 0; i < retries; i++) {
     try {
       return await operation();
-    } catch (error: unknown) {
+    } catch (error) {
       // Check if it's a connection error
       const isConnectionError = 
         (error instanceof Error && error?.message?.includes("Can't reach database server")) ||

@@ -76,7 +76,7 @@ export default function Page() {
           <div className="mt-6 text-center">
             <div className="inline-flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-full">
               <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Safe for kids & teens - Parent approved! 👨‍👩‍👧‍👦</span>
+              <span>Safe for kids & teens - Parent approved! &#x1F468;&#x200D;&#x1F469;&#x200D;&#x1F467;&#x200D;&#x1F466;</span>
             </div>
           </div>
         </div>

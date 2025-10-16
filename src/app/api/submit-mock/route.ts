@@ -3,6 +3,35 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { scoreQuestion, aggregateResults, approximateSatScale } from "@/lib/utils/scoring";
 
+// Add interfaces for the mock submission
+interface MockSubmission {
+  answers: Array<{
+    questionId: string;
+    selectedOption: string;
+    timeSpent: number;
+  }>;
+  sessionId: string;
+  examId: string;
+  startedAt: string;
+  finishedAt: string;
+}
+
+interface QuestionData {
+  id: string;
+  correctAnswer: string;
+  explanation: string;
+}
+
+interface AnswerData {
+  answer: string;
+  timeSpentSeconds: number;
+}
+
+interface ExamSection {
+  name: string;
+  questions: QuestionData[];
+}
+
 /**
 Expected POST body:
 {
@@ -49,7 +78,7 @@ export async function POST(request: NextRequest) {
 
     // Build question list from exam
     const flatQuestionIds: string[] = [];
-    (exam.sections as any[]).forEach((s) => (s.questions || []).forEach((q: any) => flatQuestionIds.push(q.id)));
+    JSON.parse(JSON.stringify(exam.sections)).forEach((s: ExamSection) => (s.questions || []).forEach((q: QuestionData) => flatQuestionIds.push(q.id)));
 
     // Score each question (use DB question record to verify correct answer & topic)
     const scored = [];
@@ -73,8 +102,8 @@ export async function POST(request: NextRequest) {
 
     // Build per-section summary
     const sectionsSummary = [];
-    for (const section of exam.sections as any[]) {
-      const sectionQids = (section.questions || []).map((q: any) => q.id);
+    for (const section of JSON.parse(JSON.stringify(exam.sections)) as ExamSection[]) {
+      const sectionQids = (section.questions || []).map((q: QuestionData) => q.id);
       const sectionScored = scored.filter((s) => sectionQids.includes(s.qid));
       const secAgg = aggregateResults(sectionScored);
       sectionsSummary.push({
@@ -108,8 +137,8 @@ export async function POST(request: NextRequest) {
 
     // Update topic mastery
     const now = new Date().toISOString();
-    // Collate topic deltas
-    const topicDeltas = {} as Record<string, any>;
+    // Collate topic deltas with proper typing
+    const topicDeltas: Record<string, { correctDelta: number; totalDelta: number }> = {};
     for (const s of scored) {
       topicDeltas[s.topic] = topicDeltas[s.topic] || { correctDelta: 0, totalDelta: 0 };
       topicDeltas[s.topic].correctDelta += s.points;

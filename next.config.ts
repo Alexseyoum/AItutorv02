@@ -2,9 +2,18 @@ import type { NextConfig } from "next";
 
 // Bundle analyzer
 const withBundleAnalyzer = process.env.ANALYZE === 'true' 
-  ? require('@next/bundle-analyzer')({
-      enabled: process.env.ANALYZE === 'true',
-    })
+  ? (config: NextConfig) => {
+      try {
+        // Dynamic import to avoid top-level await issues
+        const bundleAnalyzer = require('@next/bundle-analyzer')({
+          enabled: process.env.ANALYZE === 'true',
+        });
+        return bundleAnalyzer(config);
+      } catch (error) {
+        console.warn('Bundle analyzer not available:', error);
+        return config;
+      }
+    }
   : (config: NextConfig) => config;
 
 const nextConfig: NextConfig = {

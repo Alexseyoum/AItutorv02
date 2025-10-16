@@ -146,7 +146,7 @@ export default async function Home() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 dark:text-white mb-2">📚 All Subjects</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Math, science, English, history - we've got everything you need for school!</p>
+                  <p className="text-gray-600 dark:text-gray-300">Math, science, English, history - we&#39;ve got everything you need for school!</p>
                 </div>
               </div>
               
@@ -156,7 +156,7 @@ export default async function Home() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 dark:text-white mb-2">📈 Track Progress</h4>
-                  <p className="text-gray-600 dark:text-gray-300">See how much you've learned and earn cool badges for your achievements!</p>
+                  <p className="text-gray-600 dark:text-gray-300">See how much you&#39;ve learned and earn cool badges for your achievements!</p>
                 </div>
               </div>
             </div>
@@ -168,7 +168,7 @@ export default async function Home() {
                 </div>
                 <div>
                   <h4 className="font-bold text-gray-900 dark:text-white mb-2">🎯 Smart Difficulty</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Questions get easier or harder based on how you're doing - never too easy, never too hard!</p>
+                  <p className="text-gray-600 dark:text-gray-300">Questions get easier or harder based on how you&#39;re doing - never too easy, never too hard!</p>
                 </div>
               </div>
               

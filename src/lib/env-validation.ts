@@ -48,6 +48,7 @@ class EnvironmentValidator {
   }
 
   private validateAndLoadEnvironment(): EnvironmentConfig {
+    // Validate required environment variables
     const requiredVars = [
       'DATABASE_URL',
       'BETTER_AUTH_URL',
@@ -96,7 +97,7 @@ class EnvironmentValidator {
       NODEMAILER_USER: process.env.NODEMAILER_USER!,
       NODEMAILER_APP_PASSWORD: process.env.NODEMAILER_APP_PASSWORD!,
       ADMIN_EMAILS: process.env.ADMIN_EMAILS,
-      NODE_ENV: (process.env.NODE_ENV as any) || 'development',
+      NODE_ENV: (process.env.NODE_ENV as 'development' | 'production' | 'test') || 'development',
     };
   }
 

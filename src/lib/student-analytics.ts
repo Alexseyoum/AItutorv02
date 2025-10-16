@@ -12,7 +12,7 @@ export class StudentAnalytics {
       topic?: string;
       duration?: number;
       score?: number;
-      metadata?: any;
+      metadata?: Record<string, unknown>;
     } = {}
   ) {
     try {
@@ -26,7 +26,7 @@ export class StudentAnalytics {
             topic: options.topic,
             duration: options.duration,
             score: options.score,
-            metadata: options.metadata
+            metadata: options.metadata ? JSON.parse(JSON.stringify(options.metadata)) : undefined
           }
         })
       );
@@ -125,7 +125,13 @@ export class StudentAnalytics {
   static async checkAchievements(
     userId: string, 
     activityType: ActivityType, 
-    options: any
+    options: {
+      subject?: string;
+      topic?: string;
+      duration?: number;
+      score?: number;
+      metadata?: Record<string, unknown>;
+    }
   ) {
     try {
       // Get user's current stats
@@ -178,7 +184,14 @@ export class StudentAnalytics {
     }
   }
 
-  static async awardAchievement(userId: string, achievement: any) {
+  static async awardAchievement(userId: string, achievement: {
+    id: string;
+    title: string;
+    description: string;
+    icon: string;
+    category: AchievementCategory;
+    condition: boolean;
+  }) {
     try {
       // Check if achievement already exists
       const existing = await prisma.achievement.findFirst({

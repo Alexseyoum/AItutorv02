@@ -1,5 +1,4 @@
-// Test to check if we can create a SAT practice session with a real user
-const { PrismaClient } = require('./src/generated/prisma');
+import { PrismaClient } from './src/generated/prisma';
 
 const prisma = new PrismaClient();
 

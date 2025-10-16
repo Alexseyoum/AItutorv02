@@ -28,7 +28,7 @@ export interface EnhancedChatMessage {
   imageUrl?: string;
   links?: LinkResult[];
   keywords?: string[];
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 export interface TutorResponseEnhanced {

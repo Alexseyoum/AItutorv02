@@ -12,7 +12,7 @@ export interface Message {
   keywords?: string[];
   funFact?: string;
   analogy?: string;
-  metadata?: any;
+  metadata?: Record<string, unknown>;
 }
 
 // Link result interface for educational resources
@@ -74,7 +74,22 @@ export interface SATStudyPlan {
     websites: string[];
     practiceTests: string[];
   };
-  aiGeneratedPlan?: any; // AI-generated plan structure
+  aiGeneratedPlan?: {
+    weeks?: Array<{
+      week: number;
+      focus: string;
+      daily_plan: Array<{
+        day: string;
+        task: string;
+        duration_minutes: number;
+      }>;
+      resources?: Array<{
+        title: string;
+        url: string;
+      }>;
+    }>;
+    tips?: string[];
+  };
   createdAt: Date;
   // Progress tracking fields
   completedWeeks?: number[]; // Array of completed week numbers
@@ -87,7 +102,14 @@ export interface SATPracticeSession {
   section: 'math' | 'reading' | 'writing' | 'full';
   score?: number;
   maxScore?: number;
-  answers?: any;
+  answers?: {
+    userAnswers: Array<{
+      questionId: string;
+      selectedAnswer: string;
+      isCorrect: boolean;
+      timeSpent: number;
+    }>
+  };
   timeSpent?: number;
   completedAt?: Date;
   createdAt: Date;

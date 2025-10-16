@@ -261,9 +261,9 @@ export class EngagingTutorAgent {
       const systemMessage = this.buildSystemPrompt(profile);
       
       // Prepare messages for AI
-      const conversationMessages = [
+      const conversationMessages: Array<{role: "system" | "user" | "assistant", content: string}> = [
         { role: "system", content: systemMessage },
-        ...messages
+        ...messages.map(m => ({ role: m.role, content: m.content }))
       ];
 
       // Use the AI provider manager with conversation format
@@ -341,13 +341,13 @@ export class EngagingTutorAgent {
    * Generate response using conversation format
    */
   private async generateWithConversation(
-    messages: Array<{role: string, content: string}>,
+    messages: Array<{role: "system" | "user" | "assistant", content: string}>,
     maxTokens: number = 500
   ): Promise<string> {
     try {
       // Try with Groq first as it supports conversation format natively
       const completion = await groq.chat.completions.create({
-        messages: messages as any,
+        messages: messages,
         model: GROQ_MODELS.LLAMA3_70B,
         temperature: 0.8,
         max_tokens: maxTokens,

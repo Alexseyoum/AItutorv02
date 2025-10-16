@@ -185,7 +185,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
         return (
           <div className="space-y-6">
             <div>
-              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Subjects you're studying</Label>
+              <Label className="text-base font-medium text-gray-700 dark:text-gray-300">Subjects you&#39;re studying</Label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-3">
                 {SUBJECTS_OPTIONS.map((subject) => (
                   <button
@@ -342,7 +342,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     )}
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Yes, I'm interested in SAT prep</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Yes, I&#39;m interested in SAT prep</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Get personalized SAT study plans, practice tests, and college prep resources
                     </div>

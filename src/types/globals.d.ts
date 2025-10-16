@@ -25,8 +25,8 @@ declare global {
     onsoundend: ((this: SpeechRecognition, ev: Event) => void) | null;
     onspeechstart: ((this: SpeechRecognition, ev: Event) => void) | null;
     onspeechend: ((this: SpeechRecognition, ev: Event) => void) | null;
-    onaudiostart: ((this: SpeechRecognition, ev: Event) => any) | null;
-    onaudioend: ((this: SpeechRecognition, ev: Event) => any) | null;
+    onaudiostart: ((this: SpeechRecognition, ev: Event) => void) | null;
+    onaudioend: ((this: SpeechRecognition, ev: Event) => void) | null;
     
     // Methods
     start(): void;

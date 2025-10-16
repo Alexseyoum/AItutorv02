@@ -15,7 +15,7 @@ interface ChatSession {
     content: string;
     type: string;
     createdAt: Date;
-    metadata?: any;
+    metadata?: Record<string, unknown>;
   }>;
 }
 
@@ -92,6 +92,7 @@ export function useChatPersistence(initialTopic?: string) {
   }, [initialTopic, loadChatSessions]);
 
   const loadSession = useCallback(async (sessionId: string) => {
+    // Load a specific chat session by ID
     try {
       setIsLoading(true);
       setIsLoadingExistingSession(true);
@@ -111,7 +112,22 @@ export function useChatPersistence(initialTopic?: string) {
         setCurrentSessionId(sessionId);
         
         // Convert database messages to component format
-        const convertedMessages: Message[] = (data.session?.messages || []).map((msg: any) => ({
+        const convertedMessages: Message[] = (data.session?.messages || []).map((msg: {
+  id: string;
+  content: string;
+  type: string;
+  createdAt: string;
+  metadata?: Record<string, unknown>;
+  imageUrl?: string;
+  links?: Array<{
+    title: string;
+    url: string;
+    type: 'youtube' | 'wikipedia' | 'educational';
+    snippet?: string;
+    relevanceScore?: number;
+  }>;
+  keywords?: string[];
+}) => ({
           id: msg.id,
           content: msg.content,
           type: msg.type as "user" | "ai",
@@ -145,6 +161,7 @@ export function useChatPersistence(initialTopic?: string) {
   }, []);
 
   const saveMessageToSession = useCallback(async (message: Message, sessionId: string) => {
+    // Save a message to a specific session in the database
     try {
       Logger.info('💾 SAVE: Saving message to session', { 
         sessionId, 
@@ -196,6 +213,7 @@ export function useChatPersistence(initialTopic?: string) {
 
   // New method to ensure session exists and return session ID
   const ensureSession = useCallback(async (): Promise<string | null> => {
+    // Ensure there is an active session, creating one if needed
     if (currentSessionId) {
       Logger.info('🎯 ENSURE: Using existing session', { sessionId: currentSessionId });
       return currentSessionId;
@@ -208,6 +226,7 @@ export function useChatPersistence(initialTopic?: string) {
   }, [currentSessionId, createNewSession]);
 
   const addMessage = useCallback(async (message: Message, forceSessionId?: string) => {
+    // Add a message to the current session with persistence
     Logger.info('🐈 ADD: Starting to add message', { 
       type: message.type, 
       contentPreview: message.content.substring(0, 50) + '...' 
@@ -246,6 +265,7 @@ export function useChatPersistence(initialTopic?: string) {
 
   // New method specifically for sending a conversation (user message + AI response)
   const sendConversation = useCallback(async (userMessage: Message, aiMessage: Message) => {
+    // Send a complete conversation (user + AI) with proper persistence
     Logger.info('💬 CONVERSATION: Starting conversation flow...');
     
     // Ensure we have a session before doing anything
@@ -292,6 +312,7 @@ export function useChatPersistence(initialTopic?: string) {
 
   // Delete a session
   const deleteSession = useCallback(async (sessionId: string) => {
+    // Delete a chat session and its messages from the database
     try {
       Logger.info('🗑️ Deleting session', { sessionId });
       

@@ -805,7 +805,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                         
                         <div className="space-y-4">
                           <h3 className="font-bold text-white text-lg">Weekly Plan</h3>
-                          {studyPlan.aiGeneratedPlan.weeks && studyPlan.aiGeneratedPlan.weeks.map((week: any, index: number) => (
+                          {studyPlan.aiGeneratedPlan && studyPlan.aiGeneratedPlan.weeks && studyPlan.aiGeneratedPlan.weeks.map((week, index: number) => (
                             <Card key={index} className="bg-white/5 border border-white/10 rounded-xl">
                               <CardContent className="p-4">
                                 <div className="flex justify-between items-center mb-3">
@@ -813,12 +813,12 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                   <Badge 
                                     variant="secondary" 
                                     className={
-                                      studyPlan.completedWeeks?.includes((week as any).week) 
+                                      studyPlan.completedWeeks?.includes(week.week) 
                                         ? "bg-green-500/20 text-green-300 border-green-500/30" 
                                         : "bg-purple-500/20 text-purple-300 border-purple-500/30"
                                     }
                                   >
-                                    {studyPlan.completedWeeks?.includes((week as any).week) ? (
+                                    {studyPlan.completedWeeks?.includes(week.week) ? (
                                       <span className="flex items-center gap-1">
                                         <CheckCircle className="h-3 w-3" /> Completed
                                       </span>
@@ -829,11 +829,11 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                 </div>
                                 
                                 <div className="space-y-2 mb-3">
-                                  {week.daily_plan.map((task: any, taskIndex: number) => {
+                                  {week.daily_plan.map((task, taskIndex: number) => {
                                     // Check if task is completed
                                     const isCompleted = studyPlan.completedTasks && 
-                                      studyPlan.completedTasks[(week as any).week] && 
-                                      studyPlan.completedTasks[(week as any).week][(task as any).day];
+                                      studyPlan.completedTasks[week.week.toString()] && 
+                                      studyPlan.completedTasks[week.week.toString()][task.day];
                                       
                                     return (
                                       <div 
@@ -852,7 +852,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                               ? "bg-green-500 hover:bg-green-600" 
                                               : "border border-gray-400 hover:bg-gray-600"
                                           }`}
-                                          onClick={() => updateStudyPlanProgress((week as any).week, (task as any).day, !isCompleted)}
+                                          onClick={() => updateStudyPlanProgress(week.week, task.day, !isCompleted)}
                                         >
                                           {isCompleted && <Check className="h-3 w-3 text-white" />}
                                         </Button>
@@ -871,7 +871,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                   <div className="pt-2 border-t border-white/10">
                                     <h5 className="text-xs font-medium text-gray-400 mb-1">RESOURCES</h5>
                                     <div className="flex flex-wrap gap-2">
-                                      {week.resources.map((resource: any, resIndex: number) => (
+                                      {week.resources.map((resource, resIndex: number) => (
                                         <a 
                                           key={resIndex}
                                           href={resource.url}
