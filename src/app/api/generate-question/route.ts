@@ -93,7 +93,7 @@ export async function POST(request: NextRequest) {
     try {
       // First try to parse the entire response as JSON
       data = JSON.parse(llmResponse);
-    } catch (parseError) {
+    } catch (_parseError) {
       try {
         // Clean the response first
         const cleanedResponse = cleanLLMResponse(llmResponse);
@@ -105,7 +105,7 @@ export async function POST(request: NextRequest) {
         } else {
           throw new Error("No JSON object found in response");
         }
-      } catch (regexError) {
+      } catch (_regexError) {
         // If regex extraction fails, try manual extraction
         const startIdx = llmResponse.indexOf("{");
         const endIdx = llmResponse.lastIndexOf("}");
@@ -118,7 +118,7 @@ export async function POST(request: NextRequest) {
         
         try {
           data = JSON.parse(jsonPart);
-        } catch (extractError) {
+        } catch (_extractError) {
           // Try to fix common JSON issues in truncated responses
           let fixedJson = jsonPart;
           
@@ -126,7 +126,7 @@ export async function POST(request: NextRequest) {
           try {
             fixedJson = fixTruncatedJSON(jsonPart);
             data = JSON.parse(fixedJson);
-          } catch (fixError) {
+          } catch (_fixError) {
             // If that still fails, try a more aggressive approach
             // Remove all non-JSON characters and try to reconstruct
             const aggressiveFix = jsonPart

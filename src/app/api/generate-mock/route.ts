@@ -5,7 +5,7 @@ import { mockExamBlueprintPrompt } from "@/lib/prompts/mockExamPrompt";
 import { prisma } from "@/lib/prisma";
 
 // Add the interface for the mock request
-interface MockRequest {
+interface _MockRequest {
   goal?: string;
   grade?: number;
   subject: string;
@@ -13,10 +13,10 @@ interface MockRequest {
   questionCount: number;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {
@@ -26,7 +26,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { goal = "SAT", grade = 11 } = body;
 
     // 1️⃣ Generate the exam blueprint

@@ -79,7 +79,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
       // Process learning goals text into array before submitting
       const processedGoals = learningGoalsText
         .split(",")
-        .map(s => s.trim())
+        .map((s: string) => s.trim())
         .filter(Boolean);
 
       const submissionData = {
@@ -317,7 +317,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             <div className="text-center">
               <h3 className="text-xl font-semibold text-gray-800 mb-2">SAT Preparation</h3>
               <p className="text-gray-600">
-                Since you're in high school, would you like to include SAT preparation in your learning plan?
+                Since you&apos;re in high school, would you like to include SAT preparation in your learning plan?
               </p>
             </div>
             
@@ -342,7 +342,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
                     )}
                   </div>
                   <div className="text-left">
-                    <div className="font-medium text-gray-900 dark:text-gray-100">Yes, I&#39;m interested in SAT prep</div>
+                    <div className="font-medium text-gray-900 dark:text-gray-100">Yes, I&apos;m interested in SAT prep</div>
                     <div className="text-sm text-gray-500 dark:text-gray-400 mt-1">
                       Get personalized SAT study plans, practice tests, and college prep resources
                     </div>
@@ -428,7 +428,7 @@ export default function OnboardingWizard({ onComplete }: OnboardingWizardProps) 
             {steps[currentStep]}
           </h2>
           <p className="text-gray-600 mb-6">
-            {currentStep === 0 && "Let's start with some basic information about you"}
+            {currentStep === 0 && "Let&apos;s start with some basic information about you"}
             {currentStep === 1 && "Tell us about your academic interests and goals"}
             {currentStep === 2 && "How do you prefer to learn?"}
             {currentStep === 3 && formData.gradeLevel >= 9 

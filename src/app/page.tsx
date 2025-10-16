@@ -1,9 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import TutoringClient from "@/components/tutoring-client";
-import { Button } from "@/components/ui/button";
 import { Brain, Users, Zap, BookOpen, CheckCircle, Star, Rocket, Heart } from "lucide-react";
-import Link from "next/link";
 import { GetStartedButton } from "@/components/get-started-button";
 import { Navigation } from "@/components/ui/navigation";
 

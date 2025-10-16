@@ -30,7 +30,7 @@ export class LinkFetcher {
     }
   }
 
-  private async fetchWikipediaLinks(query: string, maxResults: number): Promise<LinkResult[]> {
+  private async fetchWikipediaLinks(query: string, _maxResults: number): Promise<LinkResult[]> {
     try {
       const searchUrl = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(query)}`;
       const response = await fetch(searchUrl);

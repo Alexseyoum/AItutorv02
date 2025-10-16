@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 
 // Add the interface for the questions request
-interface QuestionsRequest {
+interface _QuestionsRequest {
   id?: string;
   status?: string;
   topic?: string;
@@ -12,10 +12,10 @@ interface QuestionsRequest {
   limit?: string;
 }
 
-export async function PUT(request: NextRequest) {
+export async function PUT(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {
@@ -25,7 +25,7 @@ export async function PUT(request: NextRequest) {
       );
     }
 
-    const body: Record<string, unknown> = await request.json();
+    const body: Record<string, unknown> = await _request.json();
     const { id, status } = body;
 
     if (!id || !status) {
@@ -58,10 +58,10 @@ export async function PUT(request: NextRequest) {
 }
 
 // GET endpoint to fetch approved questions by topic
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {
@@ -71,7 +71,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    const { searchParams } = new URL(request.url);
+    const { searchParams } = new URL(_request.url);
     const topic = searchParams.get("topic");
     const subject = searchParams.get("subject");
     const difficulty = searchParams.get("difficulty");

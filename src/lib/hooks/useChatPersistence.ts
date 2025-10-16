@@ -30,6 +30,7 @@ export function useChatPersistence(initialTopic?: string) {
   // Load chat sessions on mount
   useEffect(() => {
     loadChatSessions();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const loadChatSessions = useCallback(async () => {
@@ -190,7 +191,7 @@ export function useChatPersistence(initialTopic?: string) {
           if (errorData.details) {
             errorMessage += `: ${errorData.details}`;
           }
-        } catch (e) {
+        } catch (_e) {
           // If parsing fails, use the raw error text
           if (errorText) {
             errorMessage += `: ${errorText}`;
@@ -261,7 +262,7 @@ export function useChatPersistence(initialTopic?: string) {
     
     // Return the session ID that was used
     return sessionId;
-  }, [currentSessionId, saveMessageToSession, loadChatSessions]);
+  }, [saveMessageToSession, loadChatSessions, ensureSession]);
 
   // New method specifically for sending a conversation (user message + AI response)
   const sendConversation = useCallback(async (userMessage: Message, aiMessage: Message) => {

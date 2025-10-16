@@ -1,4 +1,4 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextResponse } from "next/server";
 import { EngagingTutorAgent } from "@/lib/ai/tutor-engine";
 
 export async function GET() {

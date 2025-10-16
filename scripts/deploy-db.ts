@@ -135,7 +135,7 @@ class DatabaseDeployer {
       console.log('✅ Database connection established');
       
       // Verify basic database structure
-      const result = await prisma.$queryRaw`SELECT 1 as test`;
+      const _result = await prisma.$queryRaw`SELECT 1 as test`;
       console.log('✅ Database query test passed');
       
       // Check if essential tables exist
@@ -162,7 +162,7 @@ class DatabaseDeployer {
     for (const table of essentialTables) {
       try {
         // Use dynamic access with proper typing
-        const model = (prisma as any)[table.model];
+        const model = (prisma as unknown as Record<string, { count: () => Promise<number> }>)[table.model];
         if (model && typeof model.count === 'function') {
           const count = await model.count();
           console.log(`  ✅ ${table.name}: ${count} records`);
@@ -203,15 +203,15 @@ class DatabaseDeployer {
     
     try {
       // Test write operation
-      const testWrite = await prisma.$executeRaw`SELECT 'write_test' as test`;
+      const _testWrite = await prisma.$executeRaw`SELECT 'write_test' as test`;
       console.log('✅ Write operations: Working');
       
       // Test read operation
-      const testRead = await prisma.$queryRaw`SELECT 'read_test' as test`;
+      const _testRead = await prisma.$queryRaw`SELECT 'read_test' as test`;
       console.log('✅ Read operations: Working');
       
       // Check database version
-      const version = await prisma.$queryRaw`SELECT version() as version`;
+      const _version = await prisma.$queryRaw`SELECT version() as version`;
       console.log('✅ Database version check: Passed');
       
     } catch (error) {
@@ -226,8 +226,8 @@ class DatabaseDeployer {
         await prisma.$disconnect();
         console.log('✅ Database connection closed');
       }
-    } catch (error) {
-      console.warn('⚠️ Cleanup warning:', error);
+    } catch (_error) {
+      console.warn('⚠️ Cleanup warning:', _error);
     }
   }
 }

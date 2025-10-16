@@ -23,7 +23,6 @@ import {
 } from "lucide-react";
 import { StudentProfile, SATStudyPlan, SATPracticeSession, SATDiagnosticResult } from "@/lib/types";
 import { toast } from "sonner";
-import Link from "next/link";
 import { useSession } from "@/lib/auth-client";
 
 interface User {
@@ -62,7 +61,7 @@ const SAT_RESOURCES = [
 ];
 
 export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
-  const { data: session } = useSession();
+  const { data: _session } = useSession();
   const [studyPlan, setStudyPlan] = useState<SATStudyPlan | null>(null);
   const [practiceSessions, setPracticeSessions] = useState<SATPracticeSession[]>([]);
   const [diagnosticResult, setDiagnosticResult] = useState<SATDiagnosticResult | null>(null);
@@ -71,7 +70,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
   const [activeTab, setActiveTab] = useState<'dashboard' | 'study-plan' | 'practice' | 'resources'>('dashboard');
 
   // Add new state for practice session
-  const [currentSession, setCurrentSession] = useState<{section: string, startTime: Date} | null>(null);
+  const [_currentSession, _setCurrentSession] = useState<{section: string, startTime: Date} | null>(null);
 
   // Function to update study plan progress
   const updateStudyPlanProgress = async (week: number, task: string, completed: boolean) => {
@@ -272,7 +271,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
       }
 
       const data = await response.json();
-      setCurrentSession({section, startTime: new Date()});
+      _setCurrentSession({section, startTime: new Date()});
       setPracticeSessions([data.session, ...practiceSessions]);
       
       // Navigate to the practice page with the session ID
@@ -299,7 +298,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
   };
 
   // Function to complete diagnostic test (for demo purposes)
-  const completeDiagnosticTest = async () => {
+  const _completeDiagnosticTest = async () => {
     try {
       const mockScores = {
         mathScore: Math.floor(Math.random() * 200) + 200, // 200-400
@@ -404,7 +403,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
     return totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
   };
 
-  const overallProgress = diagnosticResult 
+  const _overallProgress = diagnosticResult 
     ? Math.round((diagnosticResult.totalScore || 0) / 1600 * 100) 
     : 0;
 

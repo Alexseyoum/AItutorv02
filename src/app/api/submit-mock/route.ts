@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { scoreQuestion, aggregateResults, approximateSatScale } from "@/lib/utils/scoring";
 
 // Add interfaces for the mock submission
-interface MockSubmission {
+interface _MockSubmission {
   answers: Array<{
     questionId: string;
     selectedOption: string;
@@ -22,7 +22,7 @@ interface QuestionData {
   explanation: string;
 }
 
-interface AnswerData {
+interface _AnswerData {
   answer: string;
   timeSpentSeconds: number;
 }
@@ -47,10 +47,10 @@ Expected POST body:
 }
 */
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {
@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const { examId, answers = {}, startedAt, finishedAt } = body;
     
     if (!examId) {

@@ -17,7 +17,7 @@ export class KeywordExtractor {
         Logger.info('🔤 Keywords extracted with Groq', { keywords: groqKeywords });
         return groqKeywords;
       }
-    } catch (error) {
+    } catch (_error) {
       Logger.info('❌ Groq keyword extraction failed, falling back to regex');
     }
 

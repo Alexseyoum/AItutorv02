@@ -10,6 +10,7 @@ import { useChatPersistence } from "@/lib/hooks/useChatPersistence";
 import { contextManager } from "@/lib/ai/context-manager";
 import { Message } from "@/lib/types";
 import { ModeToggle } from "@/components/ui/mode-toggle";
+import Image from "next/image";
 import { 
   Send, 
   Bot, 
@@ -18,21 +19,16 @@ import {
   HelpCircle, 
   BookOpen, 
   Calculator,
-  Sparkles,
   MessageCircle,
   ArrowLeft,
   Brain,
-  Settings,
-  Mic,
   History,
   Plus,
   ExternalLink,
-  Image as ImageIcon,
   Menu,
   X,
   Copy,
   Check,
-  MoreHorizontal,
   UserCircle,
   ChevronLeft,
   ChevronRight
@@ -58,7 +54,13 @@ interface TutorChatProps {
   initialTopic?: string;
 }
 
-const suggestedQuestions = [
+interface SuggestedQuestion {
+  text: string;
+  icon: React.ComponentType<React.SVGProps<SVGSVGElement>>;
+  category: string;
+}
+
+const suggestedQuestions: SuggestedQuestion[] = [
   {
     text: "Explain this concept simply",
     icon: Lightbulb,
@@ -86,8 +88,6 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
     currentSessionId,
     messages,
     sessions,
-    isLoading: isPersistenceLoading,
-    addMessage,
     createNewSession,
     loadSession,
     sendConversation
@@ -249,7 +249,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
       setCopiedMessageId(messageId);
       toast.success("Copied to clipboard!");
       setTimeout(() => setCopiedMessageId(null), 2000);
-    } catch (error) {
+    } catch (_error: unknown) {
       toast.error("Failed to copy message");
     }
   };
@@ -396,7 +396,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                   {studentProfile ? `Grade ${studentProfile.gradeLevel} Student` : "Student"}
                 </div>
                 <div className="text-xs text-slate-500 dark:text-slate-400">
-                  {studentProfile?.learningStyle?.replace('_', ' ') || "Learning"}
+                  {studentProfile?.learningStyle ? studentProfile.learningStyle.replace('_', ' ') : "Learning"}
                 </div>
               </div>
             )}
@@ -448,7 +448,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
               <h1 className="text-lg lg:text-xl font-semibold text-slate-900 dark:text-slate-100">AI Tutor Chat</h1>
               {studentProfile && (
                 <p className="text-xs lg:text-sm text-slate-500 dark:text-slate-400 hidden sm:block">
-                  Grade {studentProfile.gradeLevel} • {studentProfile.learningStyle?.toLowerCase().replace('_', ' ')} learner • {studentProfile.difficultyLevel?.toLowerCase()} level
+                  Grade {studentProfile.gradeLevel} • {studentProfile.learningStyle ? studentProfile.learningStyle.toLowerCase().replace('_', ' ') : 'Learning'} learner • {studentProfile.difficultyLevel?.toLowerCase() || 'Beginner'} level
                 </p>
               )}
             </div>
@@ -549,13 +549,15 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                             {/* Display educational image */}
                             {message.imageUrl && (
                               <div className="mt-4 rounded-xl overflow-hidden border border-slate-200 dark:border-slate-600">
-                                <img 
+                                <Image 
                                   src={message.imageUrl} 
                                   alt="Educational illustration" 
                                   className="w-full h-auto max-h-64 object-cover"
                                   onError={(e) => {
                                     e.currentTarget.style.display = 'none';
                                   }}
+                                  width={500}
+                                  height={300}
                                 />
                               </div>
                             )}
@@ -588,7 +590,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                                   Learn more:
                                 </p>
                                 <div className="space-y-2">
-                                  {message.links.slice(0, 2).map((link, index) => (
+                                  {message.links.slice(0, 2).map((link: { url: string; title: string; snippet?: string; type: string }, index: number) => (
                                     <a
                                       key={index}
                                       href={link.url}
@@ -611,7 +613,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                             {message.keywords && message.keywords.length > 0 && (
                               <div className="mt-3">
                                 <div className="flex flex-wrap gap-1">
-                                  {message.keywords.slice(0, 5).map((keyword, index) => (
+                                  {message.keywords.slice(0, 5).map((keyword: string, index: number) => (
                                     <span
                                       key={index}
                                       className="px-2 py-1 text-xs bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full border border-slate-200 dark:border-slate-600"
@@ -633,7 +635,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                             : "border-slate-200 dark:border-slate-600 justify-between"
                         )}>
                           <span className="text-xs">
-                            {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            {message.timestamp.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit' })}
                           </span>
                           
                           {/* Copy button for AI messages */}
@@ -698,7 +700,7 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
                   <input
                     type="checkbox"
                     checked={autoSpeak}
-                    onChange={(e) => setAutoSpeak(e.target.checked)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setAutoSpeak(e.target.checked)}
                     className="rounded border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-purple-600 focus:ring-purple-500 scale-90 lg:scale-100"
                   />
                   <span className="hidden sm:inline">Auto-speak responses</span>
@@ -707,11 +709,11 @@ export default function TutorChat({ studentProfile, onBack, initialTopic }: Tuto
               </div>
             </div>
 
-            <form onSubmit={(e) => { e.preventDefault(); sendMessage(); }} className="flex gap-2 lg:gap-3">
+            <form onSubmit={(e: React.FormEvent<HTMLFormElement>) => { e.preventDefault(); sendMessage(); }} className="flex gap-2 lg:gap-3">
               <div className="flex-1 relative">
                 <Input
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInputMessage(e.target.value)}
                   placeholder={!currentSessionId 
                     ? "Ask me anything to start learning..."
                     : "Type your message or use voice input..."

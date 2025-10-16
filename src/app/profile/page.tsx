@@ -5,7 +5,7 @@ import { UpdateUserForm } from "@/components/update-user-form";
 import { Navigation } from "@/components/ui/navigation";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { Brain, User, Shield, Settings, GraduationCap, BookOpen, Target, Clock, Heart, Star, Sparkles, Trophy } from "lucide-react";
+import { User, Shield, Settings, GraduationCap, BookOpen, Target, Clock, Heart, Star, Sparkles } from "lucide-react";
 import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";

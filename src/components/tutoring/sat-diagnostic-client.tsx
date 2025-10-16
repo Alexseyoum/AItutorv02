@@ -1,25 +1,21 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
-  Target, 
-  Clock, 
   CheckCircle, 
   XCircle,
   Brain,
   ArrowLeft,
-  Play,
-  Square,
   Trophy
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { generateQuestions } from "@/lib/utils/questionBank";
 
-interface User {
+interface _User {
   id: string;
   email: string;
   name?: string;
@@ -78,7 +74,7 @@ const DIAGNOSTIC_TOPICS = [
   "Rhetoric: Argument Analysis"
 ];
 
-export default function SATDiagnosticClient({ user, profile }: { user: User; profile: StudentProfile }) {
+export default function SATDiagnosticClient({ profile }: { profile: StudentProfile }) {
   const router = useRouter();
   const [session, setSession] = useState<DiagnosticSession | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -89,7 +85,7 @@ export default function SATDiagnosticClient({ user, profile }: { user: User; pro
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
 
   // Initialize a new diagnostic session
-  const initializeSession = async () => {
+  const initializeSession = useCallback(async () => {
     setIsLoading(true);
     try {
       // Generate questions for diagnostic
@@ -145,88 +141,10 @@ export default function SATDiagnosticClient({ user, profile }: { user: User; pro
     } finally {
       setIsLoading(false);
     }
-  };
-
-  // Start timer
-  useEffect(() => {
-    if (timeRemaining !== null && timeRemaining > 0 && session && !session.isCompleted) {
-      const newTimer = setInterval(() => {
-        setTimeRemaining(prev => {
-          if (prev === null || prev <= 1) {
-            // Time's up
-            completeSession();
-            return 0;
-          }
-          return prev - 1;
-        });
-      }, 1000);
-      
-      setTimer(newTimer);
-      return () => {
-        if (newTimer) clearInterval(newTimer);
-      };
-    }
-  }, [timeRemaining, session]);
-
-  // Handle answer selection
-  const handleAnswerSelect = (answer: string) => {
-    if (showExplanation || !session) return;
-    
-    setSelectedAnswer(answer);
-    
-    // Auto-submit after a short delay
-    setTimeout(() => {
-      handleSubmitAnswer(answer);
-    }, 1000);
-  };
-
-  // Submit answer
-  const handleSubmitAnswer = (answer: string) => {
-    if (!session || showExplanation) return;
-    
-    const currentQuestion = session.questions[currentQuestionIndex];
-    const isCorrect = answer === currentQuestion.answer;
-    
-    const newUserAnswer: UserAnswer = {
-      questionId: currentQuestion.id,
-      selectedAnswer: answer,
-      isCorrect,
-      timeSpent: Math.floor((new Date().getTime() - session.currentTime.getTime()) / 1000)
-    };
-    
-    // Update session
-    const updatedSession = {
-      ...session,
-      userAnswers: [...session.userAnswers, newUserAnswer],
-      currentTime: new Date(),
-      timeSpent: session.timeSpent + newUserAnswer.timeSpent
-    };
-    
-    setSession(updatedSession);
-    setSelectedAnswer(null);
-    setShowExplanation(true);
-  };
-
-  // Move to next question
-  const handleNextQuestion = () => {
-    if (!session) return;
-    
-    if (currentQuestionIndex < session.questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-      setSession({
-        ...session,
-        currentTime: new Date()
-      });
-    } else {
-      // Last question - complete session
-      completeSession();
-    }
-  };
+  }, [profile]);
 
   // Complete session
-  const completeSession = async () => {
+  const completeSession = useCallback(async () => {
     if (!session || session.isCompleted) return;
     
     // Clear timer
@@ -315,11 +233,89 @@ export default function SATDiagnosticClient({ user, profile }: { user: User; pro
         throw new Error(errorData.error || "Failed to save diagnostic results");
       }
       
-      const data = await response.json();
+      const _data = await response.json();
       toast.success("Diagnostic test completed and results saved!");
     } catch (error: any) {
       console.error("Failed to save diagnostic results:", error);
       toast.error("Diagnostic completed but failed to save results. You can try again.");
+    }
+  }, [session, timer]);
+
+  // Start timer
+  useEffect(() => {
+    if (timeRemaining !== null && timeRemaining > 0 && session && !session.isCompleted) {
+      const newTimer = setInterval(() => {
+        setTimeRemaining(prev => {
+          if (prev === null || prev <= 1) {
+            // Time's up
+            completeSession();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      
+      setTimer(newTimer);
+      return () => {
+        if (newTimer) clearInterval(newTimer);
+      };
+    }
+  }, [timeRemaining, session, completeSession]);
+
+  // Handle answer selection
+  const handleAnswerSelect = (answer: string) => {
+    if (showExplanation || !session) return;
+    
+    setSelectedAnswer(answer);
+    
+    // Auto-submit after a short delay
+    setTimeout(() => {
+      handleSubmitAnswer(answer);
+    }, 1000);
+  };
+
+  // Submit answer
+  const handleSubmitAnswer = (answer: string) => {
+    if (!session || showExplanation) return;
+    
+    const currentQuestion = session.questions[currentQuestionIndex];
+    const isCorrect = answer === currentQuestion.answer;
+    
+    const newUserAnswer: UserAnswer = {
+      questionId: currentQuestion.id,
+      selectedAnswer: answer,
+      isCorrect,
+      timeSpent: Math.floor((new Date().getTime() - session.currentTime.getTime()) / 1000)
+    };
+    
+    // Update session
+    const updatedSession = {
+      ...session,
+      userAnswers: [...session.userAnswers, newUserAnswer],
+      currentTime: new Date(),
+      timeSpent: session.timeSpent + newUserAnswer.timeSpent
+    };
+    
+    setSession(updatedSession);
+    setSelectedAnswer(null);
+    setShowExplanation(true);
+  };
+
+  // Move to next question
+  const handleNextQuestion = () => {
+    if (!session) return;
+    
+    if (currentQuestionIndex < session.questions.length - 1) {
+      setCurrentQuestionIndex(prev => prev + 1);
+      setSelectedAnswer(null);
+      setShowExplanation(false);
+      setSession({
+        ...session,
+        currentTime: new Date()
+      });
+    } else {
+      // Last question - complete session
+      completeSession();
     }
   };
 
@@ -338,7 +334,7 @@ export default function SATDiagnosticClient({ user, profile }: { user: User; pro
   // Initialize session on component mount
   useEffect(() => {
     initializeSession();
-  }, []);
+  }, [initializeSession]);
 
   // If no session or still loading, show loading state
   if (!session || isLoading) {
@@ -536,7 +532,7 @@ export default function SATDiagnosticClient({ user, profile }: { user: User; pro
             <div className="space-y-3">
               {currentQuestion.choices.map((choice, index) => {
                 const isSelected = selectedAnswer === choice;
-                const isCorrect = userAnswer?.isCorrect && userAnswer.selectedAnswer === choice;
+                const _isCorrect = userAnswer?.isCorrect && userAnswer.selectedAnswer === choice;
                 const isIncorrect = !userAnswer?.isCorrect && userAnswer?.selectedAnswer === choice;
                 const showCorrect = showExplanation && choice === currentQuestion.answer;
                 

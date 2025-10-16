@@ -3,15 +3,6 @@ import { groq, GROQ_MODELS } from "@/lib/groq/client";
 import { ImageGenerationOptions, ImageResult } from "./types";
 import { Logger } from "@/lib/logger";
 
-const AI_PROVIDERS = {
-  primary: 'groq',           // ✅ Always free
-  fallback1: 'huggingface',  // ✅ 100% free, no deposit
-  fallback2: 'openrouter',   // ✅ $5 free, no deposit required
-  experimental: 'perplexity' // ✅ Free tier available
-} as const;
-
-
-
 interface AIProvider {
   name: string;
   generateResponse(prompt: string, maxTokens?: number): Promise<string>;
@@ -69,7 +60,7 @@ class HuggingFaceProvider implements AIProvider {
     }
   }
 
-  async generateImage(prompt: string, options: ImageGenerationOptions = {}): Promise<ImageResult> {
+  async generateImage(prompt: string, _options: ImageGenerationOptions = {}): Promise<ImageResult> {
     if (!this.hf) {
       const { HfInference } = await import('@huggingface/inference');
       this.hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
@@ -77,7 +68,7 @@ class HuggingFaceProvider implements AIProvider {
 
     try {
       // Enhance prompt based on grade level and style
-      const enhancedPrompt = this.enhanceImagePrompt(prompt, options);
+      const enhancedPrompt = this.enhanceImagePrompt(prompt, _options);
       
       Logger.info(`🎨 HuggingFace: Generating image with prompt: "${enhancedPrompt}"`, { prompt, enhancedPrompt });
       
@@ -91,8 +82,8 @@ class HuggingFaceProvider implements AIProvider {
           model: "stabilityai/stable-diffusion-2-1",
           inputs: enhancedPrompt,
           parameters: {
-            width: options.width || 512,
-            height: options.height || 512,
+            width: _options.width || 512,
+            height: _options.height || 512,
           }
         });
 
@@ -141,7 +132,7 @@ class HuggingFaceProvider implements AIProvider {
       }
       
     } catch (error) {
-      Logger.error(`❌ HuggingFace image generation error`, error as Error, { prompt, options });
+      Logger.error(`❌ HuggingFace image generation error`, error as Error, { prompt, _options });
       
       // Provide more specific error information
       if (error instanceof Error) {
@@ -218,9 +209,9 @@ class OpenRouterProvider implements AIProvider {
 
       const data = await response.json();
       return data.choices[0]?.message?.content || "I'm working on your request.";
-    } catch (error) {
-      console.error(`${this.name} provider error:`, error);
-      throw error;
+    } catch (_error) {
+      console.error(`${this.name} provider error:`, _error);
+      throw _error;
     }
   }
 
@@ -228,7 +219,7 @@ class OpenRouterProvider implements AIProvider {
     return !!process.env.OPENROUTER_API_KEY;
   }
 
-  async generateImage(prompt: string, options: ImageGenerationOptions = {}): Promise<ImageResult> {
+  async generateImage(prompt: string, _options: ImageGenerationOptions = {}): Promise<ImageResult> {
     try {
       // OpenRouter doesn't directly support image generation through their API
       // But we can use their text generation to create a detailed description
@@ -238,9 +229,9 @@ class OpenRouterProvider implements AIProvider {
       // For now, we'll throw an error to let other providers handle it
       throw new Error('OpenRouter does not support direct image generation');
       
-    } catch (error) {
-      console.error(`❌ OpenRouter image generation error:`, error);
-      throw error;
+    } catch (_error) {
+      console.error(`❌ OpenRouter image generation error:`, _error);
+      throw _error;
     }
   }
 }
@@ -269,7 +260,7 @@ export class AIProviderManager {
         const result = await provider.generateResponse(prompt, maxTokens);
         console.log(`✅ Success with ${provider.name}`);
         return result;
-      } catch (error) {
+      } catch (_error) {
         console.log(`❌ ${provider.name} failed, trying next provider...`);
         continue;
       }

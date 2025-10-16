@@ -7,7 +7,7 @@ import { prisma } from "@/lib/prisma";
 type ChatSession = Awaited<ReturnType<typeof prisma.chatSession.findMany>>[number];
 type ChatMessage = Awaited<ReturnType<typeof prisma.chatMessage.findMany>>[number];
 
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     console.log('📋 SESSIONS: Loading chat sessions...');
     const headersList = await headers();
@@ -84,7 +84,7 @@ export async function GET(request: NextRequest) {
   }
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     console.log('🆕 SESSIONS: Creating new chat session...');
     const headersList = await headers();
@@ -99,7 +99,7 @@ export async function POST(request: NextRequest) {
 
     console.log('✅ SESSIONS: User authenticated for POST:', session.user.id);
 
-    const { title, topic } = await request.json();
+    const { title, topic } = await _request.json();
     console.log('🆕 SESSIONS: Creating session with title:', title, 'topic:', topic);
 
     const chatSession = await prisma.chatSession.create({

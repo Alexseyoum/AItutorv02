@@ -2,7 +2,7 @@
 import { auth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { ModeToggle } from "@/components/ui/mode-toggle";
-import { Brain, Users, Zap, BookOpen, ArrowRight, CheckCircle } from "lucide-react";
+import { Brain, Users, Zap, BookOpen, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { GetStartedButton } from "@/components/get-started-button";
 import { headers } from "next/headers";
@@ -10,7 +10,7 @@ import { headers } from "next/headers";
 export default async function Marketing() {
   const headersList = await headers();
 
-  const session = await auth.api.getSession({
+  const _session = await auth.api.getSession({
     headers: headersList
   });
 

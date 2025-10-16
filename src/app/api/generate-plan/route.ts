@@ -5,7 +5,7 @@ import { callLLM } from "@/lib/utils/llmClient";
 import { prisma } from "@/lib/prisma";
 
 // Add the interface for the study plan request
-interface StudyPlanRequest {
+interface _StudyPlanRequest {
   studentName?: string;
   grade?: number;
   goals?: string[];
@@ -52,10 +52,10 @@ interface WeeklySchedule {
 
 // Define types for the plan generation process
 
-export async function POST(request: NextRequest) {
+export async function POST(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const body = await request.json();
+    const body = await _request.json();
     const {
       studentName = "Student",
       grade = 10,
@@ -101,8 +101,8 @@ export async function POST(request: NextRequest) {
       if (!plan.weeks || !Array.isArray(plan.weeks)) {
         throw new Error('Invalid plan structure: missing or invalid weeks array');
       }
-    } catch (parseError) {
-      console.error('Failed to parse generated plan:', parseError);
+    } catch (_parseError) {
+      console.error('Failed to parse generated plan:', _parseError);
       throw new Error('AI response format is invalid');
     }
 
@@ -152,10 +152,10 @@ export async function POST(request: NextRequest) {
 }
 
 // GET endpoint to fetch the latest AI-generated plan
-export async function GET(request: NextRequest) {
+export async function GET(_request: NextRequest) {
   try {
     const session = await auth.api.getSession({
-      headers: request.headers
+      headers: _request.headers
     });
 
     if (!session) {

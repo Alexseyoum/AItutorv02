@@ -20,10 +20,6 @@ import {
   Camera,
   Upload,
   Zap,
-  Star,
-  TrendingUp,
-  Clock,
-  Award,
   Calculator,
   BookOpen,
   UserCircle

@@ -2,9 +2,10 @@
 
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Menu, Bell, Search, User, BookOpen, Settings, LogOut, Home, Target } from "lucide-react";
+import { Menu, Bell, Search, User, BookOpen, Settings, Home, Target } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Link from "next/link";
+import Image from "next/image";
 
 interface DashboardLayoutProps {
   children: React.ReactNode;
@@ -102,10 +103,12 @@ export function DashboardLayout({ children, user, profile }: DashboardLayoutProp
               )}>
                 <div className="flex h-8 w-8 items-center justify-center rounded-full bg-sidebar-primary text-sidebar-primary-foreground">
                   {user.avatar ? (
-                    <img
+                    <Image
                       src={user.avatar}
                       alt={user.name}
-                      className="h-8 w-8 rounded-full object-cover"
+                      width={32}
+                      height={32}
+                      className="rounded-full object-cover"
                     />
                   ) : (
                     <span className="text-sm font-semibold">

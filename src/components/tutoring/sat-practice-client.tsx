@@ -5,23 +5,20 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { 
-  BookOpen, 
   Target, 
-  Clock, 
   CheckCircle, 
   XCircle,
-  RotateCcw,
   Brain,
   ArrowLeft,
-  Play,
-  Pause,
-  Square,
   Trophy,
-  Zap
+  BookOpen,
+  Zap,
+  RotateCcw
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { generateQuestions } from "@/lib/utils/questionBank";
+import Image from "next/image";
 
 interface User {
   id: string;
@@ -101,7 +98,7 @@ const SUBJECT_TOPICS = {
   ]
 };
 
-export default function SATPracticeClient({ user, profile }: { user: User; profile: StudentProfile }) {
+export default function SATPracticeClient({ user: _user, profile }: { user: User; profile: StudentProfile }) {
   const router = useRouter();
   const [session, setSession] = useState<PracticeSession | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -112,8 +109,60 @@ export default function SATPracticeClient({ user, profile }: { user: User; profi
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
   // Add new state for AI tutoring
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(null);
-  const [isAiLoading, setIsAiLoading] = useState(false);
+  const [_isAiLoading, setIsAiLoading] = useState(false);
   const [showAiTutor, setShowAiTutor] = useState(false);
+
+  // Complete session
+  const completeSession = useCallback(async () => {
+    const currentSession = session;
+    if (!currentSession || currentSession.isCompleted) return;
+    
+    // Clear timer
+    if (timer) {
+      clearInterval(timer);
+      setTimer(null);
+    }
+    
+    // Mark session as completed
+    const completedSession = {
+      ...currentSession,
+      isCompleted: true,
+      currentTime: new Date()
+    };
+    
+    setSession(completedSession);
+    
+    // Save session to database
+    try {
+      const response = await fetch("/api/ai/sat/practice-sessions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          section: currentSession.section,
+          score: calculateScore(completedSession),
+          maxScore: currentSession.questions.length,
+          // Save only user answers and session progress (not questions)
+          answers: {
+            userAnswers: currentSession.userAnswers
+          },
+          timeSpent: completedSession.timeSpent
+        }),
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to save practice session");
+      }
+      
+      const _data = await response.json();
+      toast.success("Practice session completed and saved!");
+    } catch (error: any) {
+      console.error("Failed to save session:", error);
+      toast.error("Session completed but failed to save. You can try again.");
+    }
+  }, [session, timer]);
 
   // Initialize a new practice session
   const initializeSession = useCallback(async (section: 'math' | 'reading' | 'writing' | 'full' = 'math') => {
@@ -346,7 +395,7 @@ export default function SATPracticeClient({ user, profile }: { user: User; profi
         if (newTimer) clearInterval(newTimer);
       };
     }
-  }, [timeRemaining, session]);
+  }, [timeRemaining, session, completeSession]);
 
   // Handle answer selection
   const handleAnswerSelect = (answer: string) => {
@@ -482,57 +531,6 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
     } else {
       // Last question - complete session
       completeSession();
-    }
-  };
-
-  // Complete session
-  const completeSession = async () => {
-    if (!session || session.isCompleted) return;
-    
-    // Clear timer
-    if (timer) {
-      clearInterval(timer);
-      setTimer(null);
-    }
-    
-    // Mark session as completed
-    const completedSession = {
-      ...session,
-      isCompleted: true,
-      currentTime: new Date()
-    };
-    
-    setSession(completedSession);
-    
-    // Save session to database
-    try {
-      const response = await fetch("/api/ai/sat/practice-sessions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          section: session.section,
-          score: calculateScore(completedSession),
-          maxScore: session.questions.length,
-          // Save only user answers and session progress (not questions)
-          answers: {
-            userAnswers: session.userAnswers
-          },
-          timeSpent: completedSession.timeSpent
-        }),
-      });
-      
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to save practice session");
-      }
-      
-      const data = await response.json();
-      toast.success("Practice session completed and saved!");
-    } catch (error: any) {
-      console.error("Failed to save session:", error);
-      toast.error("Session completed but failed to save. You can try again.");
     }
   };
 
@@ -867,10 +865,12 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
                 
                 {aiExplanation.imageUrl && (
                   <div className="mt-4 rounded-lg overflow-hidden border border-cyan-500/30">
-                    <img 
+                    <Image 
                       src={aiExplanation.imageUrl} 
                       alt="AI Generated Illustration" 
                       className="w-full h-auto"
+                      width={500}
+                      height={300}
                     />
                   </div>
                 )}
@@ -910,7 +910,7 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
             <div className="space-y-3">
               {currentQuestion.choices.map((choice, index) => {
                 const isSelected = selectedAnswer === choice;
-                const isCorrect = userAnswer?.isCorrect && userAnswer.selectedAnswer === choice;
+               const _isCorrect = userAnswer?.isCorrect && userAnswer.selectedAnswer === choice;
                 const isIncorrect = !userAnswer?.isCorrect && userAnswer?.selectedAnswer === choice;
                 const showCorrect = showExplanation && choice === currentQuestion.answer;
                 

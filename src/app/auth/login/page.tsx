@@ -1,6 +1,6 @@
 import { LoginForm } from "@/components/login-form";
 import { SignInOauthButton } from "@/components/sign-in-oauth-button";
-import { Brain, Sparkles, Heart } from "lucide-react";
+import { Sparkles, Heart } from "lucide-react";
 import Link from "next/link";
 import { Navigation } from "@/components/ui/navigation";
 
@@ -36,7 +36,7 @@ export default function Page() {
             <LoginForm />
 
             <p className="text-center text-sm text-gray-600 dark:text-gray-400">
-              Don't have an account?{" "}
+              Don&apos;t have an account?{" "}
               <Link 
                 href="/auth/register" 
                 className="font-semibold gradient-text-primary hover:opacity-80 transition-all duration-150 ease-out"
