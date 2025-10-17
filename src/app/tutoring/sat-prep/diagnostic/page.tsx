@@ -56,5 +56,5 @@ export default async function SATDiagnosticPage() {
     }
   };
 
-  return <SATDiagnosticClient user={session.user} profile={profileData.profile} />;
+  return <SATDiagnosticClient profile={profileData.profile} />;
 }
