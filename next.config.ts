@@ -104,12 +104,13 @@ const nextConfig: NextConfig = {
     CUSTOM_BUILD_ID: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
   },
 
-  // Server external packages (moved from experimental)
-  serverExternalPackages: ['prisma'],
+  // Server external packages
+  serverExternalPackages: ['@/generated/prisma'],
   
   // Experimental features for performance
   experimental: {
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
+    serverComponentsExternalPackages: ['@/generated/prisma'],
   },
   
   // Webpack optimizations
@@ -121,6 +122,11 @@ const nextConfig: NextConfig = {
         net: false,
         tls: false,
       };
+    }
+    
+    // Handle Prisma client properly for serverless environments
+    if (isServer) {
+      config.externals.push('_http_common');
     }
     
     return config;
