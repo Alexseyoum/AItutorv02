@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
@@ -16,7 +16,7 @@ import {
   RotateCcw
 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { generateQuestions } from "@/lib/utils/questionBank";
 import Image from "next/image";
 
@@ -100,6 +100,7 @@ const SUBJECT_TOPICS = {
 
 export default function SATPracticeClient({ user: _user, profile }: { user: User; profile: StudentProfile }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [session, setSession] = useState<PracticeSession | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -107,10 +108,24 @@ export default function SATPracticeClient({ user: _user, profile }: { user: User
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState<NodeJS.Timeout | null>(null);
   const [timeRemaining, setTimeRemaining] = useState<number | null>(null);
-  // Add new state for AI tutoring
   const [aiExplanation, setAiExplanation] = useState<AIExplanation | null>(null);
   const [_isAiLoading, setIsAiLoading] = useState(false);
   const [showAiTutor, setShowAiTutor] = useState(false);
+  
+  const abortControllerRef = useRef<AbortController | null>(null);
+  const isComponentMounted = useRef(true);
+
+  useEffect(() => {
+    isComponentMounted.current = true;
+    abortControllerRef.current = new AbortController();
+    
+    return () => {
+      isComponentMounted.current = false;
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   // Complete session
   const completeSession = useCallback(async () => {
@@ -205,13 +220,24 @@ export default function SATPracticeClient({ user: _user, profile }: { user: User
             subject,
             difficulty: profile.difficultyLevel?.toLowerCase() || 'medium',
             goal: 'SAT',
-            questionCount: questionsPerTopic
+            questionCount: questionsPerTopic,
+            signal: abortControllerRef.current?.signal
           });
+          
+          // Check again before updating state
+          if (!isComponentMounted.current || abortControllerRef.current?.signal.aborted) {
+            console.log('Question generation cancelled after receiving response');
+            return;
+          }
           
           questions.push(...generatedQuestions);
         } catch (topicError: any) {
+          // Don't show errors if aborted
+          if (abortControllerRef.current?.signal.aborted || topicError.name === 'AbortError') {
+            return;
+          }
+          
           console.error(`Failed to generate questions for topic "${topic}":`, topicError);
-          // Continue with other topics instead of failing the entire session
           toast.error(`Failed to generate questions for topic: ${topic}. Continuing with available questions.`);
         }
       }
@@ -366,15 +392,12 @@ export default function SATPracticeClient({ user: _user, profile }: { user: User
 
   // Initialize session on component mount
   useEffect(() => {
-    // Check if there's a session ID in the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const sessionId = urlParams.get('sessionId');
+    const sessionId = searchParams.get('sessionId');
     
     if (sessionId) {
       loadSessionById(sessionId);
     }
-    // If no session ID, the component will show the section selection UI
-  }, [loadSessionById]);
+  }, [loadSessionById, searchParams]);
 
   // Start timer
   useEffect(() => {
@@ -548,6 +571,20 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
 
   // Restart session
   const restartSession = () => {
+    // Abort any ongoing API calls
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    
+    // Create new abort controller for new session
+    abortControllerRef.current = new AbortController();
+    
+    // Clear timer
+    if (timer) {
+      clearInterval(timer);
+      setTimer(null);
+    }
+    
     if (session) {
       initializeSession(session.section);
     }
@@ -623,14 +660,14 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
               </Card>
               
               <Card 
-                className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+                className="bg-gradient-to-br from-yellow-500/20 to-yellow-600/20 border border-yellow-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
                 onClick={() => initializeSession('writing')}
               >
                 <CardContent className="p-6 text-center">
-                  <Zap className="h-12 w-12 text-purple-400 mx-auto mb-4" />
+                  <Zap className="h-12 w-12 text-yellow-400 mx-auto mb-4" />
                   <h3 className="font-bold text-white mb-2">Writing</h3>
-                  <p className="text-purple-200 text-sm mb-4">Grammar and expression</p>
-                  <Button className="w-full bg-purple-500 hover:bg-purple-600">
+                  <p className="text-yellow-200 text-sm mb-4">Grammar and expression</p>
+                  <Button className="w-full bg-yellow-500 hover:bg-yellow-600">
                     {isLoading ? "Starting..." : "Start Practice"}
                   </Button>
                 </CardContent>
@@ -653,7 +690,7 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
             
             <Card 
               className="mt-6 bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
-              onClick={() => window.location.href = '/tutoring/sat-prep/diagnostic'}
+              onClick={() => router.push('/tutoring/sat-prep/diagnostic')}
             >
               <CardContent className="p-6 text-center">
                 <Target className="h-12 w-12 text-purple-400 mx-auto mb-4" />
@@ -720,7 +757,7 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
                   <div className="text-sm text-gray-400">Incorrect Answers</div>
                 </div>
                 <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-purple-400 mb-1">{Math.floor(session.timeSpent / 60)}m {session.timeSpent % 60}s</div>
+                  <div className="text-2xl font-bold text-yellow-400 mb-1">{Math.floor(session.timeSpent / 60)}m {session.timeSpent % 60}s</div>
                   <div className="text-sm text-gray-400">Time Spent</div>
                 </div>
               </div>
@@ -927,10 +964,10 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
                           : isIncorrect
                             ? "bg-red-500/20 border-red-500/50"
                             : isSelected
-                              ? "bg-purple-500/20 border-purple-500/50"
+                              ? "bg-yellow-500/20 border-yellow-500/50"
                               : "bg-white/5 border-white/10"
                         : isSelected
-                          ? "bg-purple-500/30 border-purple-500/70"
+                          ? "bg-yellow-500/30 border-yellow-500/70"
                           : "bg-white/5 border-white/10 hover:bg-white/10"
                       }
                       ${showExplanation && choice === currentQuestion.answer ? "ring-2 ring-green-500/50" : ""}
@@ -944,9 +981,9 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
                             ? "bg-green-500"
                             : isIncorrect
                               ? "bg-red-500"
-                              : "bg-purple-500"
+                              : "bg-yellow-500"
                           : isSelected
-                            ? "bg-purple-500"
+                            ? "bg-yellow-500"
                             : "bg-white/20"
                         }
                       `}>

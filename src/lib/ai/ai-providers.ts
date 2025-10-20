@@ -46,14 +46,18 @@ class HuggingFaceProvider implements AIProvider {
     }
 
     try {
-      const result = await this.hf.chatCompletion({
+      // Try text generation instead of chat completion (more reliable)
+      const result = await this.hf.textGeneration({
         model: "mistralai/Mistral-7B-Instruct-v0.2",
-        messages: [{ role: "user", content: prompt }],
-        max_tokens: maxTokens,
-        temperature: 0.8,
+        inputs: prompt,
+        parameters: {
+          max_new_tokens: maxTokens,
+          temperature: 0.8,
+          return_full_text: false,
+        }
       });
 
-      return result.choices[0]?.message?.content || "I'm processing your request.";
+      return result.generated_text || "I'm processing your request.";
     } catch (error) {
       Logger.error(`${this.name} provider error`, error as Error, { prompt, maxTokens });
       throw error;
@@ -187,28 +191,50 @@ class OpenRouterProvider implements AIProvider {
   
   async generateResponse(prompt: string, maxTokens: number = 500): Promise<string> {
     try {
-      const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
-          'Content-Type': 'application/json',
-          'HTTP-Referer': process.env.BETTER_AUTH_URL || 'http://localhost:3001',
-          'X-Title': 'TutorByAI',
-        },
-        body: JSON.stringify({
-          model: "meta-llama/llama-3.1-8b-instruct:free",
-          messages: [{ role: "user", content: prompt }],
-          max_tokens: maxTokens,
-          temperature: 0.8,
-        }),
-      });
+      // Try multiple free models in order of preference
+      const freeModels = [
+        "google/gemini-2.0-flash-exp:free",
+        "qwen/qwen-2-7b-instruct:free",
+        "meta-llama/llama-3.2-3b-instruct:free",
+      ];
+      
+      let lastError: Error | null = null;
+      
+      for (const model of freeModels) {
+        try {
+          const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${process.env.OPENROUTER_API_KEY}`,
+              'Content-Type': 'application/json',
+              'HTTP-Referer': process.env.BETTER_AUTH_URL || 'http://localhost:3001',
+              'X-Title': 'TutorByAI',
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: [{ role: "user", content: prompt }],
+              max_tokens: maxTokens,
+              temperature: 0.8,
+            }),
+          });
 
-      if (!response.ok) {
-        throw new Error(`OpenRouter API error: ${response.status}`);
+          if (!response.ok) {
+            const errorText = await response.text();
+            throw new Error(`HTTP ${response.status}: ${errorText}`);
+          }
+
+          const data = await response.json();
+          console.log(`✅ OpenRouter using model: ${model}`);
+          return data.choices[0]?.message?.content || "I'm working on your request.";
+        } catch (error) {
+          lastError = error as Error;
+          console.log(`⚠️ OpenRouter model ${model} failed, trying next...`);
+          continue;
+        }
       }
-
-      const data = await response.json();
-      return data.choices[0]?.message?.content || "I'm working on your request.";
+      
+      // If all models failed, throw the last error
+      throw lastError || new Error('All OpenRouter models failed');
     } catch (_error) {
       console.error(`${this.name} provider error:`, _error);
       throw _error;
@@ -250,22 +276,30 @@ export class AIProviderManager {
   async generateWithFallback(prompt: string, maxTokens: number = 500): Promise<string> {
     const availableProviders = this.providers.filter(provider => provider.isAvailable());
     
+    console.log(`🔍 Available providers: ${availableProviders.map(p => p.name).join(', ')}`);
+    
     if (availableProviders.length === 0) {
+      console.error('❌ No AI providers available!');
+      console.error('Environment check:', this.getEnvironmentStatus());
       throw new Error('No AI providers are available. Please check your API keys.');
     }
 
+    const errors: Array<{provider: string, error: any}> = [];
+
     for (const provider of availableProviders) {
       try {
-        console.log(`Attempting AI generation with ${provider.name}...`);
+        console.log(`🔄 Attempting AI generation with ${provider.name}...`);
         const result = await provider.generateResponse(prompt, maxTokens);
         console.log(`✅ Success with ${provider.name}`);
         return result;
-      } catch (_error) {
-        console.log(`❌ ${provider.name} failed, trying next provider...`);
+      } catch (error) {
+        console.error(`❌ ${provider.name} failed:`, error instanceof Error ? error.message : String(error));
+        errors.push({ provider: provider.name, error });
         continue;
       }
     }
 
+    console.error('❌ All providers failed. Error details:', errors.map(e => `${e.provider}: ${e.error instanceof Error ? e.error.message : String(e.error)}`).join(' | '));
     throw new Error('All AI providers failed. Please try again later.');
   }
 

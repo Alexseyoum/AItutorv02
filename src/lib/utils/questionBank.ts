@@ -10,13 +10,19 @@ export async function generateQuestions(params: {
   difficulty?: string;
   goal?: string;
   questionCount?: number;
+  signal?: AbortSignal;
 }) {
-  // Add retry logic
   let attempts = 0;
   const maxAttempts = 3;
 
   while (attempts < maxAttempts) {
     try {
+      // Check if already aborted before making request
+      if (params.signal?.aborted) {
+        console.log('Request aborted before fetch');
+        throw new Error('Request aborted');
+      }
+      
       const response = await fetch("/api/generate-question", {
         method: "POST",
         headers: {
@@ -30,8 +36,8 @@ export async function generateQuestions(params: {
           goal: params.goal || "SAT",
           questionCount: params.questionCount || 1,
         }),
-        // Include credentials for authentication
-        credentials: "include"
+        credentials: "include",
+        signal: params.signal
       });
 
       // Check if response is ok before trying to parse JSON
@@ -54,17 +60,38 @@ export async function generateQuestions(params: {
 
       return data.questions;
     } catch (error) {
+      // If aborted, don't retry
+      if (error instanceof Error && error.name === 'AbortError') {
+        console.log('Question generation request was aborted');
+        throw error;
+      }
+      
+      // Check if it's a rate limit error
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      const isRateLimit = errorMessage.includes('429') || errorMessage.includes('rate_limit') || errorMessage.includes('Rate limit');
+      
+      if (isRateLimit && attempts === 1) {
+        // For rate limit errors, show a friendly message and use fallback
+        console.log('⚠️ Primary AI provider rate limit reached, using fallback providers...');
+        // Continue to retry with fallback
+      }
+      
       attempts++;
       if (attempts >= maxAttempts) {
-        Logger.error("Question generation failed after", error as Error, { attempts: maxAttempts, params });
-        // Re-throw with more context
+        Logger.error("Question generation failed after", error as Error, { attempts: maxAttempts, params: { ...params, signal: undefined } });
+        
+        // Provide more helpful error message for rate limits
+        if (isRateLimit) {
+          throw new Error("AI service rate limit reached. We've tried backup services but they're also busy. Please wait a few minutes and try again.");
+        }
+        
         if (error instanceof Error) {
           throw new Error(`Question generation failed: ${error.message}`);
         }
         throw new Error("Question generation failed due to an unknown error");
       }
+      
       // Wait before retrying with exponential backoff
-      // Increase delay to give LLM more time to generate proper response
       await new Promise(resolve => setTimeout(resolve, 2000 * attempts));
     }
   }
