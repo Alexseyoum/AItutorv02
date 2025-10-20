@@ -1,5 +1,4 @@
 import type { NextConfig } from "next";
-import path from "path";
 
 // Bundle analyzer
 const withBundleAnalyzer = process.env.ANALYZE === 'true' 
