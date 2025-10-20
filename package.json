@@ -5,11 +5,11 @@
   "scripts": {
     "dev": "prisma generate && next dev --port 3001",
     "dev:turbo": "prisma generate && next dev --turbopack --port 3001",
-    "build": "prisma generate && next build",
-    "build:turbo": "prisma generate && next build --turbopack",
-    "build:analyze": "ANALYZE=true npm run build",
-    "start": "next start",
-    "start:prod": "NODE_ENV=production next start",
+    "build": "prisma generate && next build --turbopack",
+    "build:webpack": "prisma generate && next build",
+    "build:analyze": "ANALYZE=true npm run build:webpack",
+    "start": "next start --port 3001",
+    "start:prod": "NODE_ENV=production next start --port 3001",
     "lint": "eslint . --ext .ts,.tsx",
     "lint:fix": "eslint . --ext .ts,.tsx --fix",
     "type-check": "tsc --noEmit",
@@ -22,7 +22,7 @@
     "db:studio": "prisma studio",
     "db:reset": "prisma migrate reset",
     "validate-env": "tsx src/lib/env-validation.ts",
-    "vercel-build": "prisma generate && prisma migrate deploy && next build"
+    "vercel-build": "prisma generate && prisma migrate deploy && next build --turbopack"
   },
   "dependencies": {
     "@huggingface/inference": "^2.8.1",
@@ -36,7 +36,7 @@
     "clsx": "^2.1.1",
     "groq-sdk": "^0.33.0",
     "lucide-react": "^0.544.0",
-    "next": "15.5.3",
+    "next": "15.5.6",
     "next-themes": "^0.4.6",
     "nodemailer": "^7.0.6",
     "react": "19.1.0",

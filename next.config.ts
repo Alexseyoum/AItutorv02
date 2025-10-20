@@ -1,4 +1,5 @@
 import type { NextConfig } from "next";
+import path from "path";
 
 // Bundle analyzer
 const withBundleAnalyzer = process.env.ANALYZE === 'true' 
@@ -21,6 +22,11 @@ const nextConfig: NextConfig = {
   poweredByHeader: false,
   generateEtags: false,
   compress: true,
+  
+  // Generate stable build ID to prevent action ID mismatches
+  generateBuildId: async () => {
+    return process.env.VERCEL_GIT_COMMIT_SHA || process.env.CUSTOM_BUILD_ID || 'development-build';
+  },
   
   // Image optimization
   images: {
@@ -104,31 +110,16 @@ const nextConfig: NextConfig = {
     CUSTOM_BUILD_ID: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
   },
 
-  // Server external packages
-  serverExternalPackages: ['@/generated/prisma'],
+  // Server external packages - avoid including client component packages
+  serverExternalPackages: ['@prisma/client'],
   
   // Experimental features for performance
   experimental: {
-    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
-  },
-  
-  // Webpack optimizations
-  webpack: (config, { isServer }) => {
-    if (!isServer) {
-      config.resolve.fallback = {
-        ...config.resolve.fallback,
-        fs: false,
-        net: false,
-        tls: false,
-      };
-    }
-    
-    // Handle Prisma client properly for serverless environments
-    if (isServer) {
-      config.externals.push('_http_common');
-    }
-    
-    return config;
+    optimizePackageImports: ['lucide-react', '@radix-ui/react-icons', '@/components', '@/lib', '@/app'],
+    serverActions: {
+      bodySizeLimit: '2mb',
+      allowedOrigins: ['localhost:3001', 'localhost:3000'],
+    },
   },
 };
 

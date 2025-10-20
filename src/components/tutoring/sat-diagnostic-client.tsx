@@ -269,7 +269,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
         clearInterval(newTimer);
       };
     }
-  }, [timeRemaining, session?.isCompleted]);
+  }, [timeRemaining, session]);
 
   // Cleanup answer timeout on unmount
   useEffect(() => {
