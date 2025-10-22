@@ -156,6 +156,11 @@ jobs:
         run: npm run build
         env:
           SKIP_ENV_VALIDATION: true
+          DATABASE_URL: "postgresql://user:password@localhost:5432/tutorbyai?schema=public"
+          GROQ_API_KEY: "dummy-key-for-build"
+          BETTER_AUTH_SECRET: "dummy-secret-for-build-minimum-32-characters-long"
+          BETTER_AUTH_URL: "http://localhost:3000"
+          HUGGINGFACE_API_KEY: "dummy-hf-key"
 
       - name: Build success
         run: echo "✅ Build completed successfully!"
