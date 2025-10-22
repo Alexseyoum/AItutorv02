@@ -161,6 +161,7 @@ jobs:
           BETTER_AUTH_SECRET: "dummy-secret-for-build-minimum-32-characters-long"
           BETTER_AUTH_URL: "http://localhost:3000"
           HUGGINGFACE_API_KEY: "dummy-hf-key"
+          NEXT_PRIVATE_SKIP_PRERENDER: "1"
 
       - name: Build success
         run: echo "✅ Build completed successfully!"
