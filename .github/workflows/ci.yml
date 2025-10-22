@@ -153,7 +153,7 @@ jobs:
         run: npm run db:generate
 
       - name: Build application
-        run: npm run build
+        run: npm run build:webpack
         env:
           SKIP_ENV_VALIDATION: true
           DATABASE_URL: "postgresql://user:password@localhost:5432/tutorbyai?schema=public"
@@ -161,7 +161,6 @@ jobs:
           BETTER_AUTH_SECRET: "dummy-secret-for-build-minimum-32-characters-long"
           BETTER_AUTH_URL: "http://localhost:3000"
           HUGGINGFACE_API_KEY: "dummy-hf-key"
-          NEXT_PRIVATE_SKIP_PRERENDER: "1"
 
       - name: Build success
         run: echo "✅ Build completed successfully!"
