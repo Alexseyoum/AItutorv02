@@ -1,0 +1,369 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+enum LearningStyle {
+  VISUAL
+  AUDITORY
+  KINESTHETIC
+  READING_WRITING
+  MIXED
+}
+
+enum DifficultyLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ActivityType {
+  CHAT_MESSAGE
+  QUIZ_COMPLETED
+  TOPIC_STUDIED
+  PROBLEM_SOLVED
+  SESSION_COMPLETED
+  EXPLANATION_REQUESTED
+}
+
+enum AchievementCategory {
+  STREAK
+  PROBLEM_SOLVING
+  SUBJECT_MASTERY
+  ENGAGEMENT
+  MILESTONE
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  title   String
+  content String
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("posts")
+}
+
+model User {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  name          String
+  email         String    @unique
+  emailVerified Boolean
+  image         String?
+  role          UserRole  @default(USER)
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
+  // Student profile fields
+  isOnboarded           Boolean         @default(false)
+  gradeLevel            Int?
+  age                   Int?
+  school                String?
+  subjects              String[]        @default([])
+  learningGoals         String[]        @default([])
+  learningStyle         LearningStyle   @default(MIXED)
+  difficultyLevel       DifficultyLevel @default(INTERMEDIATE)
+  sessionDuration       Int? // in minutes
+  interests             String[]        @default([])
+  pastEngagement        Float?          @default(0)
+  isInterestedInSATPrep Boolean?        @default(false)
+
+  sessions             Session[]
+  accounts             Account[]
+  posts                Post[]
+  activities           StudentActivity[]
+  streak               LearningStreak?
+  achievements         Achievement[]
+  chatSessions         ChatSession[]
+  satStudyPlans        SATStudyPlan[]
+  satPracticeSessions  SATPracticeSession[]
+  satDiagnosticResults SATDiagnosticResult[]
+
+  // Question bank relations
+  generatedQuestions Question[]     @relation("UserGeneratedQuestions")
+  mockExams          MockExam[]
+  mockAttempts       MockAttempt[]
+  topicMasteries     TopicMastery[]
+
+  @@index([email])
+  @@index([createdAt])
+  @@map("users")
+}
+
+model Session {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  expiresAt      DateTime
+  token          String   @unique
+  ipAddress      String?
+  userAgent      String?
+  impersonatedBy String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model Account {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  accountId             String
+  providerId            String
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("accounts")
+}
+
+model Verification {
+  id        String   @id
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  identifier String
+  value      String
+  expiresAt  DateTime
+
+  @@map("verifications")
+}
+
+model StudentActivity {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  type     ActivityType
+  subject  String?
+  topic    String?
+  duration Int? // in minutes
+  score    Float? // 0-100 for quizzes/tests
+  metadata Json? // flexible data storage
+
+  @@index([userId])
+  @@index([type])
+  @@index([createdAt])
+  @@map("student_activities")
+}
+
+model LearningStreak {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  currentStreak Int      @default(0)
+  longestStreak Int      @default(0)
+  lastActivity  DateTime @default(now())
+
+  @@map("learning_streaks")
+}
+
+model Achievement {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title       String
+  description String
+  icon        String
+  category    AchievementCategory
+  progress    Float               @default(0) // 0-100
+  completed   Boolean             @default(false)
+
+  @@map("achievements")
+}
+
+model ChatSession {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  title    String?
+  topic    String?
+  isActive Boolean @default(true)
+
+  messages ChatMessage[]
+
+  @@index([userId])
+  @@index([isActive])
+  @@index([createdAt])
+  @@map("chat_sessions")
+}
+
+model ChatMessage {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now())
+
+  sessionId String
+  session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  content  String
+  type     String // "user" or "ai"
+  metadata Json?
+
+  // New fields for hybrid implementation
+  imageUrl String? // Base64 or URL for generated images
+  links    Json? // Array of { title: string, url: string, type: 'youtube' | 'wikipedia', snippet?: string }
+  keywords String[] @default([]) // Extracted keywords for better search
+
+  @@map("chat_messages")
+}
+
+model SATStudyPlan {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  timeline                String // "3-month", "6-month", "1-year"
+  focusAreas              Json // Store as JSON: { math: string[], reading: string[], writing: string[] }
+  weeklySchedule          Json // Store weekly schedule as JSON
+  resourceRecommendations Json // Store recommended resources as JSON
+  aiGeneratedPlan         Json? // Store the raw AI-generated plan
+
+  // Progress tracking fields
+  completedWeeks Int[] @default([]) // Array of completed week numbers
+  completedTasks Json  @default("{}") // Store completed tasks by week and day
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("sat_study_plans")
+}
+
+model SATPracticeSession {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  section   String // "math", "reading", "writing", "full"
+  score     Int?
+  maxScore  Int? // Maximum possible score for this section
+  answers   Json? // Store student answers and question details
+  timeSpent Int? // Time spent in seconds
+
+  completedAt DateTime? @default(now())
+  createdAt   DateTime  @default(now())
+
+  @@map("sat_practice_sessions")
+}
+
+model SATDiagnosticResult {
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  mathScore    Int?
+  readingScore Int?
+  writingScore Int?
+  totalScore   Int?
+
+  strengths  Json? // Store as JSON array of strong areas
+  weaknesses Json? // Store as JSON array of weak areas
+
+  createdAt DateTime @default(now())
+
+  @@map("sat_diagnostic_results")
+}
+
+model Question {
+  id          String   @id @default(cuid())
+  topic       String
+  subject     String
+  difficulty  String
+  question    String
+  choices     Json // Store as JSON array of strings
+  answer      String
+  explanation String
+  source      String   @default("generated") // "generated" or "official"
+  status      String   @default("pending_review") // "pending_review", "approved", "rejected"
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  userGeneratedBy String?
+  user            User?   @relation("UserGeneratedQuestions", fields: [userGeneratedBy], references: [id], onDelete: SetNull)
+
+  @@map("questions")
+}
+
+model MockExam {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal      String // "SAT", "GRADE_LEVEL", etc.
+  grade     Int
+  sections  Json // Store exam sections with questions
+  totalTime Int // Total time in minutes
+  createdAt DateTime @default(now())
+
+  attempts MockAttempt[]
+
+  @@map("mock_exams")
+}
+
+model MockAttempt {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  mockExamId String
+  mockExam   MockExam @relation(fields: [mockExamId], references: [id], onDelete: Cascade)
+  answers    Json // Store user answers and time spent
+  scored     Json // Store scoring results
+  summary    Json // Store attempt summary
+  startedAt  DateTime
+  finishedAt DateTime
+  createdAt  DateTime @default(now())
+
+  @@map("mock_attempts")
+}
+
+model TopicMastery {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  topic      String
+  correct    Int      @default(0)
+  total      Int      @default(0)
+  lastSeenAt DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@unique([userId, topic])
+  @@map("topic_mastery")
+}
