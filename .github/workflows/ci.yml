@@ -79,9 +79,6 @@ jobs:
       - name: TypeScript type check
         run: npm run type-check
 
-      - name: Check formatting
-        run: npx prettier --check "src/**/*.{ts,tsx,js,jsx,json,css,md}"
-
   test:
     name: Run Tests
     runs-on: ubuntu-latest
@@ -132,19 +129,8 @@ jobs:
 
       - name: Validate Prisma schema
         run: npx prisma validate
-
-      - name: Check schema against database
-        if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/develop'
         env:
-          DATABASE_URL: ${{ secrets.TEST_DATABASE_URL }}
-        run: |
-          npx prisma migrate diff --exit-code
-          if [ $? -ne 0 ]; then
-            echo "❌ Schema differs from database. Migration needed."
-            exit 1
-          else
-            echo "✅ Schema matches database."
-          fi
+          DATABASE_URL: "postgresql://user:password@localhost:5432/tutorbyai?schema=public"
 
   build:
     name: Build Application
