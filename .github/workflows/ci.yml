@@ -161,6 +161,10 @@ jobs:
           BETTER_AUTH_SECRET: "dummy-secret-for-build-minimum-32-characters-long"
           BETTER_AUTH_URL: "http://localhost:3000"
           HUGGINGFACE_API_KEY: "dummy-hf-key"
+          GITHUB_CLIENT_ID: "dummy-github-client-id"
+          GITHUB_CLIENT_SECRET: "dummy-github-client-secret"
+          GOOGLE_CLIENT_ID: "dummy-google-client-id"
+          GOOGLE_CLIENT_SECRET: "dummy-google-client-secret"
 
       - name: Build success
         run: echo "✅ Build completed successfully!"
