@@ -25,6 +25,21 @@ import { StudentProfile, SATStudyPlan, SATPracticeSession, SATDiagnosticResult }
 import { toast } from "sonner";
 import { useSession } from "@/lib/auth-client";
 
+// URL sanitization helper to prevent XSS
+const sanitizeUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    // Only allow http and https protocols
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.toString();
+    }
+    return '#';
+  } catch {
+    // If URL parsing fails, return a safe default
+    return '#';
+  }
+};
+
 interface User {
   id: string;
   email: string;
@@ -873,7 +888,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                       {week.resources.map((resource, resIndex: number) => (
                                         <a 
                                           key={resIndex}
-                                          href={resource.url}
+                                          href={sanitizeUrl(resource.url)}
                                           target="_blank"
                                           rel="noopener noreferrer"
                                           className="text-xs bg-white/10 hover:bg-white/20 rounded px-2 py-1 text-purple-300 transition-colors flex items-center gap-1"

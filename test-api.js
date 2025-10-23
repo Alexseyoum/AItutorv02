@@ -19,6 +19,8 @@ const options = {
   }
 };
 
+// Using http for local testing only - production uses HTTPS
+// nosemgrep: javascript.lang.security.audit.unsafe-http-request
 const req = http.request(options, res => {
   console.log(`Status: ${res.statusCode}`);
   

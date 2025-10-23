@@ -20,6 +20,21 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { generateQuestions } from "@/lib/utils/questionBank";
 import Image from "next/image";
 
+// URL sanitization helper to prevent XSS
+const sanitizeUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    // Only allow http and https protocols
+    if (parsed.protocol === 'http:' || parsed.protocol === 'https:') {
+      return parsed.toString();
+    }
+    return '#';
+  } catch {
+    // If URL parsing fails, return a safe default
+    return '#';
+  }
+};
+
 interface User {
   id: string;
   email: string;
@@ -919,7 +934,7 @@ Can you explain the concept and why the correct answer is right? Also, if my ans
                       {aiExplanation.links.slice(0, 3).map((link, index) => (
                         <a
                           key={index}
-                          href={link.url}
+                          href={sanitizeUrl(link.url)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="block p-3 bg-cyan-500/10 rounded-lg border border-cyan-500/20 hover:bg-cyan-500/20 transition-colors"
