@@ -1,7 +1,6 @@
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
-## CI/CD Pipeline Active
-echo
+echo "`n<!-- Testing GitHub Actions deployment -->" >>
 ## Live Demo
 
 Check out the live demo of TutorByAI: [https://your-vercel-url.vercel.app](https://your-vercel-url.vercel.app)
