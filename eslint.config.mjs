@@ -6,6 +6,15 @@ import tsParser from '@typescript-eslint/parser';
 
 export default [
   {
+    ignores: [
+      '.next/*', 
+      'node_modules/*',
+      'src/generated/**/*',
+      'dist/**/*',
+      'build/**/*'
+    ],
+  },
+  {
     files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
       parser: tsParser,
@@ -18,9 +27,16 @@ export default [
     },
     plugins: {
       '@typescript-eslint': tsPlugin,
+      'react': reactPlugin,
+      'react-hooks': hooksPlugin,
+      '@next/next': nextPlugin,
     },
     rules: {
       ...tsPlugin.configs.recommended.rules,
+      ...reactPlugin.configs['jsx-runtime'].rules,
+      ...hooksPlugin.configs.recommended.rules,
+      ...nextPlugin.configs.recommended.rules,
+      ...nextPlugin.configs['core-web-vitals'].rules,
       '@typescript-eslint/triple-slash-reference': 'off',
       '@typescript-eslint/no-require-imports': 'off',
       '@typescript-eslint/no-empty-object-type': 'off',
@@ -34,6 +50,7 @@ export default [
           caughtErrorsIgnorePattern: '^_'
         }
       ],
+      'react-hooks/exhaustive-deps': 'warn',
     },
     settings: {
       react: {
@@ -42,18 +59,12 @@ export default [
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.js', '**/*.mjs', '**/*.cjs'],
     plugins: {
-      react: reactPlugin,
-      'react-hooks': hooksPlugin,
       '@next/next': nextPlugin,
     },
     rules: {
-      ...reactPlugin.configs['jsx-runtime'].rules,
-      ...hooksPlugin.configs.recommended.rules,
       ...nextPlugin.configs.recommended.rules,
-      ...nextPlugin.configs['core-web-vitals'].rules,
-      'react-hooks/exhaustive-deps': 'warn',
     },
   },
   {
@@ -72,14 +83,5 @@ export default [
       '@typescript-eslint/no-unsafe-function-type': 'off',
       '@typescript-eslint/no-wrapper-object-types': 'off',
     },
-  },
-  {
-    ignores: [
-      '.next/*', 
-      'node_modules/*',
-      'src/generated/**/*',
-      'dist/**/*',
-      'build/**/*'
-    ],
   },
 ];
