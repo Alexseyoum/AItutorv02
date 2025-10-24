@@ -27,6 +27,19 @@ const nextConfig: NextConfig = {
     return process.env.VERCEL_GIT_COMMIT_SHA || process.env.CUSTOM_BUILD_ID || 'development-build';
   },
   
+  // Webpack configuration for stable module IDs (critical for Server Actions)
+  webpack: (config, { dev }) => {
+    // ONLY use deterministic module IDs in production
+    // Dev mode needs natural/named module IDs for HMR to work
+    if (!dev) {
+      config.optimization = {
+        ...config.optimization,
+        moduleIds: 'deterministic',
+      };
+    }
+    return config;
+  },
+  
   // Image optimization
   images: {
     formats: ['image/webp', 'image/avif'],
@@ -109,8 +122,8 @@ const nextConfig: NextConfig = {
     CUSTOM_BUILD_ID: process.env.VERCEL_GIT_COMMIT_SHA || 'local',
   },
 
-  // Server external packages - avoid including client component packages
-  serverExternalPackages: ['@prisma/client'],
+  // Server external packages - use generated Prisma path
+  serverExternalPackages: ['@/generated/prisma'],
   
   // Experimental features for performance
   experimental: {
