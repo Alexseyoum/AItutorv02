@@ -117,19 +117,6 @@ const nextConfig: NextConfig = {
     ];
   },
   
-  // Webpack configuration for stable module IDs (critical for Server Actions)
-  webpack: (config, { dev }) => {
-    // ONLY use deterministic module IDs in production
-    // Dev mode needs natural/named module IDs for HMR to work
-    if (!dev) {
-      config.optimization = {
-        ...config.optimization,
-        moduleIds: 'deterministic',
-      };
-    }
-    return config;
-  },
-  
   // Turbopack configuration (currently using defaults)
   // Adding this suppresses the "webpack configured but not turbopack" warning
   turbopack: {
