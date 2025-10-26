@@ -322,6 +322,44 @@ export default function SATPracticeClient() {
     }
   };
 
+  // New function to exit the practice session
+  const exitPractice = () => {
+    if (!session) return;
+    
+    // Confirm exit if user has answered questions
+    const answeredCount = session.answers.filter(a => a !== null).length;
+    if (answeredCount > 0) {
+      const confirmExit = window.confirm(
+        `You have answered ${answeredCount} questions. Are you sure you want to exit? Your progress will be lost.`
+      );
+      if (!confirmExit) return;
+    }
+    
+    // Reset session state
+    setSession(null);
+    setTimeRemaining(0);
+    sessionCompletedRef.current = false;
+    setAiExplanation(null);
+  };
+
+  // New function to navigate to a specific question
+  const goToQuestion = (index: number) => {
+    if (!session || index < 0 || index >= session.questions.length) return;
+    
+    setSession({
+      ...session,
+      currentQuestionIndex: index
+    });
+    setAiExplanation(null);
+  };
+
+  // New function to get question status for review panel
+  const getQuestionStatus = (index: number) => {
+    if (!session) return "unvisited";
+    if (session.answers[index] === null) return "skipped";
+    return "answered";
+  };
+
   if (!session) {
     return (
       <div className="min-h-screen bg-slate-900 p-6">
@@ -481,11 +519,20 @@ export default function SATPracticeClient() {
               {currentQuestion.difficulty.toUpperCase()}
             </span>
           </div>
-          <div className="flex items-center gap-2 font-mono">
-            <span className="text-xl">⏰</span>
-            <span className="text-lg font-bold text-gray-100">
-              {formatTime(timeRemaining)}
-            </span>
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2 font-mono">
+              <span className="text-xl">⏰</span>
+              <span className="text-lg font-bold text-gray-100">
+                {formatTime(timeRemaining)}
+              </span>
+            </div>
+            <Button
+              onClick={exitPractice}
+              variant="outline"
+              className="border-2 border-red-500 text-red-400 hover:bg-red-500/10 font-bold py-1 px-3 rounded-lg text-sm"
+            >
+              Exit
+            </Button>
           </div>
         </div>
 
@@ -578,6 +625,55 @@ export default function SATPracticeClient() {
           </div>
 
           <div className="space-y-6">
+            {/* Question Review Panel */}
+            <Card className="bg-slate-800 border-2 border-purple-500/40 shadow-lg shadow-purple-500/10">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2 font-bold text-purple-400">
+                  📋 Question Review
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-5 gap-2">
+                  {session.questions.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => goToQuestion(index)}
+                      className={`aspect-square rounded-lg border-2 flex items-center justify-center font-bold text-sm transition-all ${
+                        index === session.currentQuestionIndex
+                          ? "bg-blue-600 border-blue-300 text-white scale-105"
+                          : getQuestionStatus(index) === "answered"
+                          ? "bg-green-700 border-green-500 text-white"
+                          : getQuestionStatus(index) === "skipped"
+                          ? "bg-yellow-700 border-yellow-500 text-white"
+                          : "bg-slate-700 border-slate-500 text-gray-300"
+                      }`}
+                    >
+                      {index + 1}
+                    </button>
+                  ))}
+                </div>
+                
+                <div className="mt-4 flex flex-wrap gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-blue-600 rounded"></div>
+                    <span className="text-xs text-gray-300">Current</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-green-700 rounded"></div>
+                    <span className="text-xs text-gray-300">Answered</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-yellow-700 rounded"></div>
+                    <span className="text-xs text-gray-300">Skipped</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 bg-slate-700 rounded border border-slate-500"></div>
+                    <span className="text-xs text-gray-300">Unvisited</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card className="bg-slate-800 border-2 border-yellow-500/40 shadow-lg shadow-yellow-500/10">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-bold text-yellow-400">

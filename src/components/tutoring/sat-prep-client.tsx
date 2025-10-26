@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -76,7 +77,7 @@ const SAT_RESOURCES = [
 ];
 
 export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
-  const { data: _session } = useSession();
+  const router = useRouter();
   const [studyPlan, setStudyPlan] = useState<SATStudyPlan | null>(null);
   const [practiceSessions, setPracticeSessions] = useState<SATPracticeSession[]>([]);
   const [diagnosticResult, setDiagnosticResult] = useState<SATDiagnosticResult | null>(null);
@@ -462,10 +463,10 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => window.history.back()}
+            onClick={() => router.push("/tutoring")}
             className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 transition-all duration-300 ease-bounce rounded-xl"
           >
-            Back to Dashboard
+            Home
           </Button>
         </div>
       </nav>

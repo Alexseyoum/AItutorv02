@@ -28,7 +28,7 @@ const nextConfig: NextConfig = {
   },
   
   // Webpack configuration for stable module IDs (critical for Server Actions)
-  webpack: (config, { dev }) => {
+  webpack: (config, { dev, isServer }) => {
     // ONLY use deterministic module IDs in production
     // Dev mode needs natural/named module IDs for HMR to work
     if (!dev) {
@@ -37,6 +37,21 @@ const nextConfig: NextConfig = {
         moduleIds: 'deterministic',
       };
     }
+    
+    // Fix for the "EPERM: operation not permitted" error
+    // Ignore problematic directories
+    config.watchOptions = {
+      ignored: [
+        '**/node_modules/**',
+        '**/.git/**',
+        '**/Local Settings/**',
+        '**/AppData/**',
+        '**/Temporary Internet Files/**',
+        '**/Cache/**',
+        '**/tmp/**'
+      ]
+    };
+    
     return config;
   },
   
@@ -115,13 +130,6 @@ const nextConfig: NextConfig = {
         ],
       },
     ];
-  },
-  
-  // Turbopack configuration (currently using defaults)
-  // Adding this suppresses the "webpack configured but not turbopack" warning
-  turbopack: {
-    // Turbopack options can be added here as needed in the future
-    // For now, we're using the default Turbopack configuration
   },
   
   // Environment variables validation
