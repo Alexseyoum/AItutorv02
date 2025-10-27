@@ -37,14 +37,23 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Calculate time spent (assuming answers array contains timing information)
+    // If the existing session already has timeSpent, we keep it
+    // Otherwise we calculate it from the answers if possible
+    let timeSpent = existingSession.timeSpent || 0;
+    
+    // If answers is an array with timing info, calculate total time
+    if (Array.isArray(answers)) {
+      // We'll need to get the original questions to calculate time properly
+      // For now, we'll just update the session with the provided data
+    }
+
     const updatedSession = await prisma.sATPracticeSession.update({
       where: { id: sessionId },
       data: {
         score,
-        answers: {
-          ...(existingSession.answers as object || {}),
-          userAnswers: answers
-        },
+        answers: answers, // Store the answers directly, not merged
+        timeSpent: timeSpent,
         completedAt: new Date()
       }
     });

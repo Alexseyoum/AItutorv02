@@ -186,8 +186,25 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ stats });
 
-  } catch (error) {
-    console.error("SAT stats API error:", error);
+  } catch (error: any) {
+    console.error("SAT stats API error:", {
+      message: error.message,
+      stack: error.stack,
+      name: error.name
+    });
+    
+    // Return more detailed error information in development
+    if (process.env.NODE_ENV === 'development') {
+      return NextResponse.json(
+        { 
+          error: "Failed to fetch SAT statistics", 
+          details: error.message,
+          stack: error.stack
+        },
+        { status: 500 }
+      );
+    }
+    
     return NextResponse.json(
       { error: "Failed to fetch SAT statistics" },
       { status: 500 }

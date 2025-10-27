@@ -8,6 +8,7 @@ import { prisma } from "@/lib/prisma";
 function generateFallbackQuestions(section: string, topic: string, count: number) {
   const questions = [];
   const isMath = section === "math";
+  const isWriting = section === "writing";
   
   for (let i = 0; i < count; i++) {
     if (isMath) {
@@ -16,6 +17,14 @@ function generateFallbackQuestions(section: string, topic: string, count: number
         choices: ["5", "7", "12", "17"],
         answer: "7",
         explanation: "To solve x + 5 = 12, subtract 5 from both sides: x = 12 - 5 = 7.",
+        difficulty: i % 3 === 0 ? "easy" : i % 3 === 1 ? "medium" : "hard"
+      });
+    } else if (isWriting) {
+      questions.push({
+        question: `Writing practice question ${i + 1} for ${topic}. Which version of the underlined portion best expresses the idea? Original: "The students, which were tired, went home."`,
+        choices: ["which were tired,", "who were tired,", "being tired,", "tired,"],
+        answer: "who were tired,",
+        explanation: "When referring to people, 'who' is the correct relative pronoun, not 'which' which is used for things.",
         difficulty: i % 3 === 0 ? "easy" : i % 3 === 1 ? "medium" : "hard"
       });
     } else {
@@ -88,7 +97,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const subject = section === "math" ? "Math" : "Reading and Writing";
+    // Map section to proper subject for question generation
+    let subject = "Math";
+    if (section === "reading") {
+      subject = "Reading";
+    } else if (section === "writing") {
+      subject = "Writing";
+    }
+
     const questionCount = 10;
 
     const prompt = questionPrompt({

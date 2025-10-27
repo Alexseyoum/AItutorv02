@@ -62,6 +62,15 @@ const READING_TOPICS = [
   "Words in Context"
 ] as const;
 
+const WRITING_TOPICS = [
+  "Standard English Conventions: Grammar",
+  "Standard English Conventions: Punctuation",
+  "Standard English Conventions: Usage",
+  "Expression of Ideas: Organization",
+  "Expression of Ideas: Precision",
+  "Expression of Ideas: Conciseness"
+] as const;
+
 const SAT_SECTIONS: SATSection[] = [
   {
     id: "math",
@@ -71,15 +80,22 @@ const SAT_SECTIONS: SATSection[] = [
   },
   {
     id: "reading",
-    name: "Reading and Writing", 
+    name: "Reading", 
     topics: [...READING_TOPICS],
+    timeLimit: 32 * 60
+  },
+  {
+    id: "writing",
+    name: "Writing",
+    topics: [...WRITING_TOPICS],
     timeLimit: 32 * 60
   }
 ];
 
 const TIME_LIMITS: Record<string, number> = {
   math: 35 * 60,
-  reading: 32 * 60
+  reading: 32 * 60,
+  writing: 32 * 60
 };
 
 function sanitizeUrl(url: string): string {
@@ -147,6 +163,11 @@ export default function SATPracticeClient() {
     sessionCompletedRef.current = true;
 
     const finalScore = calculateScore(session.answers, session.questions);
+    
+    // Calculate time spent
+    const timeSpent = session.startedAt 
+      ? Math.floor((new Date().getTime() - session.startedAt.getTime()) / 1000)
+      : 0;
 
     try {
       const response = await fetch("/api/sat/complete", {
@@ -155,7 +176,8 @@ export default function SATPracticeClient() {
         body: JSON.stringify({
           sessionId: session.id,
           answers: session.answers,
-          score: finalScore
+          score: finalScore,
+          timeSpent: timeSpent
         })
       });
 
@@ -229,7 +251,8 @@ export default function SATPracticeClient() {
       });
 
       if (!response.ok) {
-        throw new Error("Failed to start session");
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to start session");
       }
 
       const data = await response.json();
@@ -249,8 +272,12 @@ export default function SATPracticeClient() {
       setSession(newSession);
       setTimeRemaining(TIME_LIMITS[sectionId] || 35 * 60);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to start practice session");
+      console.error("Session initialization error:", err);
+      setError(err instanceof Error ? err.message : "Failed to start practice session. Please check your connection and try again.");
+      // Reset loading state on error
+      setLoading(false);
     } finally {
+      // Ensure loading is always set to false
       setLoading(false);
     }
   };
@@ -386,10 +413,10 @@ export default function SATPracticeClient() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {SAT_SECTIONS.map(section => (
-              <Card key={section.id} className="bg-slate-800 border-2 border-green-500/40 shadow-lg shadow-green-500/10">
+              <Card key={`section-${section.id}`} className="bg-white border border-gray-200 rounded-xl shadow-sm">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-xl text-green-400">
-                    📚 {section.name}
+                  <CardTitle key={`title-${section.id}`} className="flex items-center gap-2 text-xl font-semibold text-gray-900">
+                    {section.name}
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -399,9 +426,9 @@ export default function SATPracticeClient() {
                         key={topic}
                         onClick={() => initializeSession(section.id, topic)}
                         disabled={loading}
-                        className="w-full justify-start bg-green-600 hover:bg-green-500 text-white border-2 border-green-400/40 font-semibold text-base py-6 rounded-xl disabled:opacity-50"
+                        className="w-full justify-start bg-blue-600 hover:bg-blue-700 text-white font-medium text-base py-4 rounded-lg disabled:opacity-50"
                       >
-                        🎯 {topic}
+                        {topic}
                       </Button>
                     ))}
                   </div>
@@ -484,7 +511,7 @@ export default function SATPracticeClient() {
                     setTimeRemaining(0);
                     sessionCompletedRef.current = false;
                   }}
-                  className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl"
+                  className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-33 rounded-xl"
                 >
                   Start New Practice
                 </Button>

@@ -24,7 +24,7 @@ import {
 } from "lucide-react";
 import { StudentProfile, SATStudyPlan, SATPracticeSession, SATDiagnosticResult } from "@/lib/types";
 import { toast } from "sonner";
-import { useSession } from "@/lib/auth-client";
+
 
 // URL sanitization helper to prevent XSS
 const sanitizeUrl = (url: string): string => {
@@ -124,6 +124,20 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
     }
   };
 
+  // Function to calculate study plan progress
+  const calculateStudyPlanProgress = () => {
+    if (!studyPlan || !studyPlan.aiGeneratedPlan) return 0;
+    
+    // Type assertion to tell TypeScript that aiGeneratedPlan is an object with weeks property
+    const aiPlan = studyPlan.aiGeneratedPlan as { weeks?: any[] };
+    if (!aiPlan.weeks) return 0;
+    
+    const totalWeeks = aiPlan.weeks.length;
+    const completedWeeks = studyPlan.completedWeeks?.length || 0;
+    
+    return totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
+  };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -193,13 +207,18 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
           console.error("Failed to fetch SAT stats:", statsRes.status, errorText);
           try {
             const errorData = JSON.parse(errorText);
-            toast.error(`Failed to load SAT statistics: ${errorData.error || errorData.message || 'Unknown error'}`);
+            // Show more detailed error in development
+            if (process.env.NODE_ENV === 'development' && errorData.details) {
+              toast.error(`Failed to load SAT statistics: ${errorData.error} - ${errorData.details}`);
+            } else {
+              toast.error(`Failed to load SAT statistics: ${errorData.error || errorData.message || 'Unknown error'}`);
+            }
           } catch {
             toast.error(`Failed to load SAT statistics: ${statsRes.status} ${errorText}`);
           }
         }
 
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.error("Error fetching SAT data:", error);
         toast.error("Failed to load SAT preparation data. Please check your connection and try again.");
       } finally {
@@ -403,20 +422,6 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
       console.error("Error completing practice session:", error);
       toast.error("Failed to complete practice session");
     }
-  };
-
-  // Function to calculate study plan progress
-  const calculateStudyPlanProgress = () => {
-    if (!studyPlan || !studyPlan.aiGeneratedPlan) return 0;
-    
-    // Type assertion to tell TypeScript that aiGeneratedPlan is an object with weeks property
-    const aiPlan = studyPlan.aiGeneratedPlan as { weeks?: any[] };
-    if (!aiPlan.weeks) return 0;
-    
-    const totalWeeks = aiPlan.weeks.length;
-    const completedWeeks = studyPlan.completedWeeks?.length || 0;
-    
-    return totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
   };
 
   const _overallProgress = diagnosticResult 
