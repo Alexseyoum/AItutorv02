@@ -8,7 +8,8 @@
     "start": "next start -p 3001",
     "lint": "next lint",
     "db:generate": "npx prisma generate",
-    "db:studio": "npx prisma studio"
+    "db:studio": "npx prisma studio",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@huggingface/inference": "^2.8.1",
