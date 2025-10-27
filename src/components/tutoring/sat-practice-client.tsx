@@ -238,7 +238,7 @@ export default function SATPracticeClient() {
     };
   }, [session]);
 
-  const initializeSession = async (sectionId: string, topic: string) => {
+  const initializeSession = async (sectionId: string, topic: string)=>{
     setLoading(true);
     setError(null);
     sessionCompletedRef.current = false;
@@ -413,9 +413,9 @@ export default function SATPracticeClient() {
 
           <div className="grid md:grid-cols-2 gap-6">
             {SAT_SECTIONS.map(section => (
-              <Card key={`section-${section.id}`} className="bg-white border border-gray-200 rounded-xl shadow-sm">
+              <Card key={`section-${section.id}`} className="bg-slate-800 border-2 border-green-500/40 shadow-lg shadow-green-500/10">
                 <CardHeader>
-                  <CardTitle key={`title-${section.id}`} className="flex items-center gap-2 text-xl font-semibold text-gray-900">
+                  <CardTitle key={`title-${section.id}`} className="flex items-center gap-2 text-xl font-semibold text-gray-100">
                     {section.name}
                   </CardTitle>
                 </CardHeader>
@@ -511,7 +511,7 @@ export default function SATPracticeClient() {
                     setTimeRemaining(0);
                     sessionCompletedRef.current = false;
                   }}
-                  className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-33 rounded-xl"
+                  className="flex-1 bg-green-600 hover:bg-green-500 text-white font-bold py-3 rounded-xl"
                 >
                   Start New Practice
                 </Button>
