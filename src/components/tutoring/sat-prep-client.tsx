@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +24,7 @@ import {
 } from "lucide-react";
 import { StudentProfile, SATStudyPlan, SATPracticeSession, SATDiagnosticResult } from "@/lib/types";
 import { toast } from "sonner";
-import { useSession } from "@/lib/auth-client";
+
 
 // URL sanitization helper to prevent XSS
 const sanitizeUrl = (url: string): string => {
@@ -76,7 +77,7 @@ const SAT_RESOURCES = [
 ];
 
 export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
-  const { data: _session } = useSession();
+  const router = useRouter();
   const [studyPlan, setStudyPlan] = useState<SATStudyPlan | null>(null);
   const [practiceSessions, setPracticeSessions] = useState<SATPracticeSession[]>([]);
   const [diagnosticResult, setDiagnosticResult] = useState<SATDiagnosticResult | null>(null);
@@ -121,6 +122,20 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
       console.error("Error updating study plan:", error);
       toast.error("Failed to update study plan");
     }
+  };
+
+  // Function to calculate study plan progress
+  const calculateStudyPlanProgress = () => {
+    if (!studyPlan || !studyPlan.aiGeneratedPlan) return 0;
+    
+    // Type assertion to tell TypeScript that aiGeneratedPlan is an object with weeks property
+    const aiPlan = studyPlan.aiGeneratedPlan as { weeks?: any[] };
+    if (!aiPlan.weeks) return 0;
+    
+    const totalWeeks = aiPlan.weeks.length;
+    const completedWeeks = studyPlan.completedWeeks?.length || 0;
+    
+    return totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
   };
 
   useEffect(() => {
@@ -192,13 +207,18 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
           console.error("Failed to fetch SAT stats:", statsRes.status, errorText);
           try {
             const errorData = JSON.parse(errorText);
-            toast.error(`Failed to load SAT statistics: ${errorData.error || errorData.message || 'Unknown error'}`);
+            // Show more detailed error in development
+            if (process.env.NODE_ENV === 'development' && errorData.details) {
+              toast.error(`Failed to load SAT statistics: ${errorData.error} - ${errorData.details}`);
+            } else {
+              toast.error(`Failed to load SAT statistics: ${errorData.error || errorData.message || 'Unknown error'}`);
+            }
           } catch {
             toast.error(`Failed to load SAT statistics: ${statsRes.status} ${errorText}`);
           }
         }
 
-      } catch (error: unknown) {
+      } catch (error: any) {
         console.error("Error fetching SAT data:", error);
         toast.error("Failed to load SAT preparation data. Please check your connection and try again.");
       } finally {
@@ -404,20 +424,6 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
     }
   };
 
-  // Function to calculate study plan progress
-  const calculateStudyPlanProgress = () => {
-    if (!studyPlan || !studyPlan.aiGeneratedPlan) return 0;
-    
-    // Type assertion to tell TypeScript that aiGeneratedPlan is an object with weeks property
-    const aiPlan = studyPlan.aiGeneratedPlan as { weeks?: any[] };
-    if (!aiPlan.weeks) return 0;
-    
-    const totalWeeks = aiPlan.weeks.length;
-    const completedWeeks = studyPlan.completedWeeks?.length || 0;
-    
-    return totalWeeks > 0 ? Math.round((completedWeeks / totalWeeks) * 100) : 0;
-  };
-
   const _overallProgress = diagnosticResult 
     ? Math.round((diagnosticResult.totalScore || 0) / 1600 * 100) 
     : 0;
@@ -462,10 +468,10 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
           <Button 
             variant="ghost" 
             size="sm" 
-            onClick={() => window.history.back()}
+            onClick={() => router.push("/tutoring")}
             className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 transition-all duration-300 ease-bounce rounded-xl"
           >
-            Back to Dashboard
+            Home
           </Button>
         </div>
       </nav>

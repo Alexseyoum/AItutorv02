@@ -58,6 +58,32 @@ interface DiagnosticSession {
   isCompleted: boolean;
 }
 
+const MATH_TOPICS = [
+  "Algebra: Linear Equations",
+  "Algebra: Systems of Equations",
+  "Geometry: Triangles",
+  "Geometry: Circles",
+  "Data Analysis: Statistics",
+  "Data Analysis: Probability"
+] as const;
+
+const READING_TOPICS = [
+  "Reading Comprehension: Literature",
+  "Reading Comprehension: History",
+  "Reading Comprehension: Science",
+  "Command of Evidence",
+  "Words in Context"
+] as const;
+
+const WRITING_TOPICS = [
+  "Standard English Conventions: Grammar",
+  "Standard English Conventions: Punctuation",
+  "Expression of Ideas: Organization",
+  "Expression of Ideas: Precision"
+] as const;
+
+const _ALL_TOPICS = [...MATH_TOPICS, ...READING_TOPICS, ...WRITING_TOPICS] as const;
+
 const DIAGNOSTIC_TOPICS = [
   "Algebra: Linear Equations",
   "Algebra: Quadratic Equations",
@@ -168,25 +194,29 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     // Save diagnostic results to database
     try {
       // Calculate scores by section
-      let mathScore = 0;
-      let readingScore = 0;
-      let writingScore = 0;
-      let mathCount = 0;
-      let readingCount = 0;
-      let writingCount = 0;
+      let mathCorrect = 0;
+      let readingCorrect = 0;
+      let writingCorrect = 0;
+      let mathTotal = 0;
+      let readingTotal = 0;
+      let writingTotal = 0;
       
       session.questions.forEach((question, index) => {
         const userAnswer = session.userAnswers[index];
-        if (userAnswer && userAnswer.isCorrect) {
-          if (question.subject.toLowerCase().includes('math')) {
-            mathScore += 1;
-            mathCount += 1;
-          } else if (question.subject.toLowerCase().includes('reading')) {
-            readingScore += 1;
-            readingCount += 1;
-          } else if (question.subject.toLowerCase().includes('writing') || question.subject.toLowerCase().includes('grammar')) {
-            writingScore += 1;
-            writingCount += 1;
+        if (question.subject.toLowerCase().includes('math')) {
+          mathTotal += 1;
+          if (userAnswer && userAnswer.isCorrect) {
+            mathCorrect += 1;
+          }
+        } else if (question.subject.toLowerCase().includes('reading')) {
+          readingTotal += 1;
+          if (userAnswer && userAnswer.isCorrect) {
+            readingCorrect += 1;
+          }
+        } else if (question.subject.toLowerCase().includes('writing') || question.subject.toLowerCase().includes('grammar')) {
+          writingTotal += 1;
+          if (userAnswer && userAnswer.isCorrect) {
+            writingCorrect += 1;
           }
         }
       });
@@ -198,23 +228,43 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
         return Math.round(200 + (correct / total) * 600);
       };
       
-      const mathScaled = mathCount > 0 ? scaleScore(mathScore, mathCount) : 0;
-      const readingScaled = readingCount > 0 ? scaleScore(readingScore, readingCount) : 0;
-      const writingScaled = writingCount > 0 ? scaleScore(writingScore, writingCount) : 0;
+      const mathScaled = mathTotal > 0 ? scaleScore(mathCorrect, mathTotal) : 0;
+      const readingScaled = readingTotal > 0 ? scaleScore(readingCorrect, readingTotal) : 0;
+      const writingScaled = writingTotal > 0 ? scaleScore(writingCorrect, writingTotal) : 0;
       const totalScore = mathScaled + readingScaled + writingScaled;
+      
+      // Log the scores for debugging
+      console.log("Diagnostic scores calculated:", {
+        mathScaled,
+        readingScaled,
+        writingScaled,
+        totalScore,
+        mathCorrect,
+        mathTotal,
+        readingCorrect,
+        readingTotal,
+        writingCorrect,
+        writingTotal
+      });
       
       // Identify strengths and weaknesses
       const strengths: string[] = [];
       const weaknesses: string[] = [];
       
-      if (mathScaled > 500) strengths.push("Math");
-      else if (mathScaled > 0) weaknesses.push("Math");
+      if (mathTotal > 0) {
+        if (mathScaled > 500) strengths.push("Math");
+        else weaknesses.push("Math");
+      }
       
-      if (readingScaled > 500) strengths.push("Reading");
-      else if (readingScaled > 0) weaknesses.push("Reading");
+      if (readingTotal > 0) {
+        if (readingScaled > 500) strengths.push("Reading");
+        else weaknesses.push("Reading");
+      }
       
-      if (writingScaled > 500) strengths.push("Writing");
-      else if (writingScaled > 0) weaknesses.push("Writing");
+      if (writingTotal > 0) {
+        if (writingScaled > 500) strengths.push("Writing");
+        else weaknesses.push("Writing");
+      }
       
       const response = await fetch("/api/ai/sat/diagnostic", {
         method: "POST",
@@ -231,13 +281,15 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
         }),
       });
       
-      
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.error || "Failed to save diagnostic results");
       }
       
-      const _data = await response.json();
+      const data = await response.json();
+      console.log("Diagnostic results saved:", data);
+      // Update the diagnostic result in the parent component
+      window.dispatchEvent(new CustomEvent('diagnosticCompleted', { detail: data.diagnostic }));
       toast.success("Diagnostic test completed and results saved!");
     } catch (error: any) {
       console.error("Failed to save diagnostic results:", error);

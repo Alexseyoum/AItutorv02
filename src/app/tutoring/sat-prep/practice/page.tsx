@@ -39,22 +39,5 @@ export default async function SATPracticePage() {
     redirect('/tutoring');
   }
 
-  const profileData = {
-    profile: {
-      gradeLevel: user.gradeLevel || 0,
-      age: user.age !== null ? user.age : undefined,
-      school: user.school !== null ? user.school : undefined,
-      subjects: user.subjects,
-      learningGoals: user.learningGoals,
-      learningStyle: user.learningStyle,
-      difficultyLevel: user.difficultyLevel,
-      sessionDuration: user.sessionDuration !== null ? user.sessionDuration : undefined,
-      interests: user.interests,
-      pastEngagement: user.pastEngagement || 0,
-      isOnboarded: user.isOnboarded,
-      isInterestedInSATPrep: user.isInterestedInSATPrep
-    }
-  };
-
-  return <SATPracticeClient user={session.user} profile={profileData.profile} />;
+  return <SATPracticeClient />;
 }
