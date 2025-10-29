@@ -1,7 +1,7 @@
 import { auth } from "@/lib/auth";
 import { headers } from "next/headers";
 import TutoringClient from "@/components/tutoring-client";
-import { Brain, Users, Zap, BookOpen, CheckCircle, Star } from "lucide-react";
+import { Brain, Users, Zap, BookOpen } from "lucide-react";
 import { GetStartedButton } from "@/components/get-started-button";
 import { Navigation } from "@/components/ui/navigation";
 
