@@ -15,11 +15,11 @@ export default async function Marketing() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-purple-900">
+    <div className="min-h-screen bg-white dark:bg-gray-900">
       {/* Navigation */}
       <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto">
         <div className="flex items-center gap-2">
-          <Brain className="h-8 w-8 text-blue-600 dark:text-purple-400" />
+          <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />
           <span className="text-2xl font-bold text-gray-900 dark:text-white">TutorByAI</span>
         </div>
         <div className="flex items-center gap-4">
@@ -33,14 +33,12 @@ export default async function Marketing() {
       {/* Hero Section */}
       <main className="max-w-7xl mx-auto px-6 pt-20 pb-32">
         <div className="text-center max-w-4xl mx-auto">
-          <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6">
-            Learn Anything with
-            <span className="bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"> AI-Powered </span>
-            Tutoring
+          <h1 className="text-4xl md:text-6xl font-bold text-gray-900 dark:text-white mb-6">
+            Smarter Learning with
+            <span className="text-blue-600 dark:text-blue-400"> AI-Powered Tutoring</span>
           </h1>
           <p className="text-xl text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
-            Experience personalized learning with our advanced AI tutor. Get instant answers, 
-            interactive lessons, and adaptive learning paths tailored just for you.
+            Get instant answers, personalized study plans, and interactive AI chat - all at a fraction of the cost of traditional tutoring services.
           </p>
           <div className="flex justify-center mb-16">
             <GetStartedButton />
@@ -48,124 +46,210 @@ export default async function Marketing() {
 
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-blue-600">50K+</div>
-              <div className="text-gray-600 dark:text-gray-400">Students Learning</div>
+            <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">10K+</div>
+              <div className="text-gray-600 dark:text-gray-400">Active Students</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-purple-600">1M+</div>
+            <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">500K+</div>
               <div className="text-gray-600 dark:text-gray-400">Questions Answered</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-green-600">95%</div>
-              <div className="text-gray-600 dark:text-gray-400">Success Rate</div>
+            <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-800">
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">90%</div>
+              <div className="text-gray-600 dark:text-gray-400">Improved Grades</div>
             </div>
           </div>
         </div>
 
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
-          <div className="text-center p-8 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Zap className="h-8 w-8 text-blue-600" />
+          <div className="text-center p-8 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Zap className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Instant Answers</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Get immediate, accurate responses to any question across multiple subjects and topics.
+            <p className="text-gray-600 dark:text-gray-400">
+              Get immediate, accurate responses to any academic question across multiple subjects.
             </p>
           </div>
 
-          <div className="text-center p-8 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <div className="w-16 h-16 bg-purple-100 dark:bg-purple-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <Users className="h-8 w-8 text-purple-600" />
+          <div className="text-center p-8 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <Users className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Personalized Learning</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Adaptive AI that learns your style and creates customized lesson plans for optimal growth.
+            <p className="text-gray-600 dark:text-gray-400">
+              Adaptive AI that creates customized learning paths based on your strengths and weaknesses.
             </p>
           </div>
 
-          <div className="text-center p-8 rounded-2xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm border border-gray-200 dark:border-gray-700">
-            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-2xl flex items-center justify-center mx-auto mb-4">
-              <BookOpen className="h-8 w-8 text-green-600" />
+          <div className="text-center p-8 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700">
+            <div className="w-16 h-16 bg-blue-100 dark:bg-blue-900/30 rounded-xl flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="h-8 w-8 text-blue-600 dark:text-blue-400" />
             </div>
-            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Interactive Lessons</h3>
-            <p className="text-gray-600 dark:text-gray-300">
-              Engaging, hands-on learning experiences with real-time feedback and progress tracking.
+            <h3 className="text-xl font-semibold mb-3 text-gray-900 dark:text-white">Progress Tracking</h3>
+            <p className="text-gray-600 dark:text-gray-400">
+              Detailed analytics and insights to monitor your learning journey and identify improvement areas.
             </p>
           </div>
         </div>
 
-        {/* Benefits Section */}
-        <div className="bg-white/60 dark:bg-gray-800/60 backdrop-blur-sm rounded-3xl p-12 border border-gray-200 dark:border-gray-700">
+        {/* Unique Value Proposition Section */}
+        <div className="bg-blue-50 dark:bg-gray-800 rounded-2xl p-12 mb-20">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
-              Why Choose TutorByAI?
+              What Makes TutorByAI Different?
             </h2>
-            <p className="text-lg text-gray-600 dark:text-gray-300">
-              Experience the future of education with our cutting-edge AI technology
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Advanced AI features that other platforms don't offer
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">24/7 Availability</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Learn at your own pace, anytime, anywhere with our always-available AI tutor.</p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-blue-200 dark:border-gray-600">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <Zap className="h-6 w-6 text-blue-600 dark:text-blue-400" />
               </div>
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Multi-Subject Support</h4>
-                  <p className="text-gray-600 dark:text-gray-300">From math and science to languages and history - we cover it all.</p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
-                <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Progress Tracking</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Monitor your learning journey with detailed analytics and insights.</p>
-                </div>
-              </div>
+              <h3 className="text-xl font-semibold mb-3 text-center text-gray-900 dark:text-white">AI-Powered Summaries</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-center">
+                Turn lectures, videos, and notes into concise study materials instantly - a feature unique to TutorByAI.
+              </p>
             </div>
-            <div className="space-y-6">
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-blue-200 dark:border-gray-600">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <Users className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-center text-gray-900 dark:text-white">Interactive AI Chat</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-center">
+                Have real conversations with our AI tutor to get personalized explanations and guidance.
+              </p>
+            </div>
+
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-blue-200 dark:border-gray-600">
+              <div className="w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg flex items-center justify-center mb-4 mx-auto">
+                <BookOpen className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3 text-center text-gray-900 dark:text-white">Multi-Format Support</h3>
+              <p className="text-gray-600 dark:text-gray-300 text-center">
+                Upload documents, images, or type directly - our AI understands multiple input formats.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Testimonials Section */}
+        <div className="bg-gray-50 dark:bg-gray-800 rounded-2xl p-12 mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              What Students Are Saying
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Join thousands of students who have transformed their learning experience
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">A</span>
+                </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Adaptive Difficulty</h4>
-                  <p className="text-gray-600 dark:text-gray-300">AI adjusts question difficulty based on your performance and learning pace.</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Alex M.</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">10th Grade Student</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+              <p className="text-gray-600 dark:text-gray-300">
+                "TutorByAI helped me understand algebra concepts I'd been struggling with for months. My test scores improved by 20% in just three weeks!"
+              </p>
+            </div>
+
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">S</span>
+                </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Interactive Explanations</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Step-by-step breakdowns that make complex concepts easy to understand.</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Sophia R.</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">11th Grade Student</p>
                 </div>
               </div>
-              <div className="flex items-start gap-4">
-                <CheckCircle className="h-6 w-6 text-green-500 mt-1 flex-shrink-0" />
+              <p className="text-gray-600 dark:text-gray-300">
+                "The SAT prep features are amazing! I've been using TutorByAI for two months and my practice test scores keep going up. Highly recommend for college prep."
+              </p>
+            </div>
+
+            <div className="p-6 bg-white dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+              <div className="flex items-center mb-4">
+                <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900 rounded-full flex items-center justify-center mr-3">
+                  <span className="text-blue-600 dark:text-blue-400 font-bold">M</span>
+                </div>
                 <div>
-                  <h4 className="font-semibold text-gray-900 dark:text-white mb-2">Affordable Learning</h4>
-                  <p className="text-gray-600 dark:text-gray-300">Get world-class tutoring at a fraction of traditional tutoring costs.</p>
+                  <h4 className="font-semibold text-gray-900 dark:text-white">Maya K.</h4>
+                  <p className="text-sm text-gray-600 dark:text-gray-400">9th Grade Student</p>
                 </div>
               </div>
+              <p className="text-gray-600 dark:text-gray-300">
+                "I used to hate chemistry, but TutorByAI made it so much easier to understand. The step-by-step explanations are perfect for visual learners like me."
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Subject Areas Section */}
+        <div className="mb-20">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+              Comprehensive Subject Coverage
+            </h2>
+            <p className="text-lg text-gray-600 dark:text-gray-400">
+              Get help with all your core subjects and beyond
+            </p>
+          </div>
+          
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Mathematics</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Science</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">English</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">History</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">SAT Prep</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Languages</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Writing</span>
+            </div>
+            <div className="flex items-center justify-center p-4 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+              <span className="text-gray-700 dark:text-gray-300 font-medium">Test Prep</span>
             </div>
           </div>
         </div>
 
         {/* CTA Section */}
-        <div className="text-center mt-20">
+        <div className="text-center bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-gray-800 dark:to-gray-800 rounded-2xl p-12 border border-gray-200 dark:border-gray-700">
           <h2 className="text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-6">
             Ready to Transform Your Learning?
           </h2>
           <p className="text-lg text-gray-600 dark:text-gray-300 mb-8 max-w-2xl mx-auto">
             Join thousands of students who are already experiencing the power of AI-driven education.
           </p>
-          <GetStartedButton />
+          <div className="flex flex-col sm:flex-row justify-center gap-4">
+            <GetStartedButton />
+          </div>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-4">
+            Start your free 7-day trial. No credit card required.
+          </p>
         </div>
       </main>
 

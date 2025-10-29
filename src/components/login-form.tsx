@@ -8,7 +8,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signInEmailAction } from "@/actions/sign-in-email.action";
 import Link from "next/link";
-import { LogIn, Eye, EyeOff } from "lucide-react";
+import { ArrowRight, Eye, EyeOff } from "lucide-react";
 
 export const LoginForm = () => {
   const [isPending, setIsPending] = useState(false);
@@ -28,7 +28,7 @@ export const LoginForm = () => {
       toast.error(error);
       setIsPending(false);
     } else {
-      toast.success("Welcome back! Let's continue learning! 🎉");
+      toast.success("Welcome back! You're now signed in.");
       router.push("/");
     }
   }
@@ -36,26 +36,27 @@ export const LoginForm = () => {
   return (
     <form onSubmit={handleSubmit} className="w-full space-y-6">
       <div className="space-y-3">
-        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-semibold text-base">
-          📧 Email Address
+        <Label htmlFor="email" className="text-gray-700 dark:text-gray-300 font-medium">
+          Email Address
         </Label>
         <Input 
           type="email" 
           id="email" 
           name="email" 
-          placeholder="Enter your email address"
+          placeholder="Enter your email"
           required
+          className="h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg"
         />
       </div>
 
       <div className="space-y-3">
         <div className="flex justify-between items-center">
-          <Label htmlFor="password" className="text-gray-700 dark:text-gray-300 font-semibold text-base">
-            🔐 Password
+          <Label htmlFor="password" className="text-gray-700 dark:text-gray-300 font-medium">
+            Password
           </Label>
           <Link
             href="/auth/forgot-password"
-            className="text-sm font-medium gradient-text-primary hover:opacity-80 transition-all duration-150 ease-out"
+            className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:opacity-80 transition-all duration-150 ease-out"
           >
             Forgot password?
           </Link>
@@ -68,6 +69,7 @@ export const LoginForm = () => {
             name="password" 
             placeholder="Enter your password"
             required
+            className="h-12 border-gray-300 dark:border-gray-600 focus:border-blue-500 dark:focus:border-blue-400 rounded-lg"
           />
           <button
             type="button"
@@ -79,22 +81,32 @@ export const LoginForm = () => {
         </div>
       </div>
 
+      <div className="flex items-center">
+        <input
+          id="remember-me"
+          name="remember-me"
+          type="checkbox"
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
+          Remember me
+        </label>
+      </div>
+
       <Button 
         type="submit" 
-        variant="gradient"
-        size="lg"
-        className="w-full animate-scale-in delay-100" 
+        className="w-full h-12 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow transition-all duration-200" 
         disabled={isPending}
       >
         {isPending ? (
           <>
-            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            Signing you in...
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2" />
+            Signing in...
           </>
         ) : (
           <>
-            <LogIn className="w-5 h-5" />
-            Let's Go! &#x1F680;
+            <ArrowRight className="w-5 h-5 mr-2" />
+            Sign In
           </>
         )}
       </Button>

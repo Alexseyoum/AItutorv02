@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { signIn } from "@/lib/auth-client";
+import { GoogleIcon } from "@/components/icons/google-icon";
+import { GithubIcon } from "@/components/icons/github-icon";
 
 interface SignInOauthButtonProps {
   provider: "google" | "github";
@@ -29,7 +31,7 @@ export const SignInOauthButton = ({
 
   const action = signUp ? "Up" : "In";
   const providerName = provider === "google" ? "Google" : "GitHub";
-  const emoji = provider === "google" ? "🌟" : "🚀";
+  const Icon = provider === "google" ? GoogleIcon : GithubIcon;
 
   return (
     <Button 
@@ -46,7 +48,8 @@ export const SignInOauthButton = ({
         </>
       ) : (
         <>
-          {emoji} Sign {action} with {providerName}
+          <Icon className="w-5 h-5 mr-2" />
+          Sign {action} with {providerName}
         </>
       )}
     </Button>
