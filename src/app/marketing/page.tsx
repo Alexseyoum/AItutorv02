@@ -47,8 +47,8 @@ export default async function Marketing() {
           {/* Stats */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 mb-20">
             <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-800">
-              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">10K+</div>
-              <div className="text-gray-600 dark:text-gray-400">Active Students</div>
+              <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">90%</div>
+              <div className="text-gray-600 dark:text-gray-400">User Retention Rate</div>
             </div>
             <div className="text-center p-6 rounded-lg bg-gray-50 dark:bg-gray-800">
               <div className="text-3xl font-bold text-blue-600 dark:text-blue-400">500K+</div>
