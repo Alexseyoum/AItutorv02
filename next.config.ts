@@ -17,6 +17,13 @@ const withBundleAnalyzer = process.env.ANALYZE === 'true'
   : (config: NextConfig) => config;
 
 const nextConfig: NextConfig = {
+  // Turbopack configuration to help with caching issues
+  turbopack: {
+    resolveAlias: {
+      // Add any specific aliases that might help with module resolution
+    },
+  },
+  
   // Production optimizations
   poweredByHeader: false,
   generateEtags: false,

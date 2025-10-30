@@ -430,37 +430,26 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
         <div className="text-center">
           <div className="relative">
-            <div className="w-16 h-16 border-4 border-purple-400/30 rounded-full animate-spin"></div>
-            <div className="w-16 h-16 border-4 border-t-purple-400 rounded-full animate-spin absolute top-0"></div>
+            <div className="w-12 h-12 border-4 border-gray-300 rounded-full animate-spin"></div>
           </div>
-          <p className="text-purple-200 mt-4 text-lg">Loading your SAT prep dashboard...</p>
+          <p className="text-gray-600 dark:text-gray-400 mt-4">Loading your SAT prep dashboard...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
-      {/* Animated Background Elements */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-2000"></div>
-        <div className="absolute top-3/4 left-1/2 w-80 h-80 bg-cyan-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
+    <div className="min-h-screen bg-white">
+      {/* Animated background elements */}
 
       {/* Navigation */}
-      <nav className="relative z-10 flex items-center justify-between p-6 max-w-7xl mx-auto">
+      <nav className="flex items-center justify-between p-6 max-w-7xl mx-auto border-b border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-900">
         <div className="flex items-center gap-3">
-          <div className="relative">
-            <Brain className="h-10 w-10 text-purple-400 animate-pulse" />
-            <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-pink-400 to-purple-500 rounded-full animate-bounce">
-              <div className="w-2 h-2 bg-white rounded-full mx-auto mt-1"></div>
-            </div>
-          </div>
-          <span className="text-2xl font-bold gradient-text-primary">
+          <Brain className="h-8 w-8 text-blue-600 dark:text-blue-400" />
+          <span className="text-xl font-bold text-gray-900 dark:text-white">
             SAT Prep
           </span>
         </div>
@@ -469,7 +458,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
             variant="ghost" 
             size="sm" 
             onClick={() => router.push("/tutoring")}
-            className="text-purple-200 hover:text-white hover:bg-white/10 glass border border-white/20 transition-all duration-300 ease-bounce rounded-xl"
+            className="text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             Home
           </Button>
@@ -477,24 +466,24 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
       </nav>
 
       {/* Main Content */}
-      <main className="relative z-10 max-w-7xl mx-auto px-6 pb-20">
+      <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header */}
-        <div className="text-center mb-12 animate-fade-in">
-          <h1 className="text-display text-white mb-4 animate-bounce-in">
-            SAT Preparation, <span className="gradient-text-fun">{user.name?.split(' ')[0] || 'Student'}</span>! 🎓
+        <div className="text-center mb-12">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
+            SAT Preparation, {user.name?.split(' ')[0] || 'Student'}!
           </h1>
-          <p className="text-xl text-purple-200 mb-6">Your personalized path to SAT success</p>
+          <p className="text-gray-600 dark:text-gray-400 mb-6">Your personalized path to SAT success</p>
           
           <div className="flex flex-wrap justify-center gap-3 mb-8">
-            <Badge variant="secondary" className="px-4 py-2 bg-white/10 glass border border-white/20 text-purple-200 font-medium">
-              🎯 Grade {profile.gradeLevel}
+            <Badge variant="secondary" className="px-4 py-2 bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200 font-medium rounded-full">
+              Grade {profile.gradeLevel}
             </Badge>
-            <Badge variant="secondary" className="px-4 py-2 bg-white/10 glass border border-white/20 text-purple-200 font-medium">
-              📚 {profile.learningStyle?.replace('_', ' ')} Learner
+            <Badge variant="secondary" className="px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 font-medium rounded-full">
+              {profile.learningStyle?.replace('_', ' ')} Learner
             </Badge>
             {profile.interests?.slice(0, 2).map((interest, index) => (
-              <Badge key={index} variant="secondary" className="px-4 py-2 bg-white/10 glass border border-white/20 text-purple-200 font-medium">
-                🌟 {interest}
+              <Badge key={index} variant="secondary" className="px-4 py-2 bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200 font-medium rounded-full">
+                {interest}
               </Badge>
             ))}
           </div>
@@ -502,43 +491,43 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-8">
-          <div className="inline-flex bg-white/10 glass border border-white/20 rounded-xl p-1">
+          <div className="inline-flex bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
             <button
               onClick={() => setActiveTab('dashboard')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'dashboard'
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'text-purple-200 hover:text-white hover:bg-white/10'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               Dashboard
             </button>
             <button
               onClick={() => setActiveTab('study-plan')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'study-plan'
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'text-purple-200 hover:text-white hover:bg-white/10'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               Study Plan
             </button>
             <button
               onClick={() => setActiveTab('practice')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'practice'
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'text-purple-200 hover:text-white hover:bg-white/10'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               Practice
             </button>
             <button
               onClick={() => setActiveTab('resources')}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                 activeTab === 'resources'
-                  ? 'bg-purple-500 text-white shadow-lg'
-                  : 'text-purple-200 hover:text-white hover:bg-white/10'
+                  ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow'
+                  : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               Resources
@@ -548,12 +537,12 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         {/* Dashboard Tab */}
         {activeTab === 'dashboard' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Progress Overview */}
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <TrendingUp className="h-6 w-6 text-purple-400" />
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <TrendingUp className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   Your SAT Progress
                 </CardTitle>
               </CardHeader>
@@ -562,66 +551,66 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   <div className="space-y-6">
                     <div>
                       <div className="flex justify-between items-center mb-2">
-                        <span className="text-white font-medium">Overall Progress</span>
-                        <span className="text-cyan-400 font-bold">{satStats.studyPlanProgress || 0}%</span>
+                        <span className="text-gray-700 dark:text-gray-300 font-medium">Overall Progress</span>
+                        <span className="text-blue-600 dark:text-blue-400 font-bold">{satStats.studyPlanProgress || 0}%</span>
                       </div>
-                      <Progress value={satStats.studyPlanProgress || 0} className="h-3" />
+                      <Progress value={satStats.studyPlanProgress || 0} className="h-2" />
                     </div>
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="p-1 bg-blue-500/30 rounded">
-                            <Target className="h-4 w-4 text-blue-300" />
+                          <div className="p-1 bg-blue-100 dark:bg-blue-900/30 rounded">
+                            <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                           </div>
-                          <span className="text-sm font-medium text-white">Math</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Math</span>
                         </div>
-                        <div className="text-2xl font-bold text-blue-400">
+                        <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
                           {satStats.latestDiagnostic?.mathScore || diagnosticResult?.mathScore || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-400">Score</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
                       
-                      <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="p-1 bg-green-500/30 rounded">
-                            <BookOpen className="h-4 w-4 text-green-300" />
+                          <div className="p-1 bg-green-100 dark:bg-green-900/30 rounded">
+                            <BookOpen className="h-4 w-4 text-green-600 dark:text-green-400" />
                           </div>
-                          <span className="text-sm font-medium text-white">Reading</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Reading</span>
                         </div>
-                        <div className="text-2xl font-bold text-green-400">
+                        <div className="text-xl font-bold text-green-600 dark:text-green-400">
                           {satStats.latestDiagnostic?.readingScore || diagnosticResult?.readingScore || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-400">Score</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
                       
-                      <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="p-1 bg-purple-500/30 rounded">
-                            <FileText className="h-4 w-4 text-purple-300" />
+                          <div className="p-1 bg-purple-100 dark:bg-purple-900/30 rounded">
+                            <FileText className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                           </div>
-                          <span className="text-sm font-medium text-white">Writing</span>
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">Writing</span>
                         </div>
-                        <div className="text-2xl font-bold text-purple-400">
+                        <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
                           {satStats.latestDiagnostic?.writingScore || diagnosticResult?.writingScore || 'N/A'}
                         </div>
-                        <div className="text-xs text-gray-400">Score</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
                     </div>
                     
                     <div className="flex flex-wrap gap-2">
-                      <span className="text-sm text-gray-300">Strengths:</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Strengths:</span>
                       {(satStats.latestDiagnostic?.strengths || diagnosticResult?.strengths)?.slice(0, 3).map((strength: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/30">
+                        <Badge key={index} variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                           {strength}
                         </Badge>
                       ))}
                     </div>
                     
                     <div className="flex flex-wrap gap-2">
-                      <span className="text-sm text-gray-300">Areas to Improve:</span>
+                      <span className="text-sm text-gray-600 dark:text-gray-400">Areas to Improve:</span>
                       {(satStats.latestDiagnostic?.weaknesses || diagnosticResult?.weaknesses)?.slice(0, 3).map((weakness: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="bg-orange-500/20 text-orange-300 border-orange-500/30">
+                        <Badge key={index} variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200">
                           {weakness}
                         </Badge>
                       ))}
@@ -631,7 +620,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                       <Button 
                         onClick={startDiagnosticTest}
                         variant="outline"
-                        className="w-full border-purple-500 text-purple-300 hover:bg-purple-500/20"
+                        className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
                       >
                         Retake Diagnostic Test
                       </Button>
@@ -639,14 +628,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Target className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">Take a Diagnostic Test</h3>
-                    <p className="text-purple-200 mb-4">
+                    <Target className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">Take a Diagnostic Test</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
                       Start with a diagnostic test to identify your strengths and areas for improvement.
                     </p>
                     <Button 
                       onClick={startDiagnosticTest}
-                      className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Start Diagnostic
                     </Button>
@@ -656,10 +645,10 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
             </Card>
             
             {/* Recent Practice Sessions */}
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl lg:col-span-2">
+            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Clock className="h-6 w-6 text-purple-400" />
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Clock className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   Recent Practice
                 </CardTitle>
               </CardHeader>
@@ -668,33 +657,33 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   <div className="space-y-6">
                     {/* Stats Overview */}
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                      <div className="bg-white/5 glass rounded-lg p-3 border border-white/10 text-center">
-                        <div className="text-xl font-bold text-cyan-400">{satStats.totalSessions}</div>
-                        <div className="text-xs text-gray-400">Total Sessions</div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <div className="text-lg font-bold text-gray-900 dark:text-white">{satStats.totalSessions}</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Total Sessions</div>
                       </div>
-                      <div className="bg-white/5 glass rounded-lg p-3 border border-white/10 text-center">
-                        <div className="text-xl font-bold text-green-400">{satStats.completionRate}%</div>
-                        <div className="text-xs text-gray-400">Completion Rate</div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <div className="text-lg font-bold text-gray-900 dark:text-white">{satStats.completionRate}%</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Completion Rate</div>
                       </div>
-                      <div className="bg-white/5 glass rounded-lg p-3 border border-white/10 text-center">
-                        <div className="text-xl font-bold text-purple-400">{Math.floor((satStats.totalStudyTime || 0) / 60)}h</div>
-                        <div className="text-xs text-gray-400">Study Time</div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <div className="text-lg font-bold text-gray-900 dark:text-white">{Math.floor((satStats.totalStudyTime || 0) / 60)}h</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">Study Time</div>
                       </div>
-                      <div className="bg-white/5 glass rounded-lg p-3 border border-white/10 text-center">
-                        <div className="text-xl font-bold text-orange-400">{satStats.weeklyStudyTime || 0}m</div>
-                        <div className="text-xs text-gray-400">This Week</div>
+                      <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-3 text-center">
+                        <div className="text-lg font-bold text-gray-900 dark:text-white">{satStats.weeklyStudyTime || 0}m</div>
+                        <div className="text-xs text-gray-500 dark:text-gray-400">This Week</div>
                       </div>
                     </div>
                     
                     {/* Recent Sessions */}
                     {practiceSessions.length > 0 ? (
                       <div className="space-y-4">
-                        <h3 className="font-medium text-white">Recent Sessions</h3>
+                        <h3 className="font-medium text-gray-900 dark:text-white">Recent Sessions</h3>
                         {practiceSessions.slice(0, 3).map((session) => (
-                          <div key={session.id} className="flex items-center justify-between p-4 bg-white/5 rounded-lg border border-white/10">
+                          <div key={session.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600">
                             <div>
-                              <div className="font-medium text-white capitalize">{session.section} Practice</div>
-                              <div className="text-sm text-gray-400">
+                              <div className="font-medium text-gray-900 dark:text-white capitalize">{session.section} Practice</div>
+                              <div className="text-sm text-gray-600 dark:text-gray-400">
                                 {session.completedAt 
                                   ? new Date(session.completedAt).toLocaleDateString() 
                                   : 'In progress'}
@@ -702,8 +691,8 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                             </div>
                             {session.score && session.maxScore ? (
                               <div className="text-right">
-                                <div className="font-bold text-cyan-400">{session.score}/{session.maxScore}</div>
-                                <div className="text-xs text-gray-400">
+                                <div className="font-bold text-gray-900 dark:text-white">{session.score}/{session.maxScore}</div>
+                                <div className="text-xs text-gray-600 dark:text-gray-400">
                                   {Math.round((session.score / session.maxScore) * 100)}% correct
                                 </div>
                               </div>
@@ -711,7 +700,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                               <Button 
                                 size="sm" 
                                 onClick={() => completePracticeSession(session.id)}
-                                className="bg-gradient-to-r from-green-500 to-teal-500 hover:from-green-600 hover:to-teal-600 text-white"
+                                className="bg-blue-600 hover:bg-blue-700 text-white"
                               >
                                 Complete
                               </Button>
@@ -721,9 +710,9 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                       </div>
                     ) : (
                       <div className="text-center py-4">
-                        <Play className="h-8 w-8 text-purple-400 mx-auto mb-2" />
-                        <h3 className="text-md font-medium text-white mb-1">No Practice Sessions Yet</h3>
-                        <p className="text-purple-200 text-sm">
+                        <Play className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                        <h3 className="text-md font-medium text-gray-900 dark:text-white mb-1">No Practice Sessions Yet</h3>
+                        <p className="text-gray-600 dark:text-gray-400 text-sm">
                           Start practicing to build your skills.
                         </p>
                       </div>
@@ -731,14 +720,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </div>
                 ) : (
                   <div className="text-center py-8">
-                    <Play className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-white mb-2">No Practice Data Available</h3>
-                    <p className="text-purple-200 mb-4">
+                    <Play className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Practice Data Available</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-4">
                       Complete practice sessions to see your statistics.
                     </p>
                     <Button 
                       onClick={() => setActiveTab('practice')}
-                      className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Start Practicing
                     </Button>
@@ -751,18 +740,18 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         {/* Study Plan Tab */}
         {activeTab === 'study-plan' && (
-          <div className="space-y-8">
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+          <div className="space-y-6">
+            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center justify-between">
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
                   <span className="flex items-center gap-2">
-                    <Calendar className="h-6 w-6 text-purple-400" />
+                    <Calendar className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     Your SAT Study Plan
                   </span>
                   {!studyPlan && (
                     <Button 
                       onClick={generateStudyPlan}
-                      className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
                       Generate Plan
                     </Button>
@@ -775,14 +764,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                     {studyPlan.aiGeneratedPlan ? (
                       // Display AI-generated plan
                       <div className="space-y-6">
-                        <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-white">AI-Powered Personalized Plan</span>
-                            <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                            <span className="font-medium text-gray-900 dark:text-white">AI-Powered Personalized Plan</span>
+                            <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
                               Generated
                             </Badge>
                           </div>
-                          <p className="text-purple-200 text-sm">
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
                             Custom plan based on your profile and goals
                           </p>
                           
@@ -790,8 +779,8 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                           {studyPlan.aiGeneratedPlan.weeks && (
                             <div className="mt-4">
                               <div className="flex justify-between items-center mb-2">
-                                <span className="text-sm text-gray-300">Overall Progress</span>
-                                <span className="text-sm font-medium text-cyan-400">
+                                <span className="text-sm text-gray-600 dark:text-gray-400">Overall Progress</span>
+                                <span className="text-sm font-medium text-blue-600 dark:text-blue-400">
                                   {calculateStudyPlanProgress()}% Complete
                                 </span>
                               </div>
@@ -799,7 +788,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                 value={calculateStudyPlanProgress()} 
                                 className="h-2" 
                               />
-                              <div className="text-xs text-gray-400 mt-1">
+                              <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                                 {studyPlan.completedWeeks?.length || 0} of {(studyPlan.aiGeneratedPlan as { weeks?: any[] })?.weeks?.length || 0} weeks completed
                               </div>
                             </div>
@@ -807,15 +796,15 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                         </div>
                         
                         {studyPlan.aiGeneratedPlan.tips && (
-                          <div className="bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-lg p-4 border border-blue-500/20">
-                            <h3 className="font-bold text-white mb-2 flex items-center gap-2">
-                              <Zap className="h-5 w-5 text-yellow-400" />
+                          <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-2 flex items-center gap-2">
+                              <Zap className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                               Pro Tips
                             </h3>
                             <ul className="space-y-1">
                               {studyPlan.aiGeneratedPlan.tips.map((tip: string, index: number) => (
-                                <li key={index} className="text-sm text-gray-300 flex items-start gap-2">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400 mt-2 flex-shrink-0"></div>
+                                <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-start gap-2">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
                                   {tip}
                                 </li>
                               ))}
@@ -824,18 +813,18 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                         )}
                         
                         <div className="space-y-4">
-                          <h3 className="font-bold text-white text-lg">Weekly Plan</h3>
+                          <h3 className="font-bold text-gray-900 dark:text-white text-lg">Weekly Plan</h3>
                           {studyPlan.aiGeneratedPlan && studyPlan.aiGeneratedPlan.weeks && studyPlan.aiGeneratedPlan.weeks.map((week, index: number) => (
-                            <Card key={index} className="bg-white/5 border border-white/10 rounded-xl">
+                            <Card key={index} className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 rounded-lg">
                               <CardContent className="p-4">
                                 <div className="flex justify-between items-center mb-3">
-                                  <h4 className="font-bold text-white">Week {week.week}: {week.focus}</h4>
+                                  <h4 className="font-bold text-gray-900 dark:text-white">Week {week.week}: {week.focus}</h4>
                                   <Badge 
                                     variant="secondary" 
                                     className={
                                       studyPlan.completedWeeks?.includes(week.week) 
-                                        ? "bg-green-500/20 text-green-300 border-green-500/30" 
-                                        : "bg-purple-500/20 text-purple-300 border-purple-500/30"
+                                        ? "bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200" 
+                                        : "bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
                                     }
                                   >
                                     {studyPlan.completedWeeks?.includes(week.week) ? (
@@ -858,10 +847,10 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                     return (
                                       <div 
                                         key={taskIndex} 
-                                        className={`flex items-center gap-2 p-2 rounded border transition-all ${
+                                        className={`flex items-center gap-2 p-2 rounded border ${
                                           isCompleted 
-                                            ? "bg-green-500/10 border-green-500/30" 
-                                            : "bg-white/5 border-white/5 hover:bg-white/10"
+                                            ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800" 
+                                            : "bg-white dark:bg-gray-600 border-gray-200 dark:border-gray-500"
                                         }`}
                                       >
                                         <Button
@@ -869,27 +858,27 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                           size="sm"
                                           className={`w-6 h-6 p-0 rounded-full ${
                                             isCompleted 
-                                              ? "bg-green-500 hover:bg-green-600" 
-                                              : "border border-gray-400 hover:bg-gray-600"
+                                              ? "bg-green-600 hover:bg-green-700" 
+                                              : "border border-gray-400 hover:bg-gray-200 dark:hover:bg-gray-500"
                                           }`}
                                           onClick={() => updateStudyPlanProgress(week.week, task.day, !isCompleted)}
                                         >
                                           {isCompleted && <Check className="h-3 w-3 text-white" />}
                                         </Button>
                                         <div className="flex-1">
-                                          <div className={`text-sm ${isCompleted ? "text-green-300 line-through" : "text-white"}`}>
+                                          <div className={`text-sm ${isCompleted ? "text-green-800 dark:text-green-200 line-through" : "text-gray-900 dark:text-white"}`}>
                                             {task.task}
                                           </div>
-                                          <div className="text-xs text-gray-400">{task.duration_minutes} minutes</div>
+                                          <div className="text-xs text-gray-600 dark:text-gray-400">{task.duration_minutes} minutes</div>
                                         </div>
                                       </div>
                                     );
-                                  })}
+                                  })},
                                 </div>
                                 
                                 {week.resources && week.resources.length > 0 && (
-                                  <div className="pt-2 border-t border-white/10">
-                                    <h5 className="text-xs font-medium text-gray-400 mb-1">RESOURCES</h5>
+                                  <div className="pt-2 border-t border-gray-200 dark:border-gray-600">
+                                    <h5 className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">RESOURCES</h5>
                                     <div className="flex flex-wrap gap-2">
                                       {week.resources.map((resource, resIndex: number) => (
                                         <a 
@@ -897,7 +886,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                                           href={sanitizeUrl(resource.url)}
                                           target="_blank"
                                           rel="noopener noreferrer"
-                                          className="text-xs bg-white/10 hover:bg-white/20 rounded px-2 py-1 text-purple-300 transition-colors flex items-center gap-1"
+                                          className="text-xs bg-gray-100 dark:bg-gray-600 hover:bg-gray-200 dark:hover:bg-gray-500 rounded px-2 py-1 text-gray-700 dark:text-gray-300 transition-colors flex items-center gap-1"
                                         >
                                           {resource.title}
                                           <ExternalLink className="h-3 w-3" />
@@ -914,58 +903,58 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                     ) : (
                       // Display basic plan
                       <div className="space-y-6">
-                        <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
                           <div className="flex justify-between items-center mb-2">
-                            <span className="font-medium text-white">Timeline</span>
-                            <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                            <span className="font-medium text-gray-900 dark:text-white">Timeline</span>
+                            <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
                               {studyPlan.timeline}
                             </Badge>
                           </div>
-                          <p className="text-purple-200 text-sm">
+                          <p className="text-gray-600 dark:text-gray-400 text-sm">
                             Personalized study plan based on your current level and goals
                           </p>
                         </div>
                         
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                          <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                            <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                              <Target className="h-4 w-4 text-blue-400" />
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                              <Target className="h-4 w-4 text-blue-600 dark:text-blue-400" />
                               Math Focus Areas
                             </h3>
                             <ul className="space-y-2">
                               {studyPlan.focusAreas.math.map((area, index) => (
-                                <li key={index} className="text-sm text-gray-300 flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-400"></div>
+                                <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-blue-600 dark:bg-blue-400"></div>
                                   {area}
                                 </li>
                               ))}
                             </ul>
                           </div>
                           
-                          <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                            <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                              <BookOpen className="h-4 w-4 text-green-400" />
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                              <BookOpen className="h-4 w-4 text-green-600 dark:text-green-400" />
                               Reading Focus Areas
                             </h3>
                             <ul className="space-y-2">
                               {studyPlan.focusAreas.reading.map((area, index) => (
-                                <li key={index} className="text-sm text-gray-300 flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-green-600 dark:bg-green-400"></div>
                                   {area}
                                 </li>
                               ))}
                             </ul>
                           </div>
                           
-                          <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                            <h3 className="font-bold text-white mb-3 flex items-center gap-2">
-                              <FileText className="h-4 w-4 text-purple-400" />
+                          <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                            <h3 className="font-bold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                              <FileText className="h-4 w-4 text-purple-600 dark:text-purple-400" />
                               Writing Focus Areas
                             </h3>
                             <ul className="space-y-2">
                               {studyPlan.focusAreas.writing.map((area, index) => (
-                                <li key={index} className="text-sm text-gray-300 flex items-center gap-2">
-                                  <div className="w-1.5 h-1.5 rounded-full bg-purple-400"></div>
+                                <li key={index} className="text-sm text-gray-700 dark:text-gray-300 flex items-center gap-2">
+                                  <div className="w-1.5 h-1.5 rounded-full bg-purple-600 dark:bg-purple-400"></div>
                                   {area}
                                 </li>
                               ))}
@@ -973,30 +962,30 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                           </div>
                         </div>
                         
-                        <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                          <h3 className="font-bold text-white mb-3">Weekly Schedule Preview</h3>
+                        <div className="bg-gray-50 dark:bg-gray-700 rounded-lg p-4">
+                          <h3 className="font-bold text-gray-900 dark:text-white mb-3">Weekly Schedule Preview</h3>
                           <div className="space-y-3">
                             {Object.entries(studyPlan.weeklySchedule).slice(0, 3).map(([week, schedule]) => (
-                              <div key={week} className="p-3 bg-white/5 rounded border border-white/10">
-                                <div className="font-medium text-white mb-2">Week {week}</div>
+                              <div key={week} className="p-3 bg-white dark:bg-gray-600 rounded border border-gray-200 dark:border-gray-500">
+                                <div className="font-medium text-gray-900 dark:text-white mb-2">Week {week}</div>
                                 <div className="flex flex-wrap gap-2">
                                   {schedule.math.length > 0 && (
-                                    <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
+                                    <Badge variant="secondary" className="bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200">
                                       Math: {schedule.math.length} topics
                                     </Badge>
                                   )}
                                   {schedule.reading.length > 0 && (
-                                    <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/30">
+                                    <Badge variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                                       Reading: {schedule.reading.length} topics
                                     </Badge>
                                   )}
                                   {schedule.writing.length > 0 && (
-                                    <Badge variant="secondary" className="bg-purple-500/20 text-purple-300 border-purple-500/30">
+                                    <Badge variant="secondary" className="bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-200">
                                       Writing: {schedule.writing.length} topics
                                     </Badge>
                                   )}
                                   {schedule.practiceTest && (
-                                    <Badge variant="secondary" className="bg-orange-500/20 text-orange-300 border-orange-500/30">
+                                    <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200">
                                       Practice Test
                                     </Badge>
                                   )}
@@ -1010,17 +999,16 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </div>
                 ) : (
                   <div className="text-center py-12">
-                    <Calendar className="h-16 w-16 text-purple-400 mx-auto mb-6" />
-                    <h3 className="text-xl font-bold text-white mb-2">Personalized Study Plan</h3>
-                    <p className="text-purple-200 mb-6 max-w-2xl mx-auto">
-                      Generate a personalized SAT study plan based on your diagnostic results, 
-                      target test date, and available study time.
+                    <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">No Study Plan Yet</h3>
+                    <p className="text-gray-600 dark:text-gray-400 mb-6">
+                      Generate a personalized study plan based on your diagnostic test results.
                     </p>
                     <Button 
                       onClick={generateStudyPlan}
-                      className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white px-8 py-3 text-lg"
+                      className="bg-blue-600 hover:bg-blue-700 text-white"
                     >
-                      Generate My Study Plan
+                      Generate Study Plan
                     </Button>
                   </div>
                 )}
@@ -1032,24 +1020,24 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
         {/* Practice Tab */}
         {activeTab === 'practice' && (
           <div className="space-y-8">
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+            <Card className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Play className="h-6 w-6 text-purple-400" />
+                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Play className="h-5 w-5 text-blue-600" />
                   Practice Sessions
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <Card 
-                    className="bg-gradient-to-br from-blue-500/20 to-blue-600/20 border border-blue-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+                    className="bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                   >
                     <CardContent className="p-6 text-center">
-                      <Target className="h-12 w-12 text-blue-400 mx-auto mb-4" />
-                      <h3 className="font-bold text-white mb-2">Math Practice</h3>
-                      <p className="text-blue-200 text-sm mb-4">Algebra, geometry, and data analysis</p>
+                      <Target className="h-10 w-10 text-blue-600 mx-auto mb-3" />
+                      <h3 className="font-semibold text-gray-900 mb-2">Math Practice</h3>
+                      <p className="text-gray-600 text-sm mb-4">Algebra, geometry, and data analysis</p>
                       <Button 
-                        className="w-full bg-blue-500 hover:bg-blue-600"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                         onClick={() => startPracticeSession('math')}
                       >
                         Start Practice
@@ -1058,14 +1046,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </Card>
                   
                   <Card 
-                    className="bg-gradient-to-br from-green-500/20 to-green-600/20 border border-green-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+                    className="bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                   >
                     <CardContent className="p-6 text-center">
-                      <BookOpen className="h-12 w-12 text-green-400 mx-auto mb-4" />
-                      <h3 className="font-bold text-white mb-2">Reading Practice</h3>
-                      <p className="text-green-200 text-sm mb-4">Comprehension and analysis</p>
+                      <BookOpen className="h-10 w-10 text-green-600 mx-auto mb-3" />
+                      <h3 className="font-semibold text-gray-900 mb-2">Reading Practice</h3>
+                      <p className="text-gray-600 text-sm mb-4">Comprehension and analysis</p>
                       <Button 
-                        className="w-full bg-green-500 hover:bg-green-600"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white"
                         onClick={() => startPracticeSession('reading')}
                       >
                         Start Practice
@@ -1074,14 +1062,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </Card>
                   
                   <Card 
-                    className="bg-gradient-to-br from-purple-500/20 to-purple-600/20 border border-purple-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+                    className="bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                   >
                     <CardContent className="p-6 text-center">
-                      <FileText className="h-12 w-12 text-purple-400 mx-auto mb-4" />
-                      <h3 className="font-bold text-white mb-2">Writing Practice</h3>
-                      <p className="text-purple-200 text-sm mb-4">Grammar and expression</p>
+                      <FileText className="h-10 w-10 text-purple-600 mx-auto mb-3" />
+                      <h3 className="font-semibold text-gray-900 mb-2">Writing Practice</h3>
+                      <p className="text-gray-600 text-sm mb-4">Grammar and expression</p>
                       <Button 
-                        className="w-full bg-purple-500 hover:bg-purple-600"
+                        className="w-full bg-purple-600 hover:bg-purple-700 text-white"
                         onClick={() => startPracticeSession('writing')}
                       >
                         Start Practice
@@ -1090,14 +1078,14 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                   </Card>
                   
                   <Card 
-                    className="bg-gradient-to-br from-orange-500/20 to-orange-600/20 border border-orange-500/30 rounded-xl cursor-pointer hover:scale-105 transition-transform"
+                    className="bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                   >
                     <CardContent className="p-6 text-center">
-                      <Trophy className="h-12 w-12 text-orange-400 mx-auto mb-4" />
-                      <h3 className="font-bold text-white mb-2">Full Practice Test</h3>
-                      <p className="text-orange-200 text-sm mb-4">Simulate real test conditions with all sections</p>
+                      <Trophy className="h-10 w-10 text-orange-600 mx-auto mb-3" />
+                      <h3 className="font-semibold text-gray-900 mb-2">Full Practice Test</h3>
+                      <p className="text-gray-600 text-sm mb-4">Simulate real test conditions with all sections</p>
                       <Button 
-                        className="w-full bg-orange-500 hover:bg-orange-600"
+                        className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                         onClick={() => startPracticeSession('full')}
                       >
                         Start Test
@@ -1108,23 +1096,23 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+            <Card className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <Zap className="h-6 w-6 text-purple-400" />
+                <CardTitle className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <Zap className="h-5 w-5 text-blue-600" />
                   Quick Diagnostic
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="text-center py-8">
-                  <Target className="h-16 w-16 text-purple-400 mx-auto mb-6" />
-                  <h3 className="text-xl font-bold text-white mb-2">Take a Quick Diagnostic</h3>
-                  <p className="text-purple-200 mb-6 max-w-2xl mx-auto">
+                  <Target className="h-12 w-12 text-blue-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-bold text-gray-900 mb-2">Take a Quick Diagnostic</h3>
+                  <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
                     Identify your current SAT level with a quick diagnostic test 
                     covering all sections of the SAT.
                   </p>
                   <Button 
-                    className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600 text-white px-8 py-3 text-lg"
+                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2"
                     onClick={startDiagnosticTest}
                   >
                     Start Diagnostic
@@ -1137,105 +1125,78 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         {/* Resources Tab */}
         {activeTab === 'resources' && (
-          <div className="space-y-8">
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+          <div className="space-y-6">
+            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <BookOpen className="h-6 w-6 text-purple-400" />
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <BookMarked className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   Official SAT Resources
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {SAT_RESOURCES.map((resource, index) => {
                     const Icon = resource.icon;
                     return (
-                      <Card key={index} className="bg-white/5 border border-white/10 rounded-xl overflow-hidden hover:scale-105 transition-transform">
-                        <CardContent className="p-5">
-                          <div className="flex items-start gap-3 mb-3">
-                            <div className="p-2 bg-purple-500/20 rounded-lg">
-                              <Icon className="h-5 w-5 text-purple-400" />
-                            </div>
-                            <div>
-                              <h3 className="font-bold text-white">{resource.title}</h3>
-                              <Badge 
-                                variant="secondary" 
-                                className={`mt-1 text-xs ${
-                                  resource.type === 'official' 
-                                    ? 'bg-green-500/20 text-green-300 border-green-500/30' 
-                                    : 'bg-blue-500/20 text-blue-300 border-blue-500/30'
-                                }`}
-                              >
-                                {resource.type}
-                              </Badge>
-                            </div>
+                      <a 
+                        key={index}
+                        href={sanitizeUrl(resource.url)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="block p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors"
+                      >
+                        <div className="flex items-start gap-3">
+                          <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                            <Icon className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                           </div>
-                          <p className="text-sm text-gray-300 mb-4">{resource.description}</p>
-                          <a 
-                            href={resource.url} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-sm text-purple-300 hover:text-purple-200 transition-colors"
-                          >
-                            Visit Resource <ExternalLink className="h-3 w-3" />
-                          </a>
-                        </CardContent>
-                      </Card>
+                          <div>
+                            <h3 className="font-medium text-gray-900 dark:text-white mb-1">{resource.title}</h3>
+                            <p className="text-sm text-gray-600 dark:text-gray-400">{resource.description}</p>
+                            <Badge 
+                              variant="secondary" 
+                              className="mt-2 text-xs bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-200"
+                            >
+                              {resource.type}
+                            </Badge>
+                          </div>
+                        </div>
+                      </a>
                     );
                   })}
                 </div>
               </CardContent>
             </Card>
             
-            <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
+            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
-                <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                  <BookMarked className="h-6 w-6 text-purple-400" />
-                  Recommended Books
+                <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Trophy className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  Study Tips
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                  <div className="bg-white/5 glass rounded-lg p-5 border border-white/10">
-                    <h3 className="font-bold text-white mb-2">The Official SAT Study Guide</h3>
-                    <p className="text-sm text-gray-300 mb-3">
-                      The official study guide from College Board with 8 real practice tests.
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary" className="bg-green-500/20 text-green-300 border-green-500/30">
-                        Official
-                      </Badge>
-                      <a 
-                        href="https://store.collegeboard.org/sto/productdetail.do?Itemkey=1000001008" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-purple-300 hover:text-purple-200 transition-colors flex items-center gap-1"
-                      >
-                        View on Store <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-                  </div>
-                  
-                  <div className="bg-white/5 glass rounded-lg p-5 border border-white/10">
-                    <h3 className="font-bold text-white mb-2">Khan Academy SAT Prep</h3>
-                    <p className="text-sm text-gray-300 mb-3">
-                      Free personalized SAT practice, progress tracking, and college readiness resources.
-                    </p>
-                    <div className="flex items-center justify-between">
-                      <Badge variant="secondary" className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                        Free
-                      </Badge>
-                      <a 
-                        href="https://satsuite.collegeboard.org/sat/practice-preparation/khan-academy" 
-                        target="_blank" 
-                        rel="noopener noreferrer"
-                        className="text-sm text-purple-300 hover:text-purple-200 transition-colors flex items-center gap-1"
-                      >
-                        Visit Site <ExternalLink className="h-3 w-3" />
-                      </a>
-                    </div>
-                  </div>
-                </div>
+                <ul className="space-y-3">
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-700 dark:text-gray-300">Take a diagnostic test to identify your strengths and weaknesses</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-700 dark:text-gray-300">Create a study schedule and stick to it consistently</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-700 dark:text-gray-300">Practice with timed tests to build endurance and time management skills</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-700 dark:text-gray-300">Review incorrect answers to understand your mistakes and avoid repeating them</p>
+                  </li>
+                  <li className="flex items-start gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-600 dark:bg-blue-400 mt-2 flex-shrink-0"></div>
+                    <p className="text-gray-700 dark:text-gray-300">Focus on your weakest areas while maintaining your strengths</p>
+                  </li>
+                </ul>
               </CardContent>
             </Card>
           </div>
