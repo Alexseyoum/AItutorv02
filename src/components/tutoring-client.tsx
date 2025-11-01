@@ -12,7 +12,6 @@ import {
   Compass,
   Settings,
   Flame,
-  Trophy,
   Target,
   Play,
   Zap,
@@ -361,7 +360,7 @@ export default function TutoringClient({ user, profile }: TutoringClientProps) {
                 {/* Achievements */}
                 <div className="p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex items-center justify-center gap-2 mb-2">
-                    <Trophy className="h-5 w-5 text-yellow-500" />
+                    <div className="h-5 w-5 text-yellow-500 flex items-center justify-center">🏆</div>
                     <span className="font-medium text-gray-900 dark:text-white">Achievements</span>
                   </div>
                   <div className="text-center text-2xl font-bold text-gray-900 dark:text-white">

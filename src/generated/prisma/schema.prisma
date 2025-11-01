@@ -298,7 +298,11 @@ model SATDiagnosticResult {
   strengths  Json? // Store as JSON array of strong areas
   weaknesses Json? // Store as JSON array of weak areas
 
-  createdAt DateTime @default(now())
+  // Store individual question answers for detailed analysis
+  questionAnswers Json? // Store as JSON array of { questionId, selectedAnswer, correctAnswer, isCorrect, subject, topic, timeSpent }
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt // Add updatedAt field for tracking modifications
 
   @@map("sat_diagnostic_results")
 }

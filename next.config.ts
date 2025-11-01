@@ -110,7 +110,7 @@ const nextConfig: NextConfig = {
           },
           {
             key: 'Content-Security-Policy',
-            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://openrouter.ai https://api-inference.huggingface.co https://www.googleapis.com https://en.wikipedia.org https://satsuite.collegeboard.org https://www.khanacademy.org https://api.vercel.com https://*.sentry.io; frame-src 'self' https://accounts.google.com https://github.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';",
+            value: "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https://api.groq.com https://openrouter.ai https://router.huggingface.co https://www.googleapis.com https://en.wikipedia.org https://satsuite.collegeboard.org https://www.khanacademy.org https://api.vercel.com https://*.sentry.io; frame-src 'self' https://accounts.google.com https://github.com; frame-ancestors 'none'; object-src 'none'; base-uri 'self'; form-action 'self';",
           },
         ],
       },

@@ -8,8 +8,7 @@ import {
   CheckCircle, 
   XCircle,
   Brain,
-  ArrowLeft,
-  Trophy
+  ArrowLeft
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -191,6 +190,20 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     
     setSession(completedSession);
     
+    // Prepare question answers data for storage
+    const questionAnswers = session.questions.map((question, index) => {
+      const userAnswer = session.userAnswers[index];
+      return {
+        questionId: question.id,
+        selectedAnswer: userAnswer?.selectedAnswer || null,
+        correctAnswer: question.answer,
+        isCorrect: userAnswer?.isCorrect || false,
+        subject: question.subject,
+        topic: question.topic,
+        timeSpent: userAnswer?.timeSpent || 0
+      };
+    });
+    
     // Save diagnostic results to database
     try {
       // Calculate scores by section
@@ -201,8 +214,8 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
       let readingTotal = 0;
       let writingTotal = 0;
       
-      session.questions.forEach((question, index) => {
-        const userAnswer = session.userAnswers[index];
+      session.questions.forEach((question) => {
+        const userAnswer = session.userAnswers.find(a => a.questionId === question.id);
         if (question.subject.toLowerCase().includes('math')) {
           mathTotal += 1;
           if (userAnswer && userAnswer.isCorrect) {
@@ -252,17 +265,17 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
       const weaknesses: string[] = [];
       
       if (mathTotal > 0) {
-        if (mathScaled > 500) strengths.push("Math");
+        if (mathScaled >= 500) strengths.push("Math");
         else weaknesses.push("Math");
       }
       
       if (readingTotal > 0) {
-        if (readingScaled > 500) strengths.push("Reading");
+        if (readingScaled >= 500) strengths.push("Reading");
         else weaknesses.push("Reading");
       }
       
       if (writingTotal > 0) {
-        if (writingScaled > 500) strengths.push("Writing");
+        if (writingScaled >= 500) strengths.push("Writing");
         else weaknesses.push("Writing");
       }
       
@@ -276,8 +289,9 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
           readingScore: readingScaled,
           writingScore: writingScaled,
           totalScore,
-          strengths,
-          weaknesses
+          strengths: JSON.stringify(strengths),
+          weaknesses: JSON.stringify(weaknesses),
+          questionAnswers: JSON.stringify(questionAnswers)
         }),
       });
       
@@ -326,11 +340,38 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
   // Cleanup answer timeout on unmount
   useEffect(() => {
     return () => {
-      if (answerTimeoutRef.current) {
-        clearTimeout(answerTimeoutRef.current);
+      const timeout = answerTimeoutRef.current;
+      if (timeout) {
+        clearTimeout(timeout);
       }
     };
   }, []);
+
+  // Handle manual answer submission
+  const handleSubmitAnswer = useCallback(() => {
+    if (!session || !selectedAnswer || showExplanation) return;
+    
+    const currentQuestion = session.questions[currentQuestionIndex];
+    const isCorrect = selectedAnswer === currentQuestion.answer;
+    
+    const newUserAnswer: UserAnswer = {
+      questionId: currentQuestion.id,
+      selectedAnswer: selectedAnswer,
+      isCorrect,
+      timeSpent: Math.floor((new Date().getTime() - session.currentTime.getTime()) / 1000)
+    };
+    
+    // Update session
+    const updatedSession = {
+      ...session,
+      userAnswers: [...session.userAnswers, newUserAnswer],
+      currentTime: new Date(),
+      timeSpent: session.timeSpent + newUserAnswer.timeSpent
+    };
+    
+    setSession(updatedSession);
+    setShowExplanation(true);
+  }, [session, selectedAnswer, showExplanation, currentQuestionIndex]);
 
   // Handle answer selection
   const handleAnswerSelect = useCallback((answer: string) => {
@@ -343,51 +384,62 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
       clearTimeout(answerTimeoutRef.current);
     }
     
-    // Auto-submit after a short delay
+    // Set new timeout for auto-advance
     answerTimeoutRef.current = setTimeout(() => {
-      if (!session || showExplanation) return;
-      
-      const currentQuestion = session.questions[currentQuestionIndex];
-      const isCorrect = answer === currentQuestion.answer;
-      
-      const newUserAnswer: UserAnswer = {
-        questionId: currentQuestion.id,
-        selectedAnswer: answer,
-        isCorrect,
-        timeSpent: Math.floor((new Date().getTime() - session.currentTime.getTime()) / 1000)
-      };
-      
-      // Update session
-      const updatedSession = {
-        ...session,
-        userAnswers: [...session.userAnswers, newUserAnswer],
-        currentTime: new Date(),
-        timeSpent: session.timeSpent + newUserAnswer.timeSpent
-      };
-      
-      setSession(updatedSession);
-      setSelectedAnswer(null);
-      setShowExplanation(true);
-    }, 1000);
-  }, [showExplanation, session, currentQuestionIndex]);
+      if (answer) {
+        handleSubmitAnswer();
+      }
+    }, 2000);
+  }, [showExplanation, session, handleSubmitAnswer]);
 
   // Move to next question
   const handleNextQuestion = useCallback(() => {
     if (!session) return;
     
+    // If there's a selected answer but not yet submitted, submit it first
+    if (selectedAnswer && !showExplanation) {
+      handleSubmitAnswer();
+    }
+    
     if (currentQuestionIndex < session.questions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
-      setShowExplanation(false);
-      setSession({
-        ...session,
+      // Set the selected answer for the new question if it exists
+      const nextQuestion = session.questions[currentQuestionIndex + 1];
+      const nextUserAnswer = session.userAnswers.find(a => a.questionId === nextQuestion.id);
+      setSelectedAnswer(nextUserAnswer?.selectedAnswer || null);
+      setShowExplanation(!!nextUserAnswer?.selectedAnswer);
+      setSession(prevSession => ({
+        ...prevSession!,
         currentTime: new Date()
-      });
+      }));
     } else {
       // Last question - complete session
       completeSession();
     }
-  }, [session, currentQuestionIndex, completeSession]);
+  }, [currentQuestionIndex, session, completeSession, selectedAnswer, showExplanation, handleSubmitAnswer]);
+
+  // Move to previous question
+  const handlePreviousQuestion = useCallback(() => {
+    if (!session) return;
+    
+    // If there's a selected answer but not yet submitted, submit it first
+    if (selectedAnswer && !showExplanation) {
+      handleSubmitAnswer();
+    }
+    
+    if (currentQuestionIndex > 0) {
+      setCurrentQuestionIndex(prev => prev - 1);
+      // Set the selected answer for the new question if it exists
+      const prevQuestion = session.questions[currentQuestionIndex - 1];
+      const prevUserAnswer = session.userAnswers.find(a => a.questionId === prevQuestion.id);
+      setSelectedAnswer(prevUserAnswer?.selectedAnswer || null);
+      setShowExplanation(!!prevUserAnswer?.selectedAnswer);
+      setSession(prevSession => ({
+        ...prevSession!,
+        currentTime: new Date()
+      }));
+    }
+  }, [currentQuestionIndex, session, selectedAnswer, showExplanation, handleSubmitAnswer]);
 
   // Format time
   const formatTime = (seconds: number): string => {
@@ -445,41 +497,110 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
 
   // If session is completed, show results
   if (session.isCompleted) {
-    // Calculate scores
-    let mathScore = 0;
-    let readingScore = 0;
-    let writingScore = 0;
+    // Initialize counters
     let mathCount = 0;
     let readingCount = 0;
     let writingCount = 0;
+    let mathCorrect = 0;
+    let readingCorrect = 0;
+    let writingCorrect = 0;
     
-    session.questions.forEach((question, index) => {
-      const userAnswer = session.userAnswers[index];
-      if (userAnswer && userAnswer.isCorrect) {
+    // Count questions by subject and track correct answers
+    session.questions.forEach((question, _index) => {
+      const userAnswer = session.userAnswers.find(a => a.questionId === question.id);
+      
+      // Only count questions that were actually answered
+      if (userAnswer && userAnswer.selectedAnswer !== null) {
         if (question.subject.toLowerCase().includes('math')) {
-          mathScore += 1;
           mathCount += 1;
+          if (userAnswer.isCorrect) {
+            mathCorrect += 1;
+          }
         } else if (question.subject.toLowerCase().includes('reading')) {
-          readingScore += 1;
           readingCount += 1;
+          if (userAnswer.isCorrect) {
+            readingCorrect += 1;
+          }
         } else if (question.subject.toLowerCase().includes('writing') || question.subject.toLowerCase().includes('grammar')) {
-          writingScore += 1;
           writingCount += 1;
+          if (userAnswer.isCorrect) {
+            writingCorrect += 1;
+          }
         }
       }
     });
     
     // Scale scores to SAT scale (200-800 per section)
     const scaleScore = (correct: number, total: number) => {
-      if (total === 0) return 0;
+      if (total === 0) return null; // Return null instead of 0 for better clarity
       // Scale to 200-800 range
       return Math.round(200 + (correct / total) * 600);
     };
     
-    const mathScaled = mathCount > 0 ? scaleScore(mathScore, mathCount) : 0;
-    const readingScaled = readingCount > 0 ? scaleScore(readingScore, readingCount) : 0;
-    const writingScaled = writingCount > 0 ? scaleScore(writingScore, writingCount) : 0;
-    const totalScore = mathScaled + readingScaled + writingScaled;
+    const mathScaled = mathCount > 0 ? scaleScore(mathCorrect, mathCount) : null;
+    const readingScaled = readingCount > 0 ? scaleScore(readingCorrect, readingCount) : null;
+    const writingScaled = writingCount > 0 ? scaleScore(writingCorrect, writingCount) : null;
+    const totalScore = (mathScaled || 0) + (readingScaled || 0) + (writingScaled || 0);
+    
+    // Identify strengths and weaknesses based on actual performance
+    const strengths: string[] = [];
+    const weaknesses: string[] = [];
+    
+    if (mathCount > 0) {
+      const mathAccuracy = mathCorrect / mathCount;
+      if (mathAccuracy >= 0.7) strengths.push("Math");
+      else if (mathAccuracy <= 0.3) weaknesses.push("Math");
+    }
+    
+    if (readingCount > 0) {
+      const readingAccuracy = readingCorrect / readingCount;
+      if (readingAccuracy >= 0.7) strengths.push("Reading");
+      else if (readingAccuracy <= 0.3) weaknesses.push("Reading");
+    }
+    
+    if (writingCount > 0) {
+      const writingAccuracy = writingCorrect / writingCount;
+      if (writingAccuracy >= 0.7) strengths.push("Writing");
+      else if (writingAccuracy <= 0.3) weaknesses.push("Writing");
+    }
+    
+    // Prepare detailed analysis data
+    const questionAnalysis = session.questions.map((question, _index) => {
+      const userAnswer = session.userAnswers.find(a => a.questionId === question.id);
+      return {
+        question: question.question,
+        topic: question.topic,
+        subject: question.subject,
+        userAnswer: userAnswer?.selectedAnswer || "Not answered",
+        correctAnswer: question.answer,
+        isCorrect: userAnswer?.isCorrect || false,
+        explanation: question.explanation,
+        timeSpent: userAnswer?.timeSpent || 0
+      };
+    }).filter(q => q.userAnswer !== "Not answered"); // Only include answered questions
+    
+    // Group questions by topic for analysis
+    const topicsAnalysis: Record<string, { correct: number; total: number; timeSpent: number }> = {};
+    questionAnalysis.forEach(q => {
+      if (!topicsAnalysis[q.topic]) {
+        topicsAnalysis[q.topic] = { correct: 0, total: 0, timeSpent: 0 };
+      }
+      topicsAnalysis[q.topic].total += 1;
+      if (q.isCorrect) {
+        topicsAnalysis[q.topic].correct += 1;
+      }
+      topicsAnalysis[q.topic].timeSpent += q.timeSpent;
+    });
+    
+    // Find challenging topics (low accuracy or high time spent)
+    const challengingTopics = Object.entries(topicsAnalysis)
+      .filter(([_, stats]) => stats.total > 0 && (stats.correct / stats.total < 0.7 || stats.timeSpent / stats.total > 30))
+      .map(([topic, stats]) => ({
+        topic,
+        accuracy: Math.round((stats.correct / stats.total) * 100),
+        avgTime: Math.round(stats.timeSpent / stats.total)
+      }))
+      .sort((a, b) => a.accuracy - b.accuracy || a.avgTime - b.avgTime);
     
     return (
       <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -491,7 +612,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
               variant="ghost"
               className="text-purple-200 hover:text-white hover:bg-white/10"
             >
-              <ArrowLeft className="h-5 w-5 mr-2" />
+              ←
               Back to SAT Prep
             </Button>
             <h1 className="text-3xl font-bold text-white">Diagnostic Results</h1>
@@ -502,13 +623,12 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
           <Card className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-6 shadow-2xl">
             <CardHeader>
               <CardTitle className="text-2xl font-bold text-white flex items-center gap-2">
-                <Trophy className="h-6 w-6 text-purple-400" />
                 SAT Diagnostic Test Results
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="text-center mb-8">
-                <div className="text-5xl font-bold text-white mb-2">{totalScore}</div>
+                <div className="text-5xl font-bold text-white mb-2">{totalScore || 0}</div>
                 <div className="text-2xl font-bold text-cyan-400 mb-4">Total Score</div>
                 <p className="text-purple-200">
                   Time spent: {Math.floor(session.timeSpent / 60)} minutes {session.timeSpent % 60} seconds
@@ -517,18 +637,82 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
               
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
                 <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-blue-400 mb-1">{mathScaled || 'N/A'}</div>
+                  <div className="text-2xl font-bold text-blue-400 mb-1">{mathScaled !== null ? mathScaled : 'N/A'}</div>
                   <div className="text-sm text-gray-400">Math Score</div>
+                  <div className="text-xs text-gray-500 mt-1">{mathCorrect}/{mathCount} correct</div>
                 </div>
                 <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-green-400 mb-1">{readingScaled || 'N/A'}</div>
+                  <div className="text-2xl font-bold text-green-400 mb-1">{readingScaled !== null ? readingScaled : 'N/A'}</div>
                   <div className="text-sm text-gray-400">Reading Score</div>
+                  <div className="text-xs text-gray-500 mt-1">{readingCorrect}/{readingCount} correct</div>
                 </div>
                 <div className="bg-white/5 glass rounded-lg p-4 border border-white/10">
-                  <div className="text-2xl font-bold text-purple-400 mb-1">{writingScaled || 'N/A'}</div>
+                  <div className="text-2xl font-bold text-purple-400 mb-1">{writingScaled !== null ? writingScaled : 'N/A'}</div>
                   <div className="text-sm text-gray-400">Writing Score</div>
+                  <div className="text-xs text-gray-500 mt-1">{writingCorrect}/{writingCount} correct</div>
                 </div>
               </div>
+              
+              <div className="mb-8">
+                <h3 className="text-xl font-bold text-white mb-4">Performance Analysis</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-green-500/10 rounded-lg p-4 border border-green-500/30">
+                    <h4 className="font-bold text-green-400 mb-2">Strengths</h4>
+                    {strengths.length > 0 ? (
+                      <ul className="text-white">
+                        {strengths.map((strength, index) => (
+                          <li key={index} className="flex items-center mb-1">
+                            ✅ {strength}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400">Continue practicing to identify your strengths</p>
+                    )}
+                  </div>
+                  <div className="bg-red-500/10 rounded-lg p-4 border border-red-500/30">
+                    <h4 className="font-bold text-red-400 mb-2">Areas for Improvement</h4>
+                    {weaknesses.length > 0 ? (
+                      <ul className="text-white">
+                        {weaknesses.map((weakness, index) => (
+                          <li key={index} className="flex items-center mb-1">
+                            ❌ {weakness}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400">Good job! Keep practicing to further improve</p>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {/* Detailed topic analysis */}
+              {challengingTopics.length > 0 && (
+                <div className="mb-8">
+                  <h3 className="text-xl font-bold text-white mb-4">Detailed Topic Analysis</h3>
+                  <div className="bg-white/5 rounded-lg p-4 border border-white/10">
+                    <p className="text-purple-200 mb-4">
+                      Based on your performance, here are the topics that need more attention:
+                    </p>
+                    <div className="space-y-3">
+                      {challengingTopics.map((topic, _index) => (
+                        <div key={_index} className="flex justify-between items-center p-3 bg-white/5 rounded-lg">
+                          <span className="text-white font-medium">{topic.topic}</span>
+                          <div className="flex gap-4">
+                            <span className={`${topic.accuracy < 50 ? 'text-red-400' : topic.accuracy < 70 ? 'text-yellow-400' : 'text-green-400'}`}>
+                              Accuracy: {topic.accuracy}%
+                            </span>
+                            <span className="text-blue-400">
+                              Avg. Time: {topic.avgTime}s
+                            </span>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
               
               <div className="flex justify-center gap-4">
                 <Button 
@@ -548,6 +732,9 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
   // Show current question
   const currentQuestion = session.questions[currentQuestionIndex];
   const userAnswer = session.userAnswers.find(a => a.questionId === currentQuestion.id);
+  
+  // Check if current question has been answered
+  const isCurrentQuestionAnswered = session.userAnswers.some(a => a.questionId === currentQuestion.id && a.selectedAnswer !== null);
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -602,7 +789,6 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
             <div className="space-y-3">
               {currentQuestion.choices.map((choice, index) => {
                 const isSelected = selectedAnswer === choice;
-                const _isCorrect = userAnswer?.isCorrect && userAnswer.selectedAnswer === choice;
                 const isIncorrect = !userAnswer?.isCorrect && userAnswer?.selectedAnswer === choice;
                 const showCorrect = showExplanation && choice === currentQuestion.answer;
                 
@@ -610,10 +796,10 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
                   <button
                     key={index}
                     onClick={() => handleAnswerSelect(choice)}
-                    disabled={showExplanation || !!userAnswer}
+                    disabled={showExplanation || isCurrentQuestionAnswered}
                     className={`
                       w-full text-left p-4 rounded-xl border transition-all
-                      ${showExplanation || userAnswer
+                      ${showExplanation || isCurrentQuestionAnswered
                         ? showCorrect
                           ? "bg-green-500/20 border-green-500/50"
                           : isIncorrect
@@ -631,18 +817,20 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
                     <div className="flex items-center">
                       <div className={`
                         w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0
-                        ${showExplanation || userAnswer
+                        ${showExplanation || isCurrentQuestionAnswered
                           ? showCorrect
                             ? "bg-green-500"
                             : isIncorrect
                               ? "bg-red-500"
-                              : "bg-purple-500"
+                            : isSelected
+                              ? "bg-purple-500"
+                              : "bg-white/20"
                           : isSelected
                             ? "bg-purple-500"
                             : "bg-white/20"
                         }
                       `}>
-                        {showExplanation || userAnswer ? (
+                        {showExplanation || isCurrentQuestionAnswered ? (
                           showCorrect || (isIncorrect && choice === currentQuestion.answer) ? (
                             <CheckCircle className="h-4 w-4 text-white" />
                           ) : isIncorrect ? (
@@ -674,7 +862,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
             <div className="mt-6 flex justify-between">
               <Button
                 variant="outline"
-                onClick={() => setCurrentQuestionIndex(Math.max(0, currentQuestionIndex - 1))}
+                onClick={handlePreviousQuestion}
                 disabled={currentQuestionIndex === 0}
                 className="border-purple-500 text-purple-300 hover:bg-purple-500/20"
               >
@@ -689,8 +877,19 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
                   {currentQuestionIndex < session.questions.length - 1 ? "Next Question" : "Finish Test"}
                 </Button>
               ) : (
-                <div className="text-purple-200 text-sm">
-                  {selectedAnswer ? "Processing answer..." : "Select an answer to continue"}
+                <div className="flex gap-2">
+                  {selectedAnswer ? (
+                    <Button
+                      onClick={handleSubmitAnswer}
+                      className="bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+                    >
+                      Submit Answer
+                    </Button>
+                  ) : (
+                    <div className="text-purple-200 text-sm">
+                      Select an answer to continue
+                    </div>
+                  )}
                 </div>
               )}
             </div>
