@@ -17,7 +17,7 @@ export async function callLLM(prompt: string, model: GroqModel = GROQ_MODELS.LLA
         { role: "user", content: prompt },
       ],
       temperature: 0.7,
-      max_tokens: 2000,
+      max_tokens: 1500, // Reduced from 2000 to 1500 to avoid timeouts
     });
 
     console.log(`Groq API call successful, received response`);
@@ -54,7 +54,7 @@ export async function callLLM(prompt: string, model: GroqModel = GROQ_MODELS.LLA
       try {
         // Use fallback providers
         console.log('🔄 Starting fallback provider chain...');
-        const fallbackResponse = await providerManager.generateWithFallback(prompt, 2000);
+        const fallbackResponse = await providerManager.generateWithFallback(prompt, 1500); // Reduced tokens
         console.log('✅ Successfully generated response using fallback provider');
         return fallbackResponse;
       } catch (fallbackError) {

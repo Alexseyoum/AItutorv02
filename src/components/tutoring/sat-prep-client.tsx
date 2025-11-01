@@ -10,7 +10,6 @@ import {
   BookOpen, 
   Calendar, 
   Target, 
-  Trophy, 
   Clock, 
   FileText, 
   Play, 
@@ -183,6 +182,25 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         if (diagnosticRes.ok) {
           const data = await diagnosticRes.json();
+          // Parse strengths and weaknesses if they're JSON strings
+          if (data.diagnostic) {
+            if (typeof data.diagnostic.strengths === 'string') {
+              try {
+                data.diagnostic.strengths = JSON.parse(data.diagnostic.strengths);
+              } catch (e) {
+                console.error('Failed to parse strengths:', e);
+                data.diagnostic.strengths = [];
+              }
+            }
+            if (typeof data.diagnostic.weaknesses === 'string') {
+              try {
+                data.diagnostic.weaknesses = JSON.parse(data.diagnostic.weaknesses);
+              } catch (e) {
+                console.error('Failed to parse weaknesses:', e);
+                data.diagnostic.weaknesses = [];
+              }
+            }
+          }
           setDiagnosticResult(data.diagnostic);
         } else if (diagnosticRes.status === 401) {
           toast.error("Please log in to view your diagnostic results");
@@ -424,10 +442,6 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
     }
   };
 
-  const _overallProgress = diagnosticResult 
-    ? Math.round((diagnosticResult.totalScore || 0) / 1600 * 100) 
-    : 0;
-
   if (isLoading) {
     return (
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center">
@@ -566,7 +580,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                           <span className="text-sm font-medium text-gray-900 dark:text-white">Math</span>
                         </div>
                         <div className="text-xl font-bold text-blue-600 dark:text-blue-400">
-                          {satStats.latestDiagnostic?.mathScore || diagnosticResult?.mathScore || 'N/A'}
+                          {satStats.latestDiagnostic?.mathScore != null ? satStats.latestDiagnostic.mathScore : diagnosticResult?.mathScore != null ? diagnosticResult.mathScore : 'N/A'}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
@@ -579,7 +593,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                           <span className="text-sm font-medium text-gray-900 dark:text-white">Reading</span>
                         </div>
                         <div className="text-xl font-bold text-green-600 dark:text-green-400">
-                          {satStats.latestDiagnostic?.readingScore || diagnosticResult?.readingScore || 'N/A'}
+                          {satStats.latestDiagnostic?.readingScore != null ? satStats.latestDiagnostic.readingScore : diagnosticResult?.readingScore != null ? diagnosticResult.readingScore : 'N/A'}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
@@ -592,7 +606,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                           <span className="text-sm font-medium text-gray-900 dark:text-white">Writing</span>
                         </div>
                         <div className="text-xl font-bold text-purple-600 dark:text-purple-400">
-                          {satStats.latestDiagnostic?.writingScore || diagnosticResult?.writingScore || 'N/A'}
+                          {satStats.latestDiagnostic?.writingScore != null ? satStats.latestDiagnostic.writingScore : diagnosticResult?.writingScore != null ? diagnosticResult.writingScore : 'N/A'}
                         </div>
                         <div className="text-xs text-gray-500 dark:text-gray-400">Score</div>
                       </div>
@@ -600,20 +614,30 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                     
                     <div className="flex flex-wrap gap-2">
                       <span className="text-sm text-gray-600 dark:text-gray-400">Strengths:</span>
-                      {(satStats.latestDiagnostic?.strengths || diagnosticResult?.strengths)?.slice(0, 3).map((strength: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
-                          {strength}
-                        </Badge>
-                      ))}
+                      {(() => {
+                        const strengths = satStats.latestDiagnostic?.strengths || diagnosticResult?.strengths;
+                        // Parse JSON if needed
+                        const parsedStrengths = typeof strengths === 'string' ? JSON.parse(strengths) : strengths;
+                        return Array.isArray(parsedStrengths) ? parsedStrengths.slice(0, 3).map((strength: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
+                            {strength}
+                          </Badge>
+                        )) : null;
+                      })()}
                     </div>
                     
                     <div className="flex flex-wrap gap-2">
                       <span className="text-sm text-gray-600 dark:text-gray-400">Areas to Improve:</span>
-                      {(satStats.latestDiagnostic?.weaknesses || diagnosticResult?.weaknesses)?.slice(0, 3).map((weakness: string, index: number) => (
-                        <Badge key={index} variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200">
-                          {weakness}
-                        </Badge>
-                      ))}
+                      {(() => {
+                        const weaknesses = satStats.latestDiagnostic?.weaknesses || diagnosticResult?.weaknesses;
+                        // Parse JSON if needed
+                        const parsedWeaknesses = typeof weaknesses === 'string' ? JSON.parse(weaknesses) : weaknesses;
+                        return Array.isArray(parsedWeaknesses) ? parsedWeaknesses.slice(0, 3).map((weakness: string, index: number) => (
+                          <Badge key={index} variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200">
+                            {weakness}
+                          </Badge>
+                        )) : null;
+                      })()}
                     </div>
                     
                     <div className="pt-4">
@@ -1081,7 +1105,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                     className="bg-white border border-gray-200 rounded-lg cursor-pointer hover:shadow-md transition-shadow"
                   >
                     <CardContent className="p-6 text-center">
-                      <Trophy className="h-10 w-10 text-orange-600 mx-auto mb-3" />
+                      <div className="h-10 w-10 text-orange-600 mx-auto mb-3 flex items-center justify-center text-2xl">🏆</div>
                       <h3 className="font-semibold text-gray-900 mb-2">Full Practice Test</h3>
                       <p className="text-gray-600 text-sm mb-4">Simulate real test conditions with all sections</p>
                       <Button 
@@ -1170,7 +1194,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
             <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Trophy className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="h-5 w-5 text-blue-600 dark:text-blue-400 flex items-center justify-center">🏆</div>
                   Study Tips
                 </CardTitle>
               </CardHeader>

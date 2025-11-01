@@ -16565,6 +16565,7 @@ export namespace Prisma {
     writingScore: number | null
     totalScore: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SATDiagnosticResultMaxAggregateOutputType = {
@@ -16575,6 +16576,7 @@ export namespace Prisma {
     writingScore: number | null
     totalScore: number | null
     createdAt: Date | null
+    updatedAt: Date | null
   }
 
   export type SATDiagnosticResultCountAggregateOutputType = {
@@ -16586,7 +16588,9 @@ export namespace Prisma {
     totalScore: number
     strengths: number
     weaknesses: number
+    questionAnswers: number
     createdAt: number
+    updatedAt: number
     _all: number
   }
 
@@ -16613,6 +16617,7 @@ export namespace Prisma {
     writingScore?: true
     totalScore?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SATDiagnosticResultMaxAggregateInputType = {
@@ -16623,6 +16628,7 @@ export namespace Prisma {
     writingScore?: true
     totalScore?: true
     createdAt?: true
+    updatedAt?: true
   }
 
   export type SATDiagnosticResultCountAggregateInputType = {
@@ -16634,7 +16640,9 @@ export namespace Prisma {
     totalScore?: true
     strengths?: true
     weaknesses?: true
+    questionAnswers?: true
     createdAt?: true
+    updatedAt?: true
     _all?: true
   }
 
@@ -16733,7 +16741,9 @@ export namespace Prisma {
     totalScore: number | null
     strengths: JsonValue | null
     weaknesses: JsonValue | null
+    questionAnswers: JsonValue | null
     createdAt: Date
+    updatedAt: Date | null
     _count: SATDiagnosticResultCountAggregateOutputType | null
     _avg: SATDiagnosticResultAvgAggregateOutputType | null
     _sum: SATDiagnosticResultSumAggregateOutputType | null
@@ -16764,7 +16774,9 @@ export namespace Prisma {
     totalScore?: boolean
     strengths?: boolean
     weaknesses?: boolean
+    questionAnswers?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["sATDiagnosticResult"]>
 
@@ -16777,7 +16789,9 @@ export namespace Prisma {
     totalScore?: boolean
     strengths?: boolean
     weaknesses?: boolean
+    questionAnswers?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["sATDiagnosticResult"]>
 
@@ -16790,7 +16804,9 @@ export namespace Prisma {
     totalScore?: boolean
     strengths?: boolean
     weaknesses?: boolean
+    questionAnswers?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["sATDiagnosticResult"]>
 
@@ -16803,10 +16819,12 @@ export namespace Prisma {
     totalScore?: boolean
     strengths?: boolean
     weaknesses?: boolean
+    questionAnswers?: boolean
     createdAt?: boolean
+    updatedAt?: boolean
   }
 
-  export type SATDiagnosticResultOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "mathScore" | "readingScore" | "writingScore" | "totalScore" | "strengths" | "weaknesses" | "createdAt", ExtArgs["result"]["sATDiagnosticResult"]>
+  export type SATDiagnosticResultOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "mathScore" | "readingScore" | "writingScore" | "totalScore" | "strengths" | "weaknesses" | "questionAnswers" | "createdAt" | "updatedAt", ExtArgs["result"]["sATDiagnosticResult"]>
   export type SATDiagnosticResultInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
   }
@@ -16831,7 +16849,9 @@ export namespace Prisma {
       totalScore: number | null
       strengths: Prisma.JsonValue | null
       weaknesses: Prisma.JsonValue | null
+      questionAnswers: Prisma.JsonValue | null
       createdAt: Date
+      updatedAt: Date | null
     }, ExtArgs["result"]["sATDiagnosticResult"]>
     composites: {}
   }
@@ -17264,7 +17284,9 @@ export namespace Prisma {
     readonly totalScore: FieldRef<"SATDiagnosticResult", 'Int'>
     readonly strengths: FieldRef<"SATDiagnosticResult", 'Json'>
     readonly weaknesses: FieldRef<"SATDiagnosticResult", 'Json'>
+    readonly questionAnswers: FieldRef<"SATDiagnosticResult", 'Json'>
     readonly createdAt: FieldRef<"SATDiagnosticResult", 'DateTime'>
+    readonly updatedAt: FieldRef<"SATDiagnosticResult", 'DateTime'>
   }
     
 
@@ -22443,7 +22465,9 @@ export namespace Prisma {
     totalScore: 'totalScore',
     strengths: 'strengths',
     weaknesses: 'weaknesses',
-    createdAt: 'createdAt'
+    questionAnswers: 'questionAnswers',
+    createdAt: 'createdAt',
+    updatedAt: 'updatedAt'
   };
 
   export type SATDiagnosticResultScalarFieldEnum = (typeof SATDiagnosticResultScalarFieldEnum)[keyof typeof SATDiagnosticResultScalarFieldEnum]
@@ -23715,7 +23739,9 @@ export namespace Prisma {
     totalScore?: IntNullableFilter<"SATDiagnosticResult"> | number | null
     strengths?: JsonNullableFilter<"SATDiagnosticResult">
     weaknesses?: JsonNullableFilter<"SATDiagnosticResult">
+    questionAnswers?: JsonNullableFilter<"SATDiagnosticResult">
     createdAt?: DateTimeFilter<"SATDiagnosticResult"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"SATDiagnosticResult"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }
 
@@ -23728,7 +23754,9 @@ export namespace Prisma {
     totalScore?: SortOrderInput | SortOrder
     strengths?: SortOrderInput | SortOrder
     weaknesses?: SortOrderInput | SortOrder
+    questionAnswers?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
   }
 
@@ -23744,7 +23772,9 @@ export namespace Prisma {
     totalScore?: IntNullableFilter<"SATDiagnosticResult"> | number | null
     strengths?: JsonNullableFilter<"SATDiagnosticResult">
     weaknesses?: JsonNullableFilter<"SATDiagnosticResult">
+    questionAnswers?: JsonNullableFilter<"SATDiagnosticResult">
     createdAt?: DateTimeFilter<"SATDiagnosticResult"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"SATDiagnosticResult"> | Date | string | null
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
   }, "id">
 
@@ -23757,7 +23787,9 @@ export namespace Prisma {
     totalScore?: SortOrderInput | SortOrder
     strengths?: SortOrderInput | SortOrder
     weaknesses?: SortOrderInput | SortOrder
+    questionAnswers?: SortOrderInput | SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrderInput | SortOrder
     _count?: SATDiagnosticResultCountOrderByAggregateInput
     _avg?: SATDiagnosticResultAvgOrderByAggregateInput
     _max?: SATDiagnosticResultMaxOrderByAggregateInput
@@ -23777,7 +23809,9 @@ export namespace Prisma {
     totalScore?: IntNullableWithAggregatesFilter<"SATDiagnosticResult"> | number | null
     strengths?: JsonNullableWithAggregatesFilter<"SATDiagnosticResult">
     weaknesses?: JsonNullableWithAggregatesFilter<"SATDiagnosticResult">
+    questionAnswers?: JsonNullableWithAggregatesFilter<"SATDiagnosticResult">
     createdAt?: DateTimeWithAggregatesFilter<"SATDiagnosticResult"> | Date | string
+    updatedAt?: DateTimeNullableWithAggregatesFilter<"SATDiagnosticResult"> | Date | string | null
   }
 
   export type QuestionWhereInput = {
@@ -25213,7 +25247,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
     user: UserCreateNestedOneWithoutSatDiagnosticResultsInput
   }
 
@@ -25226,7 +25262,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
   export type SATDiagnosticResultUpdateInput = {
@@ -25237,7 +25275,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneRequiredWithoutSatDiagnosticResultsNestedInput
   }
 
@@ -25250,7 +25290,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SATDiagnosticResultCreateManyInput = {
@@ -25262,7 +25304,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
   export type SATDiagnosticResultUpdateManyMutationInput = {
@@ -25273,7 +25317,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SATDiagnosticResultUncheckedUpdateManyInput = {
@@ -25285,7 +25331,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuestionCreateInput = {
@@ -26731,7 +26779,9 @@ export namespace Prisma {
     totalScore?: SortOrder
     strengths?: SortOrder
     weaknesses?: SortOrder
+    questionAnswers?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SATDiagnosticResultAvgOrderByAggregateInput = {
@@ -26749,6 +26799,7 @@ export namespace Prisma {
     writingScore?: SortOrder
     totalScore?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SATDiagnosticResultMinOrderByAggregateInput = {
@@ -26759,6 +26810,7 @@ export namespace Prisma {
     writingScore?: SortOrder
     totalScore?: SortOrder
     createdAt?: SortOrder
+    updatedAt?: SortOrder
   }
 
   export type SATDiagnosticResultSumOrderByAggregateInput = {
@@ -28782,7 +28834,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
   export type SATDiagnosticResultUncheckedCreateWithoutUserInput = {
@@ -28793,7 +28847,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
   export type SATDiagnosticResultCreateOrConnectWithoutUserInput = {
@@ -29238,7 +29294,9 @@ export namespace Prisma {
     totalScore?: IntNullableFilter<"SATDiagnosticResult"> | number | null
     strengths?: JsonNullableFilter<"SATDiagnosticResult">
     weaknesses?: JsonNullableFilter<"SATDiagnosticResult">
+    questionAnswers?: JsonNullableFilter<"SATDiagnosticResult">
     createdAt?: DateTimeFilter<"SATDiagnosticResult"> | Date | string
+    updatedAt?: DateTimeNullableFilter<"SATDiagnosticResult"> | Date | string | null
   }
 
   export type QuestionUpsertWithWhereUniqueWithoutUserInput = {
@@ -31921,7 +31979,9 @@ export namespace Prisma {
     totalScore?: number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: Date | string
+    updatedAt?: Date | string | null
   }
 
   export type QuestionCreateManyUserInput = {
@@ -32245,7 +32305,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SATDiagnosticResultUncheckedUpdateWithoutUserInput = {
@@ -32256,7 +32318,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type SATDiagnosticResultUncheckedUpdateManyWithoutUserInput = {
@@ -32267,7 +32331,9 @@ export namespace Prisma {
     totalScore?: NullableIntFieldUpdateOperationsInput | number | null
     strengths?: NullableJsonNullValueInput | InputJsonValue
     weaknesses?: NullableJsonNullValueInput | InputJsonValue
+    questionAnswers?: NullableJsonNullValueInput | InputJsonValue
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
 
   export type QuestionUpdateWithoutUserInput = {

@@ -37,148 +37,108 @@ class GroqProvider implements AIProvider {
 
 class HuggingFaceProvider implements AIProvider {
   name = 'huggingface';
-  private hf?: import('@huggingface/inference').HfInference; // Will be initialized when needed
+  private hf?: import('@huggingface/inference').HfInferenceEndpoint;
   
   async generateResponse(prompt: string, maxTokens: number = 500): Promise<string> {
+    // Debug: Log token status
+    console.log('HuggingFace token status:', {
+      tokenExists: !!process.env.HUGGINGFACE_TOKEN,
+      tokenLength: process.env.HUGGINGFACE_TOKEN?.length || 0,
+      tokenPrefix: process.env.HUGGINGFACE_TOKEN ? process.env.HUGGINGFACE_TOKEN.substring(0, 10) + '...' : 'none'
+    });
+    
+    if (!process.env.HUGGINGFACE_TOKEN) {
+      throw new Error('HuggingFace token is not set. Please check your environment variables.');
+    }
+    
     if (!this.hf) {
-      const { HfInference } = await import('@huggingface/inference');
-      this.hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
+      console.log('Initializing HuggingFace client with new endpoint...');
+      try {
+        const { HfInference } = await import('@huggingface/inference');
+        console.log('HfInference imported successfully');
+        // Directly create an endpoint client with the new URL
+        this.hf = new HfInference(process.env.HUGGINGFACE_TOKEN).endpoint('https://router.huggingface.co/hf-inference');
+        console.log('Endpoint client created successfully');
+      } catch (initError) {
+        console.error('HuggingFace client initialization error:', initError);
+        throw new Error(`Failed to initialize HuggingFace client: ${initError instanceof Error ? initError.message : 'Unknown error'}`);
+      }
     }
 
     try {
-      // Try text generation instead of chat completion (more reliable)
+      console.log('Attempting text generation with prompt length:', prompt.length);
+      
+      // For very large prompts, truncate to avoid timeout issues
+      let truncatedPrompt = prompt;
+      if (prompt.length > 2500) {
+        console.log('Truncating prompt to reduce size...');
+        truncatedPrompt = prompt.substring(0, 2500) + '... [truncated]';
+      }
+      
+      // Try text generation with the endpoint client
+      // Using a more reliable model and simpler parameters
       const result = await this.hf.textGeneration({
-        model: "mistralai/Mistral-7B-Instruct-v0.2",
-        inputs: prompt,
+        inputs: truncatedPrompt,
         parameters: {
-          max_new_tokens: maxTokens,
-          temperature: 0.8,
+          max_new_tokens: Math.min(maxTokens, 150), // Further reduce max tokens to avoid timeout
+          temperature: 0.7,
           return_full_text: false,
+          do_sample: true,
         }
       });
 
+      console.log('HuggingFace response received:', {
+        hasGeneratedText: !!result.generated_text,
+        textLength: result.generated_text?.length || 0,
+        textPreview: result.generated_text ? result.generated_text.substring(0, 50) + '...' : 'none'
+      });
+      
       return result.generated_text || "I'm processing your request.";
     } catch (error) {
+      console.error('HuggingFace detailed error:', {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : 'No stack',
+        name: error instanceof Error ? error.name : 'Unknown type',
+        fullError: error
+      });
+      
       Logger.error(`${this.name} provider error`, error as Error, { prompt, maxTokens });
-      throw error;
-    }
-  }
-
-  async generateImage(prompt: string, _options: ImageGenerationOptions = {}): Promise<ImageResult> {
-    if (!this.hf) {
-      const { HfInference } = await import('@huggingface/inference');
-      this.hf = new HfInference(process.env.HUGGINGFACE_TOKEN);
-    }
-
-    try {
-      // Enhance prompt based on grade level and style
-      const enhancedPrompt = this.enhanceImagePrompt(prompt, _options);
-      
-      Logger.info(`🎨 HuggingFace: Generating image with prompt: "${enhancedPrompt}"`, { prompt, enhancedPrompt });
-      
-      // Add timeout and error handling for the API call
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 30000); // 30 second timeout
-      
-      try {
-        // Use Stable Diffusion model for free image generation
-        const result = await this.hf.textToImage({
-          model: "stabilityai/stable-diffusion-2-1",
-          inputs: enhancedPrompt,
-          parameters: {
-            width: _options.width || 512,
-            height: _options.height || 512,
-          }
-        });
-
-        clearTimeout(timeoutId);
-
-        // Enhanced blob handling with multiple fallback approaches
-        let buffer: ArrayBuffer;
-        
-        if (result instanceof Blob) {
-          // Method 1: Direct blob conversion
-          try {
-            buffer = await result.arrayBuffer();
-          } catch (blobError) {
-            Logger.error('Direct blob conversion failed, trying alternative approach', blobError as Error);
-            
-            // Method 2: Stream-based conversion
-            const reader = new FileReader();
-            buffer = await new Promise((resolve, reject) => {
-              reader.onload = () => resolve(reader.result as ArrayBuffer);
-              reader.onerror = () => reject(reader.error);
-              reader.readAsArrayBuffer(result);
-            });
-          }
-        } else if (result && typeof result === 'object' && 'arrayBuffer' in result) {
-          // Method 3: Response-like object
-          buffer = await (result as { arrayBuffer: () => Promise<ArrayBuffer> }).arrayBuffer();
-        } else {
-          throw new Error(`Unexpected result type: ${typeof result}`);
-        }
-
-        // Convert buffer to base64 data URL
-        const base64 = Buffer.from(buffer).toString('base64');
-        const dataUrl = `data:image/png;base64,${base64}`;
-
-        Logger.info(`✅ HuggingFace: Image generated successfully, size: ${buffer.byteLength} bytes`, { size: buffer.byteLength });
-
-        return {
-          url: dataUrl,
-          alt: prompt,
-          provider: this.name
-        };
-        
-      } catch (apiError) {
-        clearTimeout(timeoutId);
-        throw apiError;
-      }
-      
-    } catch (error) {
-      Logger.error(`❌ HuggingFace image generation error`, error as Error, { prompt, _options });
       
       // Provide more specific error information
       if (error instanceof Error) {
-        if (error.message.includes('fetch')) {
-          throw new Error('Network error: Unable to connect to Hugging Face API. Please check your internet connection.');
-        } else if (error.message.includes('timeout') || error.name === 'AbortError') {
-          throw new Error('Timeout: Image generation took too long. Please try again with a simpler prompt.');
-        } else if (error.message.includes('blob') || error.message.includes('arrayBuffer')) {
-          throw new Error('Data processing error: Unable to process the generated image. The service might be experiencing issues.');
+        // Handle the specific "blob" error
+        if (error.message.includes('blob')) {
+          console.error('Blob error details:', {
+            errorMessage: error.message,
+            errorName: error.name
+          });
+          throw new Error('Model loading error: Unable to fetch model files. This might be a temporary issue with Hugging Face or a network connectivity problem. Please try again later.');
+        } else if (error.message.includes('fetch')) {
+          throw new Error('Network error: Unable to connect to Hugging Face API. Please check your internet connection and ensure your HUGGINGFACE_TOKEN is valid.');
         } else if (error.message.includes('401') || error.message.includes('unauthorized')) {
           throw new Error('Authentication error: Invalid Hugging Face token. Please check your HUGGINGFACE_TOKEN environment variable.');
+        } else if (error.message.includes('permissions') || error.message.includes('sufficient permissions')) {
+          throw new Error('Permission error: Your Hugging Face token does not have sufficient permissions for inference. Please check your token permissions at https://huggingface.co/settings/tokens');
         } else if (error.message.includes('429')) {
           throw new Error('Rate limit exceeded: Too many requests to Hugging Face. Please try again later.');
+        } else if (error.message.includes('model') && error.message.includes('loading')) {
+          throw new Error('Model loading error: Unable to load the requested model. This might be a temporary issue with Hugging Face. Please try again later.');
+        } else {
+          throw new Error(`Hugging Face generation failed: ${error.message}`);
         }
       }
       
-      throw new Error(`Hugging Face image generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      throw new Error(`Hugging Face generation failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
     }
-  }
-
-  private enhanceImagePrompt(prompt: string, options: ImageGenerationOptions): string {
-    const { gradeLevel = 8, style = 'realistic' } = options;
-    
-    let enhancement = '';
-    
-    if (gradeLevel < 8) {
-      enhancement = 'colorful, friendly, cartoon-style, educational illustration, simple and clear, suitable for children, ';
-    } else {
-      enhancement = 'detailed, educational, clear diagram, scientific illustration, high quality, ';
-    }
-    
-    if (style === 'illustration') {
-      enhancement += 'vector illustration, clean lines, ';
-    } else if (style === 'diagram') {
-      enhancement += 'technical diagram, labeled, informative, ';
-    }
-    
-    return enhancement + prompt;
   }
 
   isAvailable(): boolean {
     const hasToken = !!process.env.HUGGINGFACE_TOKEN;
+    console.log('HuggingFace provider availability:', {
+      hasToken,
+      tokenLength: process.env.HUGGINGFACE_TOKEN?.length || 0
+    });
+    
     if (!hasToken) {
       Logger.warn('⚠️ HuggingFace provider: HUGGINGFACE_TOKEN environment variable not set');
     }

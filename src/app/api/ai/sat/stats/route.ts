@@ -126,7 +126,27 @@ export async function GET(request: NextRequest) {
     }));
     
     // Get most recent diagnostic result
-    const latestDiagnostic = diagnosticResults.length > 0 ? diagnosticResults[0] : null;
+    let latestDiagnostic = diagnosticResults.length > 0 ? diagnosticResults[0] : null;
+    
+    // Parse strengths and weaknesses if they're JSON strings
+    if (latestDiagnostic) {
+      if (typeof latestDiagnostic.strengths === 'string') {
+        try {
+          latestDiagnostic.strengths = JSON.parse(latestDiagnostic.strengths);
+        } catch (e) {
+          console.error('Failed to parse strengths:', e);
+          latestDiagnostic.strengths = [];
+        }
+      }
+      if (typeof latestDiagnostic.weaknesses === 'string') {
+        try {
+          latestDiagnostic.weaknesses = JSON.parse(latestDiagnostic.weaknesses);
+        } catch (e) {
+          console.error('Failed to parse weaknesses:', e);
+          latestDiagnostic.weaknesses = [];
+        }
+      }
+    }
     
     // Calculate score improvement if we have multiple diagnostics
     let scoreImprovement = null;

@@ -5,20 +5,19 @@ import { useState } from "react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { 
-  ChevronDown, 
-  ChevronRight, 
-  BookOpen, 
   Calculator, 
   Atom, 
   Globe, 
   Palette, 
   Music, 
-  Trophy,
   Star,
   BarChart3,
   Home,
   Settings,
-  User
+  User,
+  BookOpen,
+  ChevronDown,
+  ChevronRight
 } from "lucide-react";
 
 interface NavItem {
@@ -89,7 +88,7 @@ const navigationItems: NavItem[] = [
 const bottomItems: NavItem[] = [
   {
     title: "Achievements",
-    icon: Trophy,
+    icon: () => <div className="h-5 w-5 flex items-center justify-center">🏆</div>,
     href: "/achievements",
     badge: 12
   },

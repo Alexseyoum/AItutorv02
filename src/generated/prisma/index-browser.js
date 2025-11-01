@@ -281,7 +281,9 @@ exports.Prisma.SATDiagnosticResultScalarFieldEnum = {
   totalScore: 'totalScore',
   strengths: 'strengths',
   weaknesses: 'weaknesses',
-  createdAt: 'createdAt'
+  questionAnswers: 'questionAnswers',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
 };
 
 exports.Prisma.QuestionScalarFieldEnum = {
