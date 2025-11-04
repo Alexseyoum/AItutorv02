@@ -84,6 +84,11 @@ export type SATDiagnosticResult = $Result.DefaultSelection<Prisma.$SATDiagnostic
  */
 export type Question = $Result.DefaultSelection<Prisma.$QuestionPayload>
 /**
+ * Model UserQuestionHistory
+ * 
+ */
+export type UserQuestionHistory = $Result.DefaultSelection<Prisma.$UserQuestionHistoryPayload>
+/**
  * Model MockExam
  * 
  */
@@ -153,6 +158,17 @@ export const AchievementCategory: {
 
 export type AchievementCategory = (typeof AchievementCategory)[keyof typeof AchievementCategory]
 
+
+export const QuestionStatus: {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  RETIRED: 'RETIRED',
+  ARCHIVED: 'ARCHIVED'
+};
+
+export type QuestionStatus = (typeof QuestionStatus)[keyof typeof QuestionStatus]
+
 }
 
 export type UserRole = $Enums.UserRole
@@ -174,6 +190,10 @@ export const ActivityType: typeof $Enums.ActivityType
 export type AchievementCategory = $Enums.AchievementCategory
 
 export const AchievementCategory: typeof $Enums.AchievementCategory
+
+export type QuestionStatus = $Enums.QuestionStatus
+
+export const QuestionStatus: typeof $Enums.QuestionStatus
 
 /**
  * ##  Prisma Client ʲˢ
@@ -432,6 +452,16 @@ export class PrismaClient<
     * ```
     */
   get question(): Prisma.QuestionDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userQuestionHistory`: Exposes CRUD operations for the **UserQuestionHistory** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserQuestionHistories
+    * const userQuestionHistories = await prisma.userQuestionHistory.findMany()
+    * ```
+    */
+  get userQuestionHistory(): Prisma.UserQuestionHistoryDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.mockExam`: Exposes CRUD operations for the **MockExam** model.
@@ -917,6 +947,7 @@ export namespace Prisma {
     SATPracticeSession: 'SATPracticeSession',
     SATDiagnosticResult: 'SATDiagnosticResult',
     Question: 'Question',
+    UserQuestionHistory: 'UserQuestionHistory',
     MockExam: 'MockExam',
     MockAttempt: 'MockAttempt',
     TopicMastery: 'TopicMastery'
@@ -938,7 +969,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "post" | "user" | "session" | "account" | "verification" | "studentActivity" | "learningStreak" | "achievement" | "chatSession" | "chatMessage" | "sATStudyPlan" | "sATPracticeSession" | "sATDiagnosticResult" | "question" | "mockExam" | "mockAttempt" | "topicMastery"
+      modelProps: "post" | "user" | "session" | "account" | "verification" | "studentActivity" | "learningStreak" | "achievement" | "chatSession" | "chatMessage" | "sATStudyPlan" | "sATPracticeSession" | "sATDiagnosticResult" | "question" | "userQuestionHistory" | "mockExam" | "mockAttempt" | "topicMastery"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -1978,6 +2009,80 @@ export namespace Prisma {
           }
         }
       }
+      UserQuestionHistory: {
+        payload: Prisma.$UserQuestionHistoryPayload<ExtArgs>
+        fields: Prisma.UserQuestionHistoryFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserQuestionHistoryFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserQuestionHistoryFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          findFirst: {
+            args: Prisma.UserQuestionHistoryFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserQuestionHistoryFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          findMany: {
+            args: Prisma.UserQuestionHistoryFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>[]
+          }
+          create: {
+            args: Prisma.UserQuestionHistoryCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          createMany: {
+            args: Prisma.UserQuestionHistoryCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserQuestionHistoryCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>[]
+          }
+          delete: {
+            args: Prisma.UserQuestionHistoryDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          update: {
+            args: Prisma.UserQuestionHistoryUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserQuestionHistoryDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserQuestionHistoryUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserQuestionHistoryUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserQuestionHistoryUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserQuestionHistoryPayload>
+          }
+          aggregate: {
+            args: Prisma.UserQuestionHistoryAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserQuestionHistory>
+          }
+          groupBy: {
+            args: Prisma.UserQuestionHistoryGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserQuestionHistoryGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserQuestionHistoryCountArgs<ExtArgs>
+            result: $Utils.Optional<UserQuestionHistoryCountAggregateOutputType> | number
+          }
+        }
+      }
       MockExam: {
         payload: Prisma.$MockExamPayload<ExtArgs>
         fields: Prisma.MockExamFieldRefs
@@ -2310,6 +2415,7 @@ export namespace Prisma {
     sATPracticeSession?: SATPracticeSessionOmit
     sATDiagnosticResult?: SATDiagnosticResultOmit
     question?: QuestionOmit
+    userQuestionHistory?: UserQuestionHistoryOmit
     mockExam?: MockExamOmit
     mockAttempt?: MockAttemptOmit
     topicMastery?: TopicMasteryOmit
@@ -2406,6 +2512,7 @@ export namespace Prisma {
     mockExams: number
     mockAttempts: number
     topicMasteries: number
+    questionHistories: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -2422,6 +2529,7 @@ export namespace Prisma {
     mockExams?: boolean | UserCountOutputTypeCountMockExamsArgs
     mockAttempts?: boolean | UserCountOutputTypeCountMockAttemptsArgs
     topicMasteries?: boolean | UserCountOutputTypeCountTopicMasteriesArgs
+    questionHistories?: boolean | UserCountOutputTypeCountQuestionHistoriesArgs
   }
 
   // Custom InputTypes
@@ -2526,6 +2634,13 @@ export namespace Prisma {
     where?: TopicMasteryWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountQuestionHistoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserQuestionHistoryWhereInput
+  }
+
 
   /**
    * Count Type ChatSessionCountOutputType
@@ -2555,6 +2670,46 @@ export namespace Prisma {
    */
   export type ChatSessionCountOutputTypeCountMessagesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ChatMessageWhereInput
+  }
+
+
+  /**
+   * Count Type QuestionCountOutputType
+   */
+
+  export type QuestionCountOutputType = {
+    childQuestions: number
+    userHistories: number
+  }
+
+  export type QuestionCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    childQuestions?: boolean | QuestionCountOutputTypeCountChildQuestionsArgs
+    userHistories?: boolean | QuestionCountOutputTypeCountUserHistoriesArgs
+  }
+
+  // Custom InputTypes
+  /**
+   * QuestionCountOutputType without action
+   */
+  export type QuestionCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the QuestionCountOutputType
+     */
+    select?: QuestionCountOutputTypeSelect<ExtArgs> | null
+  }
+
+  /**
+   * QuestionCountOutputType without action
+   */
+  export type QuestionCountOutputTypeCountChildQuestionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: QuestionWhereInput
+  }
+
+  /**
+   * QuestionCountOutputType without action
+   */
+  export type QuestionCountOutputTypeCountUserHistoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserQuestionHistoryWhereInput
   }
 
 
@@ -4020,6 +4175,7 @@ export namespace Prisma {
     mockExams?: boolean | User$mockExamsArgs<ExtArgs>
     mockAttempts?: boolean | User$mockAttemptsArgs<ExtArgs>
     topicMasteries?: boolean | User$topicMasteriesArgs<ExtArgs>
+    questionHistories?: boolean | User$questionHistoriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -4117,6 +4273,7 @@ export namespace Prisma {
     mockExams?: boolean | User$mockExamsArgs<ExtArgs>
     mockAttempts?: boolean | User$mockAttemptsArgs<ExtArgs>
     topicMasteries?: boolean | User$topicMasteriesArgs<ExtArgs>
+    questionHistories?: boolean | User$questionHistoriesArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {}
@@ -4139,6 +4296,7 @@ export namespace Prisma {
       mockExams: Prisma.$MockExamPayload<ExtArgs>[]
       mockAttempts: Prisma.$MockAttemptPayload<ExtArgs>[]
       topicMasteries: Prisma.$TopicMasteryPayload<ExtArgs>[]
+      questionHistories: Prisma.$UserQuestionHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -4572,6 +4730,7 @@ export namespace Prisma {
     mockExams<T extends User$mockExamsArgs<ExtArgs> = {}>(args?: Subset<T, User$mockExamsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MockExamPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     mockAttempts<T extends User$mockAttemptsArgs<ExtArgs> = {}>(args?: Subset<T, User$mockAttemptsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MockAttemptPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     topicMasteries<T extends User$topicMasteriesArgs<ExtArgs> = {}>(args?: Subset<T, User$topicMasteriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$TopicMasteryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    questionHistories<T extends User$questionHistoriesArgs<ExtArgs> = {}>(args?: Subset<T, User$questionHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -5340,6 +5499,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: TopicMasteryScalarFieldEnum | TopicMasteryScalarFieldEnum[]
+  }
+
+  /**
+   * User.questionHistories
+   */
+  export type User$questionHistoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    where?: UserQuestionHistoryWhereInput
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserQuestionHistoryScalarFieldEnum | UserQuestionHistoryScalarFieldEnum[]
   }
 
   /**
@@ -17707,8 +17890,26 @@ export namespace Prisma {
 
   export type AggregateQuestion = {
     _count: QuestionCountAggregateOutputType | null
+    _avg: QuestionAvgAggregateOutputType | null
+    _sum: QuestionSumAggregateOutputType | null
     _min: QuestionMinAggregateOutputType | null
     _max: QuestionMaxAggregateOutputType | null
+  }
+
+  export type QuestionAvgAggregateOutputType = {
+    usageCount: number | null
+    avgCorrectRate: number | null
+    avgTimeToAnswer: number | null
+    reviewCount: number | null
+    version: number | null
+  }
+
+  export type QuestionSumAggregateOutputType = {
+    usageCount: number | null
+    avgCorrectRate: number | null
+    avgTimeToAnswer: number | null
+    reviewCount: number | null
+    version: number | null
   }
 
   export type QuestionMinAggregateOutputType = {
@@ -17720,9 +17921,17 @@ export namespace Prisma {
     answer: string | null
     explanation: string | null
     source: string | null
-    status: string | null
+    status: $Enums.QuestionStatus | null
     createdAt: Date | null
     updatedAt: Date | null
+    usageCount: number | null
+    avgCorrectRate: number | null
+    avgTimeToAnswer: number | null
+    lastUsedAt: Date | null
+    reviewCount: number | null
+    version: number | null
+    isActive: boolean | null
+    parentVersionId: string | null
     userGeneratedBy: string | null
   }
 
@@ -17735,9 +17944,17 @@ export namespace Prisma {
     answer: string | null
     explanation: string | null
     source: string | null
-    status: string | null
+    status: $Enums.QuestionStatus | null
     createdAt: Date | null
     updatedAt: Date | null
+    usageCount: number | null
+    avgCorrectRate: number | null
+    avgTimeToAnswer: number | null
+    lastUsedAt: Date | null
+    reviewCount: number | null
+    version: number | null
+    isActive: boolean | null
+    parentVersionId: string | null
     userGeneratedBy: string | null
   }
 
@@ -17754,10 +17971,35 @@ export namespace Prisma {
     status: number
     createdAt: number
     updatedAt: number
+    usageCount: number
+    avgCorrectRate: number
+    avgTimeToAnswer: number
+    tags: number
+    lastUsedAt: number
+    reviewCount: number
+    version: number
+    isActive: number
+    parentVersionId: number
     userGeneratedBy: number
     _all: number
   }
 
+
+  export type QuestionAvgAggregateInputType = {
+    usageCount?: true
+    avgCorrectRate?: true
+    avgTimeToAnswer?: true
+    reviewCount?: true
+    version?: true
+  }
+
+  export type QuestionSumAggregateInputType = {
+    usageCount?: true
+    avgCorrectRate?: true
+    avgTimeToAnswer?: true
+    reviewCount?: true
+    version?: true
+  }
 
   export type QuestionMinAggregateInputType = {
     id?: true
@@ -17771,6 +18013,14 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    usageCount?: true
+    avgCorrectRate?: true
+    avgTimeToAnswer?: true
+    lastUsedAt?: true
+    reviewCount?: true
+    version?: true
+    isActive?: true
+    parentVersionId?: true
     userGeneratedBy?: true
   }
 
@@ -17786,6 +18036,14 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    usageCount?: true
+    avgCorrectRate?: true
+    avgTimeToAnswer?: true
+    lastUsedAt?: true
+    reviewCount?: true
+    version?: true
+    isActive?: true
+    parentVersionId?: true
     userGeneratedBy?: true
   }
 
@@ -17802,6 +18060,15 @@ export namespace Prisma {
     status?: true
     createdAt?: true
     updatedAt?: true
+    usageCount?: true
+    avgCorrectRate?: true
+    avgTimeToAnswer?: true
+    tags?: true
+    lastUsedAt?: true
+    reviewCount?: true
+    version?: true
+    isActive?: true
+    parentVersionId?: true
     userGeneratedBy?: true
     _all?: true
   }
@@ -17844,6 +18111,18 @@ export namespace Prisma {
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
+     * Select which fields to average
+    **/
+    _avg?: QuestionAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: QuestionSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
      * Select which fields to find the minimum value
     **/
     _min?: QuestionMinAggregateInputType
@@ -17874,6 +18153,8 @@ export namespace Prisma {
     take?: number
     skip?: number
     _count?: QuestionCountAggregateInputType | true
+    _avg?: QuestionAvgAggregateInputType
+    _sum?: QuestionSumAggregateInputType
     _min?: QuestionMinAggregateInputType
     _max?: QuestionMaxAggregateInputType
   }
@@ -17888,11 +18169,22 @@ export namespace Prisma {
     answer: string
     explanation: string
     source: string
-    status: string
+    status: $Enums.QuestionStatus
     createdAt: Date
     updatedAt: Date
+    usageCount: number
+    avgCorrectRate: number | null
+    avgTimeToAnswer: number | null
+    tags: string[]
+    lastUsedAt: Date | null
+    reviewCount: number
+    version: number
+    isActive: boolean
+    parentVersionId: string | null
     userGeneratedBy: string | null
     _count: QuestionCountAggregateOutputType | null
+    _avg: QuestionAvgAggregateOutputType | null
+    _sum: QuestionSumAggregateOutputType | null
     _min: QuestionMinAggregateOutputType | null
     _max: QuestionMaxAggregateOutputType | null
   }
@@ -17924,8 +18216,21 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    usageCount?: boolean
+    avgCorrectRate?: boolean
+    avgTimeToAnswer?: boolean
+    tags?: boolean
+    lastUsedAt?: boolean
+    reviewCount?: boolean
+    version?: boolean
+    isActive?: boolean
+    parentVersionId?: boolean
     userGeneratedBy?: boolean
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
+    childQuestions?: boolean | Question$childQuestionsArgs<ExtArgs>
+    userHistories?: boolean | Question$userHistoriesArgs<ExtArgs>
+    _count?: boolean | QuestionCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["question"]>
 
   export type QuestionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17941,8 +18246,18 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    usageCount?: boolean
+    avgCorrectRate?: boolean
+    avgTimeToAnswer?: boolean
+    tags?: boolean
+    lastUsedAt?: boolean
+    reviewCount?: boolean
+    version?: boolean
+    isActive?: boolean
+    parentVersionId?: boolean
     userGeneratedBy?: boolean
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
   }, ExtArgs["result"]["question"]>
 
   export type QuestionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -17958,8 +18273,18 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    usageCount?: boolean
+    avgCorrectRate?: boolean
+    avgTimeToAnswer?: boolean
+    tags?: boolean
+    lastUsedAt?: boolean
+    reviewCount?: boolean
+    version?: boolean
+    isActive?: boolean
+    parentVersionId?: boolean
     userGeneratedBy?: boolean
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
   }, ExtArgs["result"]["question"]>
 
   export type QuestionSelectScalar = {
@@ -17975,24 +18300,42 @@ export namespace Prisma {
     status?: boolean
     createdAt?: boolean
     updatedAt?: boolean
+    usageCount?: boolean
+    avgCorrectRate?: boolean
+    avgTimeToAnswer?: boolean
+    tags?: boolean
+    lastUsedAt?: boolean
+    reviewCount?: boolean
+    version?: boolean
+    isActive?: boolean
+    parentVersionId?: boolean
     userGeneratedBy?: boolean
   }
 
-  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "subject" | "difficulty" | "question" | "choices" | "answer" | "explanation" | "source" | "status" | "createdAt" | "updatedAt" | "userGeneratedBy", ExtArgs["result"]["question"]>
+  export type QuestionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "topic" | "subject" | "difficulty" | "question" | "choices" | "answer" | "explanation" | "source" | "status" | "createdAt" | "updatedAt" | "usageCount" | "avgCorrectRate" | "avgTimeToAnswer" | "tags" | "lastUsedAt" | "reviewCount" | "version" | "isActive" | "parentVersionId" | "userGeneratedBy", ExtArgs["result"]["question"]>
   export type QuestionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
+    childQuestions?: boolean | Question$childQuestionsArgs<ExtArgs>
+    userHistories?: boolean | Question$userHistoriesArgs<ExtArgs>
+    _count?: boolean | QuestionCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type QuestionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
   }
   export type QuestionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | Question$userArgs<ExtArgs>
+    parentQuestion?: boolean | Question$parentQuestionArgs<ExtArgs>
   }
 
   export type $QuestionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     name: "Question"
     objects: {
       user: Prisma.$UserPayload<ExtArgs> | null
+      parentQuestion: Prisma.$QuestionPayload<ExtArgs> | null
+      childQuestions: Prisma.$QuestionPayload<ExtArgs>[]
+      userHistories: Prisma.$UserQuestionHistoryPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -18004,9 +18347,18 @@ export namespace Prisma {
       answer: string
       explanation: string
       source: string
-      status: string
+      status: $Enums.QuestionStatus
       createdAt: Date
       updatedAt: Date
+      usageCount: number
+      avgCorrectRate: number | null
+      avgTimeToAnswer: number | null
+      tags: string[]
+      lastUsedAt: Date | null
+      reviewCount: number
+      version: number
+      isActive: boolean
+      parentVersionId: string | null
       userGeneratedBy: string | null
     }, ExtArgs["result"]["question"]>
     composites: {}
@@ -18403,6 +18755,9 @@ export namespace Prisma {
   export interface Prisma__QuestionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     user<T extends Question$userArgs<ExtArgs> = {}>(args?: Subset<T, Question$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    parentQuestion<T extends Question$parentQuestionArgs<ExtArgs> = {}>(args?: Subset<T, Question$parentQuestionArgs<ExtArgs>>): Prisma__QuestionClient<$Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    childQuestions<T extends Question$childQuestionsArgs<ExtArgs> = {}>(args?: Subset<T, Question$childQuestionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    userHistories<T extends Question$userHistoriesArgs<ExtArgs> = {}>(args?: Subset<T, Question$userHistoriesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -18441,9 +18796,18 @@ export namespace Prisma {
     readonly answer: FieldRef<"Question", 'String'>
     readonly explanation: FieldRef<"Question", 'String'>
     readonly source: FieldRef<"Question", 'String'>
-    readonly status: FieldRef<"Question", 'String'>
+    readonly status: FieldRef<"Question", 'QuestionStatus'>
     readonly createdAt: FieldRef<"Question", 'DateTime'>
     readonly updatedAt: FieldRef<"Question", 'DateTime'>
+    readonly usageCount: FieldRef<"Question", 'Int'>
+    readonly avgCorrectRate: FieldRef<"Question", 'Float'>
+    readonly avgTimeToAnswer: FieldRef<"Question", 'Float'>
+    readonly tags: FieldRef<"Question", 'String[]'>
+    readonly lastUsedAt: FieldRef<"Question", 'DateTime'>
+    readonly reviewCount: FieldRef<"Question", 'Int'>
+    readonly version: FieldRef<"Question", 'Int'>
+    readonly isActive: FieldRef<"Question", 'Boolean'>
+    readonly parentVersionId: FieldRef<"Question", 'String'>
     readonly userGeneratedBy: FieldRef<"Question", 'String'>
   }
     
@@ -18860,6 +19224,73 @@ export namespace Prisma {
   }
 
   /**
+   * Question.parentQuestion
+   */
+  export type Question$parentQuestionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Question
+     */
+    select?: QuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Question
+     */
+    omit?: QuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: QuestionInclude<ExtArgs> | null
+    where?: QuestionWhereInput
+  }
+
+  /**
+   * Question.childQuestions
+   */
+  export type Question$childQuestionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Question
+     */
+    select?: QuestionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Question
+     */
+    omit?: QuestionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: QuestionInclude<ExtArgs> | null
+    where?: QuestionWhereInput
+    orderBy?: QuestionOrderByWithRelationInput | QuestionOrderByWithRelationInput[]
+    cursor?: QuestionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: QuestionScalarFieldEnum | QuestionScalarFieldEnum[]
+  }
+
+  /**
+   * Question.userHistories
+   */
+  export type Question$userHistoriesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    where?: UserQuestionHistoryWhereInput
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserQuestionHistoryScalarFieldEnum | UserQuestionHistoryScalarFieldEnum[]
+  }
+
+  /**
    * Question without action
    */
   export type QuestionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -18875,6 +19306,1171 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: QuestionInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model UserQuestionHistory
+   */
+
+  export type AggregateUserQuestionHistory = {
+    _count: UserQuestionHistoryCountAggregateOutputType | null
+    _avg: UserQuestionHistoryAvgAggregateOutputType | null
+    _sum: UserQuestionHistorySumAggregateOutputType | null
+    _min: UserQuestionHistoryMinAggregateOutputType | null
+    _max: UserQuestionHistoryMaxAggregateOutputType | null
+  }
+
+  export type UserQuestionHistoryAvgAggregateOutputType = {
+    timeSpent: number | null
+  }
+
+  export type UserQuestionHistorySumAggregateOutputType = {
+    timeSpent: number | null
+  }
+
+  export type UserQuestionHistoryMinAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    questionId: string | null
+    usedAt: Date | null
+    wasCorrect: boolean | null
+    timeSpent: number | null
+    subject: string | null
+    topic: string | null
+    difficulty: string | null
+    createdAt: Date | null
+  }
+
+  export type UserQuestionHistoryMaxAggregateOutputType = {
+    id: string | null
+    userId: string | null
+    questionId: string | null
+    usedAt: Date | null
+    wasCorrect: boolean | null
+    timeSpent: number | null
+    subject: string | null
+    topic: string | null
+    difficulty: string | null
+    createdAt: Date | null
+  }
+
+  export type UserQuestionHistoryCountAggregateOutputType = {
+    id: number
+    userId: number
+    questionId: number
+    usedAt: number
+    wasCorrect: number
+    timeSpent: number
+    subject: number
+    topic: number
+    difficulty: number
+    createdAt: number
+    _all: number
+  }
+
+
+  export type UserQuestionHistoryAvgAggregateInputType = {
+    timeSpent?: true
+  }
+
+  export type UserQuestionHistorySumAggregateInputType = {
+    timeSpent?: true
+  }
+
+  export type UserQuestionHistoryMinAggregateInputType = {
+    id?: true
+    userId?: true
+    questionId?: true
+    usedAt?: true
+    wasCorrect?: true
+    timeSpent?: true
+    subject?: true
+    topic?: true
+    difficulty?: true
+    createdAt?: true
+  }
+
+  export type UserQuestionHistoryMaxAggregateInputType = {
+    id?: true
+    userId?: true
+    questionId?: true
+    usedAt?: true
+    wasCorrect?: true
+    timeSpent?: true
+    subject?: true
+    topic?: true
+    difficulty?: true
+    createdAt?: true
+  }
+
+  export type UserQuestionHistoryCountAggregateInputType = {
+    id?: true
+    userId?: true
+    questionId?: true
+    usedAt?: true
+    wasCorrect?: true
+    timeSpent?: true
+    subject?: true
+    topic?: true
+    difficulty?: true
+    createdAt?: true
+    _all?: true
+  }
+
+  export type UserQuestionHistoryAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserQuestionHistory to aggregate.
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserQuestionHistories to fetch.
+     */
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserQuestionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserQuestionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserQuestionHistories
+    **/
+    _count?: true | UserQuestionHistoryCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: UserQuestionHistoryAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: UserQuestionHistorySumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserQuestionHistoryMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserQuestionHistoryMaxAggregateInputType
+  }
+
+  export type GetUserQuestionHistoryAggregateType<T extends UserQuestionHistoryAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserQuestionHistory]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserQuestionHistory[P]>
+      : GetScalarType<T[P], AggregateUserQuestionHistory[P]>
+  }
+
+
+
+
+  export type UserQuestionHistoryGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserQuestionHistoryWhereInput
+    orderBy?: UserQuestionHistoryOrderByWithAggregationInput | UserQuestionHistoryOrderByWithAggregationInput[]
+    by: UserQuestionHistoryScalarFieldEnum[] | UserQuestionHistoryScalarFieldEnum
+    having?: UserQuestionHistoryScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserQuestionHistoryCountAggregateInputType | true
+    _avg?: UserQuestionHistoryAvgAggregateInputType
+    _sum?: UserQuestionHistorySumAggregateInputType
+    _min?: UserQuestionHistoryMinAggregateInputType
+    _max?: UserQuestionHistoryMaxAggregateInputType
+  }
+
+  export type UserQuestionHistoryGroupByOutputType = {
+    id: string
+    userId: string
+    questionId: string
+    usedAt: Date
+    wasCorrect: boolean | null
+    timeSpent: number | null
+    subject: string | null
+    topic: string | null
+    difficulty: string | null
+    createdAt: Date
+    _count: UserQuestionHistoryCountAggregateOutputType | null
+    _avg: UserQuestionHistoryAvgAggregateOutputType | null
+    _sum: UserQuestionHistorySumAggregateOutputType | null
+    _min: UserQuestionHistoryMinAggregateOutputType | null
+    _max: UserQuestionHistoryMaxAggregateOutputType | null
+  }
+
+  type GetUserQuestionHistoryGroupByPayload<T extends UserQuestionHistoryGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserQuestionHistoryGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserQuestionHistoryGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserQuestionHistoryGroupByOutputType[P]>
+            : GetScalarType<T[P], UserQuestionHistoryGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserQuestionHistorySelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    questionId?: boolean
+    usedAt?: boolean
+    wasCorrect?: boolean
+    timeSpent?: boolean
+    subject?: boolean
+    topic?: boolean
+    difficulty?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userQuestionHistory"]>
+
+  export type UserQuestionHistorySelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    questionId?: boolean
+    usedAt?: boolean
+    wasCorrect?: boolean
+    timeSpent?: boolean
+    subject?: boolean
+    topic?: boolean
+    difficulty?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userQuestionHistory"]>
+
+  export type UserQuestionHistorySelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    userId?: boolean
+    questionId?: boolean
+    usedAt?: boolean
+    wasCorrect?: boolean
+    timeSpent?: boolean
+    subject?: boolean
+    topic?: boolean
+    difficulty?: boolean
+    createdAt?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userQuestionHistory"]>
+
+  export type UserQuestionHistorySelectScalar = {
+    id?: boolean
+    userId?: boolean
+    questionId?: boolean
+    usedAt?: boolean
+    wasCorrect?: boolean
+    timeSpent?: boolean
+    subject?: boolean
+    topic?: boolean
+    difficulty?: boolean
+    createdAt?: boolean
+  }
+
+  export type UserQuestionHistoryOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "userId" | "questionId" | "usedAt" | "wasCorrect" | "timeSpent" | "subject" | "topic" | "difficulty" | "createdAt", ExtArgs["result"]["userQuestionHistory"]>
+  export type UserQuestionHistoryInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }
+  export type UserQuestionHistoryIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }
+  export type UserQuestionHistoryIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    question?: boolean | QuestionDefaultArgs<ExtArgs>
+  }
+
+  export type $UserQuestionHistoryPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserQuestionHistory"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      question: Prisma.$QuestionPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      userId: string
+      questionId: string
+      usedAt: Date
+      wasCorrect: boolean | null
+      timeSpent: number | null
+      subject: string | null
+      topic: string | null
+      difficulty: string | null
+      createdAt: Date
+    }, ExtArgs["result"]["userQuestionHistory"]>
+    composites: {}
+  }
+
+  type UserQuestionHistoryGetPayload<S extends boolean | null | undefined | UserQuestionHistoryDefaultArgs> = $Result.GetResult<Prisma.$UserQuestionHistoryPayload, S>
+
+  type UserQuestionHistoryCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserQuestionHistoryFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserQuestionHistoryCountAggregateInputType | true
+    }
+
+  export interface UserQuestionHistoryDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserQuestionHistory'], meta: { name: 'UserQuestionHistory' } }
+    /**
+     * Find zero or one UserQuestionHistory that matches the filter.
+     * @param {UserQuestionHistoryFindUniqueArgs} args - Arguments to find a UserQuestionHistory
+     * @example
+     * // Get one UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserQuestionHistoryFindUniqueArgs>(args: SelectSubset<T, UserQuestionHistoryFindUniqueArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserQuestionHistory that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserQuestionHistoryFindUniqueOrThrowArgs} args - Arguments to find a UserQuestionHistory
+     * @example
+     * // Get one UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserQuestionHistoryFindUniqueOrThrowArgs>(args: SelectSubset<T, UserQuestionHistoryFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserQuestionHistory that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryFindFirstArgs} args - Arguments to find a UserQuestionHistory
+     * @example
+     * // Get one UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserQuestionHistoryFindFirstArgs>(args?: SelectSubset<T, UserQuestionHistoryFindFirstArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserQuestionHistory that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryFindFirstOrThrowArgs} args - Arguments to find a UserQuestionHistory
+     * @example
+     * // Get one UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserQuestionHistoryFindFirstOrThrowArgs>(args?: SelectSubset<T, UserQuestionHistoryFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserQuestionHistories that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserQuestionHistories
+     * const userQuestionHistories = await prisma.userQuestionHistory.findMany()
+     * 
+     * // Get first 10 UserQuestionHistories
+     * const userQuestionHistories = await prisma.userQuestionHistory.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userQuestionHistoryWithIdOnly = await prisma.userQuestionHistory.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserQuestionHistoryFindManyArgs>(args?: SelectSubset<T, UserQuestionHistoryFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserQuestionHistory.
+     * @param {UserQuestionHistoryCreateArgs} args - Arguments to create a UserQuestionHistory.
+     * @example
+     * // Create one UserQuestionHistory
+     * const UserQuestionHistory = await prisma.userQuestionHistory.create({
+     *   data: {
+     *     // ... data to create a UserQuestionHistory
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserQuestionHistoryCreateArgs>(args: SelectSubset<T, UserQuestionHistoryCreateArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserQuestionHistories.
+     * @param {UserQuestionHistoryCreateManyArgs} args - Arguments to create many UserQuestionHistories.
+     * @example
+     * // Create many UserQuestionHistories
+     * const userQuestionHistory = await prisma.userQuestionHistory.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserQuestionHistoryCreateManyArgs>(args?: SelectSubset<T, UserQuestionHistoryCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserQuestionHistories and returns the data saved in the database.
+     * @param {UserQuestionHistoryCreateManyAndReturnArgs} args - Arguments to create many UserQuestionHistories.
+     * @example
+     * // Create many UserQuestionHistories
+     * const userQuestionHistory = await prisma.userQuestionHistory.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserQuestionHistories and only return the `id`
+     * const userQuestionHistoryWithIdOnly = await prisma.userQuestionHistory.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserQuestionHistoryCreateManyAndReturnArgs>(args?: SelectSubset<T, UserQuestionHistoryCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserQuestionHistory.
+     * @param {UserQuestionHistoryDeleteArgs} args - Arguments to delete one UserQuestionHistory.
+     * @example
+     * // Delete one UserQuestionHistory
+     * const UserQuestionHistory = await prisma.userQuestionHistory.delete({
+     *   where: {
+     *     // ... filter to delete one UserQuestionHistory
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserQuestionHistoryDeleteArgs>(args: SelectSubset<T, UserQuestionHistoryDeleteArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserQuestionHistory.
+     * @param {UserQuestionHistoryUpdateArgs} args - Arguments to update one UserQuestionHistory.
+     * @example
+     * // Update one UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserQuestionHistoryUpdateArgs>(args: SelectSubset<T, UserQuestionHistoryUpdateArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserQuestionHistories.
+     * @param {UserQuestionHistoryDeleteManyArgs} args - Arguments to filter UserQuestionHistories to delete.
+     * @example
+     * // Delete a few UserQuestionHistories
+     * const { count } = await prisma.userQuestionHistory.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserQuestionHistoryDeleteManyArgs>(args?: SelectSubset<T, UserQuestionHistoryDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserQuestionHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserQuestionHistories
+     * const userQuestionHistory = await prisma.userQuestionHistory.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserQuestionHistoryUpdateManyArgs>(args: SelectSubset<T, UserQuestionHistoryUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserQuestionHistories and returns the data updated in the database.
+     * @param {UserQuestionHistoryUpdateManyAndReturnArgs} args - Arguments to update many UserQuestionHistories.
+     * @example
+     * // Update many UserQuestionHistories
+     * const userQuestionHistory = await prisma.userQuestionHistory.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserQuestionHistories and only return the `id`
+     * const userQuestionHistoryWithIdOnly = await prisma.userQuestionHistory.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserQuestionHistoryUpdateManyAndReturnArgs>(args: SelectSubset<T, UserQuestionHistoryUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserQuestionHistory.
+     * @param {UserQuestionHistoryUpsertArgs} args - Arguments to update or create a UserQuestionHistory.
+     * @example
+     * // Update or create a UserQuestionHistory
+     * const userQuestionHistory = await prisma.userQuestionHistory.upsert({
+     *   create: {
+     *     // ... data to create a UserQuestionHistory
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserQuestionHistory we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserQuestionHistoryUpsertArgs>(args: SelectSubset<T, UserQuestionHistoryUpsertArgs<ExtArgs>>): Prisma__UserQuestionHistoryClient<$Result.GetResult<Prisma.$UserQuestionHistoryPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserQuestionHistories.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryCountArgs} args - Arguments to filter UserQuestionHistories to count.
+     * @example
+     * // Count the number of UserQuestionHistories
+     * const count = await prisma.userQuestionHistory.count({
+     *   where: {
+     *     // ... the filter for the UserQuestionHistories we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserQuestionHistoryCountArgs>(
+      args?: Subset<T, UserQuestionHistoryCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserQuestionHistoryCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserQuestionHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserQuestionHistoryAggregateArgs>(args: Subset<T, UserQuestionHistoryAggregateArgs>): Prisma.PrismaPromise<GetUserQuestionHistoryAggregateType<T>>
+
+    /**
+     * Group by UserQuestionHistory.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserQuestionHistoryGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserQuestionHistoryGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserQuestionHistoryGroupByArgs['orderBy'] }
+        : { orderBy?: UserQuestionHistoryGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserQuestionHistoryGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserQuestionHistoryGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserQuestionHistory model
+   */
+  readonly fields: UserQuestionHistoryFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserQuestionHistory.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserQuestionHistoryClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    question<T extends QuestionDefaultArgs<ExtArgs> = {}>(args?: Subset<T, QuestionDefaultArgs<ExtArgs>>): Prisma__QuestionClient<$Result.GetResult<Prisma.$QuestionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserQuestionHistory model
+   */
+  interface UserQuestionHistoryFieldRefs {
+    readonly id: FieldRef<"UserQuestionHistory", 'String'>
+    readonly userId: FieldRef<"UserQuestionHistory", 'String'>
+    readonly questionId: FieldRef<"UserQuestionHistory", 'String'>
+    readonly usedAt: FieldRef<"UserQuestionHistory", 'DateTime'>
+    readonly wasCorrect: FieldRef<"UserQuestionHistory", 'Boolean'>
+    readonly timeSpent: FieldRef<"UserQuestionHistory", 'Int'>
+    readonly subject: FieldRef<"UserQuestionHistory", 'String'>
+    readonly topic: FieldRef<"UserQuestionHistory", 'String'>
+    readonly difficulty: FieldRef<"UserQuestionHistory", 'String'>
+    readonly createdAt: FieldRef<"UserQuestionHistory", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserQuestionHistory findUnique
+   */
+  export type UserQuestionHistoryFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which UserQuestionHistory to fetch.
+     */
+    where: UserQuestionHistoryWhereUniqueInput
+  }
+
+  /**
+   * UserQuestionHistory findUniqueOrThrow
+   */
+  export type UserQuestionHistoryFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which UserQuestionHistory to fetch.
+     */
+    where: UserQuestionHistoryWhereUniqueInput
+  }
+
+  /**
+   * UserQuestionHistory findFirst
+   */
+  export type UserQuestionHistoryFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which UserQuestionHistory to fetch.
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserQuestionHistories to fetch.
+     */
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserQuestionHistories.
+     */
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserQuestionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserQuestionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserQuestionHistories.
+     */
+    distinct?: UserQuestionHistoryScalarFieldEnum | UserQuestionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * UserQuestionHistory findFirstOrThrow
+   */
+  export type UserQuestionHistoryFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which UserQuestionHistory to fetch.
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserQuestionHistories to fetch.
+     */
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserQuestionHistories.
+     */
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserQuestionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserQuestionHistories.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserQuestionHistories.
+     */
+    distinct?: UserQuestionHistoryScalarFieldEnum | UserQuestionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * UserQuestionHistory findMany
+   */
+  export type UserQuestionHistoryFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter, which UserQuestionHistories to fetch.
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserQuestionHistories to fetch.
+     */
+    orderBy?: UserQuestionHistoryOrderByWithRelationInput | UserQuestionHistoryOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserQuestionHistories.
+     */
+    cursor?: UserQuestionHistoryWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserQuestionHistories from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserQuestionHistories.
+     */
+    skip?: number
+    distinct?: UserQuestionHistoryScalarFieldEnum | UserQuestionHistoryScalarFieldEnum[]
+  }
+
+  /**
+   * UserQuestionHistory create
+   */
+  export type UserQuestionHistoryCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserQuestionHistory.
+     */
+    data: XOR<UserQuestionHistoryCreateInput, UserQuestionHistoryUncheckedCreateInput>
+  }
+
+  /**
+   * UserQuestionHistory createMany
+   */
+  export type UserQuestionHistoryCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserQuestionHistories.
+     */
+    data: UserQuestionHistoryCreateManyInput | UserQuestionHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserQuestionHistory createManyAndReturn
+   */
+  export type UserQuestionHistoryCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserQuestionHistories.
+     */
+    data: UserQuestionHistoryCreateManyInput | UserQuestionHistoryCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserQuestionHistory update
+   */
+  export type UserQuestionHistoryUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserQuestionHistory.
+     */
+    data: XOR<UserQuestionHistoryUpdateInput, UserQuestionHistoryUncheckedUpdateInput>
+    /**
+     * Choose, which UserQuestionHistory to update.
+     */
+    where: UserQuestionHistoryWhereUniqueInput
+  }
+
+  /**
+   * UserQuestionHistory updateMany
+   */
+  export type UserQuestionHistoryUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserQuestionHistories.
+     */
+    data: XOR<UserQuestionHistoryUpdateManyMutationInput, UserQuestionHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which UserQuestionHistories to update
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * Limit how many UserQuestionHistories to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserQuestionHistory updateManyAndReturn
+   */
+  export type UserQuestionHistoryUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * The data used to update UserQuestionHistories.
+     */
+    data: XOR<UserQuestionHistoryUpdateManyMutationInput, UserQuestionHistoryUncheckedUpdateManyInput>
+    /**
+     * Filter which UserQuestionHistories to update
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * Limit how many UserQuestionHistories to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserQuestionHistory upsert
+   */
+  export type UserQuestionHistoryUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserQuestionHistory to update in case it exists.
+     */
+    where: UserQuestionHistoryWhereUniqueInput
+    /**
+     * In case the UserQuestionHistory found by the `where` argument doesn't exist, create a new UserQuestionHistory with this data.
+     */
+    create: XOR<UserQuestionHistoryCreateInput, UserQuestionHistoryUncheckedCreateInput>
+    /**
+     * In case the UserQuestionHistory was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserQuestionHistoryUpdateInput, UserQuestionHistoryUncheckedUpdateInput>
+  }
+
+  /**
+   * UserQuestionHistory delete
+   */
+  export type UserQuestionHistoryDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
+    /**
+     * Filter which UserQuestionHistory to delete.
+     */
+    where: UserQuestionHistoryWhereUniqueInput
+  }
+
+  /**
+   * UserQuestionHistory deleteMany
+   */
+  export type UserQuestionHistoryDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserQuestionHistories to delete
+     */
+    where?: UserQuestionHistoryWhereInput
+    /**
+     * Limit how many UserQuestionHistories to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserQuestionHistory without action
+   */
+  export type UserQuestionHistoryDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserQuestionHistory
+     */
+    select?: UserQuestionHistorySelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserQuestionHistory
+     */
+    omit?: UserQuestionHistoryOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserQuestionHistoryInclude<ExtArgs> | null
   }
 
 
@@ -22486,10 +24082,35 @@ export namespace Prisma {
     status: 'status',
     createdAt: 'createdAt',
     updatedAt: 'updatedAt',
+    usageCount: 'usageCount',
+    avgCorrectRate: 'avgCorrectRate',
+    avgTimeToAnswer: 'avgTimeToAnswer',
+    tags: 'tags',
+    lastUsedAt: 'lastUsedAt',
+    reviewCount: 'reviewCount',
+    version: 'version',
+    isActive: 'isActive',
+    parentVersionId: 'parentVersionId',
     userGeneratedBy: 'userGeneratedBy'
   };
 
   export type QuestionScalarFieldEnum = (typeof QuestionScalarFieldEnum)[keyof typeof QuestionScalarFieldEnum]
+
+
+  export const UserQuestionHistoryScalarFieldEnum: {
+    id: 'id',
+    userId: 'userId',
+    questionId: 'questionId',
+    usedAt: 'usedAt',
+    wasCorrect: 'wasCorrect',
+    timeSpent: 'timeSpent',
+    subject: 'subject',
+    topic: 'topic',
+    difficulty: 'difficulty',
+    createdAt: 'createdAt'
+  };
+
+  export type UserQuestionHistoryScalarFieldEnum = (typeof UserQuestionHistoryScalarFieldEnum)[keyof typeof UserQuestionHistoryScalarFieldEnum]
 
 
   export const MockExamScalarFieldEnum: {
@@ -22731,6 +24352,20 @@ export namespace Prisma {
    */
   export type ListEnumAchievementCategoryFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AchievementCategory[]'>
     
+
+
+  /**
+   * Reference to a field of type 'QuestionStatus'
+   */
+  export type EnumQuestionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuestionStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'QuestionStatus[]'
+   */
+  export type ListEnumQuestionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QuestionStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -22837,6 +24472,7 @@ export namespace Prisma {
     mockExams?: MockExamListRelationFilter
     mockAttempts?: MockAttemptListRelationFilter
     topicMasteries?: TopicMasteryListRelationFilter
+    questionHistories?: UserQuestionHistoryListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -22877,6 +24513,7 @@ export namespace Prisma {
     mockExams?: MockExamOrderByRelationAggregateInput
     mockAttempts?: MockAttemptOrderByRelationAggregateInput
     topicMasteries?: TopicMasteryOrderByRelationAggregateInput
+    questionHistories?: UserQuestionHistoryOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -22920,6 +24557,7 @@ export namespace Prisma {
     mockExams?: MockExamListRelationFilter
     mockAttempts?: MockAttemptListRelationFilter
     topicMasteries?: TopicMasteryListRelationFilter
+    questionHistories?: UserQuestionHistoryListRelationFilter
   }, "id" | "email">
 
   export type UserOrderByWithAggregationInput = {
@@ -23827,11 +25465,23 @@ export namespace Prisma {
     answer?: StringFilter<"Question"> | string
     explanation?: StringFilter<"Question"> | string
     source?: StringFilter<"Question"> | string
-    status?: StringFilter<"Question"> | string
+    status?: EnumQuestionStatusFilter<"Question"> | $Enums.QuestionStatus
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
+    usageCount?: IntFilter<"Question"> | number
+    avgCorrectRate?: FloatNullableFilter<"Question"> | number | null
+    avgTimeToAnswer?: FloatNullableFilter<"Question"> | number | null
+    tags?: StringNullableListFilter<"Question">
+    lastUsedAt?: DateTimeNullableFilter<"Question"> | Date | string | null
+    reviewCount?: IntFilter<"Question"> | number
+    version?: IntFilter<"Question"> | number
+    isActive?: BoolFilter<"Question"> | boolean
+    parentVersionId?: StringNullableFilter<"Question"> | string | null
     userGeneratedBy?: StringNullableFilter<"Question"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    parentQuestion?: XOR<QuestionNullableScalarRelationFilter, QuestionWhereInput> | null
+    childQuestions?: QuestionListRelationFilter
+    userHistories?: UserQuestionHistoryListRelationFilter
   }
 
   export type QuestionOrderByWithRelationInput = {
@@ -23847,8 +25497,20 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrderInput | SortOrder
+    avgTimeToAnswer?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    parentVersionId?: SortOrderInput | SortOrder
     userGeneratedBy?: SortOrderInput | SortOrder
     user?: UserOrderByWithRelationInput
+    parentQuestion?: QuestionOrderByWithRelationInput
+    childQuestions?: QuestionOrderByRelationAggregateInput
+    userHistories?: UserQuestionHistoryOrderByRelationAggregateInput
   }
 
   export type QuestionWhereUniqueInput = Prisma.AtLeast<{
@@ -23864,11 +25526,23 @@ export namespace Prisma {
     answer?: StringFilter<"Question"> | string
     explanation?: StringFilter<"Question"> | string
     source?: StringFilter<"Question"> | string
-    status?: StringFilter<"Question"> | string
+    status?: EnumQuestionStatusFilter<"Question"> | $Enums.QuestionStatus
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
+    usageCount?: IntFilter<"Question"> | number
+    avgCorrectRate?: FloatNullableFilter<"Question"> | number | null
+    avgTimeToAnswer?: FloatNullableFilter<"Question"> | number | null
+    tags?: StringNullableListFilter<"Question">
+    lastUsedAt?: DateTimeNullableFilter<"Question"> | Date | string | null
+    reviewCount?: IntFilter<"Question"> | number
+    version?: IntFilter<"Question"> | number
+    isActive?: BoolFilter<"Question"> | boolean
+    parentVersionId?: StringNullableFilter<"Question"> | string | null
     userGeneratedBy?: StringNullableFilter<"Question"> | string | null
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+    parentQuestion?: XOR<QuestionNullableScalarRelationFilter, QuestionWhereInput> | null
+    childQuestions?: QuestionListRelationFilter
+    userHistories?: UserQuestionHistoryListRelationFilter
   }, "id">
 
   export type QuestionOrderByWithAggregationInput = {
@@ -23884,10 +25558,21 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrderInput | SortOrder
+    avgTimeToAnswer?: SortOrderInput | SortOrder
+    tags?: SortOrder
+    lastUsedAt?: SortOrderInput | SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    parentVersionId?: SortOrderInput | SortOrder
     userGeneratedBy?: SortOrderInput | SortOrder
     _count?: QuestionCountOrderByAggregateInput
+    _avg?: QuestionAvgOrderByAggregateInput
     _max?: QuestionMaxOrderByAggregateInput
     _min?: QuestionMinOrderByAggregateInput
+    _sum?: QuestionSumOrderByAggregateInput
   }
 
   export type QuestionScalarWhereWithAggregatesInput = {
@@ -23903,10 +25588,104 @@ export namespace Prisma {
     answer?: StringWithAggregatesFilter<"Question"> | string
     explanation?: StringWithAggregatesFilter<"Question"> | string
     source?: StringWithAggregatesFilter<"Question"> | string
-    status?: StringWithAggregatesFilter<"Question"> | string
+    status?: EnumQuestionStatusWithAggregatesFilter<"Question"> | $Enums.QuestionStatus
     createdAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
     updatedAt?: DateTimeWithAggregatesFilter<"Question"> | Date | string
+    usageCount?: IntWithAggregatesFilter<"Question"> | number
+    avgCorrectRate?: FloatNullableWithAggregatesFilter<"Question"> | number | null
+    avgTimeToAnswer?: FloatNullableWithAggregatesFilter<"Question"> | number | null
+    tags?: StringNullableListFilter<"Question">
+    lastUsedAt?: DateTimeNullableWithAggregatesFilter<"Question"> | Date | string | null
+    reviewCount?: IntWithAggregatesFilter<"Question"> | number
+    version?: IntWithAggregatesFilter<"Question"> | number
+    isActive?: BoolWithAggregatesFilter<"Question"> | boolean
+    parentVersionId?: StringNullableWithAggregatesFilter<"Question"> | string | null
     userGeneratedBy?: StringNullableWithAggregatesFilter<"Question"> | string | null
+  }
+
+  export type UserQuestionHistoryWhereInput = {
+    AND?: UserQuestionHistoryWhereInput | UserQuestionHistoryWhereInput[]
+    OR?: UserQuestionHistoryWhereInput[]
+    NOT?: UserQuestionHistoryWhereInput | UserQuestionHistoryWhereInput[]
+    id?: StringFilter<"UserQuestionHistory"> | string
+    userId?: StringFilter<"UserQuestionHistory"> | string
+    questionId?: StringFilter<"UserQuestionHistory"> | string
+    usedAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+    wasCorrect?: BoolNullableFilter<"UserQuestionHistory"> | boolean | null
+    timeSpent?: IntNullableFilter<"UserQuestionHistory"> | number | null
+    subject?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    topic?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    difficulty?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    createdAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    question?: XOR<QuestionScalarRelationFilter, QuestionWhereInput>
+  }
+
+  export type UserQuestionHistoryOrderByWithRelationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    questionId?: SortOrder
+    usedAt?: SortOrder
+    wasCorrect?: SortOrderInput | SortOrder
+    timeSpent?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    topic?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    user?: UserOrderByWithRelationInput
+    question?: QuestionOrderByWithRelationInput
+  }
+
+  export type UserQuestionHistoryWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    AND?: UserQuestionHistoryWhereInput | UserQuestionHistoryWhereInput[]
+    OR?: UserQuestionHistoryWhereInput[]
+    NOT?: UserQuestionHistoryWhereInput | UserQuestionHistoryWhereInput[]
+    userId?: StringFilter<"UserQuestionHistory"> | string
+    questionId?: StringFilter<"UserQuestionHistory"> | string
+    usedAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+    wasCorrect?: BoolNullableFilter<"UserQuestionHistory"> | boolean | null
+    timeSpent?: IntNullableFilter<"UserQuestionHistory"> | number | null
+    subject?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    topic?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    difficulty?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    createdAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    question?: XOR<QuestionScalarRelationFilter, QuestionWhereInput>
+  }, "id">
+
+  export type UserQuestionHistoryOrderByWithAggregationInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    questionId?: SortOrder
+    usedAt?: SortOrder
+    wasCorrect?: SortOrderInput | SortOrder
+    timeSpent?: SortOrderInput | SortOrder
+    subject?: SortOrderInput | SortOrder
+    topic?: SortOrderInput | SortOrder
+    difficulty?: SortOrderInput | SortOrder
+    createdAt?: SortOrder
+    _count?: UserQuestionHistoryCountOrderByAggregateInput
+    _avg?: UserQuestionHistoryAvgOrderByAggregateInput
+    _max?: UserQuestionHistoryMaxOrderByAggregateInput
+    _min?: UserQuestionHistoryMinOrderByAggregateInput
+    _sum?: UserQuestionHistorySumOrderByAggregateInput
+  }
+
+  export type UserQuestionHistoryScalarWhereWithAggregatesInput = {
+    AND?: UserQuestionHistoryScalarWhereWithAggregatesInput | UserQuestionHistoryScalarWhereWithAggregatesInput[]
+    OR?: UserQuestionHistoryScalarWhereWithAggregatesInput[]
+    NOT?: UserQuestionHistoryScalarWhereWithAggregatesInput | UserQuestionHistoryScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserQuestionHistory"> | string
+    userId?: StringWithAggregatesFilter<"UserQuestionHistory"> | string
+    questionId?: StringWithAggregatesFilter<"UserQuestionHistory"> | string
+    usedAt?: DateTimeWithAggregatesFilter<"UserQuestionHistory"> | Date | string
+    wasCorrect?: BoolNullableWithAggregatesFilter<"UserQuestionHistory"> | boolean | null
+    timeSpent?: IntNullableWithAggregatesFilter<"UserQuestionHistory"> | number | null
+    subject?: StringNullableWithAggregatesFilter<"UserQuestionHistory"> | string | null
+    topic?: StringNullableWithAggregatesFilter<"UserQuestionHistory"> | string | null
+    difficulty?: StringNullableWithAggregatesFilter<"UserQuestionHistory"> | string | null
+    createdAt?: DateTimeWithAggregatesFilter<"UserQuestionHistory"> | Date | string
   }
 
   export type MockExamWhereInput = {
@@ -24225,6 +26004,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -24265,6 +26045,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -24305,6 +26086,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -24345,6 +26127,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -25346,10 +27129,21 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
     user?: UserCreateNestedOneWithoutGeneratedQuestionsInput
+    parentQuestion?: QuestionCreateNestedOneWithoutChildQuestionsInput
+    childQuestions?: QuestionCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryCreateNestedManyWithoutQuestionInput
   }
 
   export type QuestionUncheckedCreateInput = {
@@ -25362,10 +27156,21 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
     userGeneratedBy?: string | null
+    childQuestions?: QuestionUncheckedCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutQuestionInput
   }
 
   export type QuestionUpdateInput = {
@@ -25378,10 +27183,21 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
     user?: UserUpdateOneWithoutGeneratedQuestionsNestedInput
+    parentQuestion?: QuestionUpdateOneWithoutChildQuestionsNestedInput
+    childQuestions?: QuestionUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUpdateManyWithoutQuestionNestedInput
   }
 
   export type QuestionUncheckedUpdateInput = {
@@ -25394,10 +27210,21 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
     userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    childQuestions?: QuestionUncheckedUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutQuestionNestedInput
   }
 
   export type QuestionCreateManyInput = {
@@ -25410,9 +27237,18 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
     userGeneratedBy?: string | null
   }
 
@@ -25426,9 +27262,17 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
   }
 
   export type QuestionUncheckedUpdateManyInput = {
@@ -25441,10 +27285,108 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
     userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserQuestionHistoryCreateInput = {
+    id?: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutQuestionHistoriesInput
+    question: QuestionCreateNestedOneWithoutUserHistoriesInput
+  }
+
+  export type UserQuestionHistoryUncheckedCreateInput = {
+    id?: string
+    userId: string
+    questionId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserQuestionHistoryUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutQuestionHistoriesNestedInput
+    question?: QuestionUpdateOneRequiredWithoutUserHistoriesNestedInput
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    questionId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserQuestionHistoryCreateManyInput = {
+    id?: string
+    userId: string
+    questionId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserQuestionHistoryUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    questionId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MockExamCreateInput = {
@@ -25931,6 +27873,12 @@ export namespace Prisma {
     none?: TopicMasteryWhereInput
   }
 
+  export type UserQuestionHistoryListRelationFilter = {
+    every?: UserQuestionHistoryWhereInput
+    some?: UserQuestionHistoryWhereInput
+    none?: UserQuestionHistoryWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -25985,6 +27933,10 @@ export namespace Prisma {
   }
 
   export type TopicMasteryOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserQuestionHistoryOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -26820,9 +28772,21 @@ export namespace Prisma {
     totalScore?: SortOrder
   }
 
+  export type EnumQuestionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuestionStatus | EnumQuestionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuestionStatusFilter<$PrismaModel> | $Enums.QuestionStatus
+  }
+
   export type UserNullableScalarRelationFilter = {
     is?: UserWhereInput | null
     isNot?: UserWhereInput | null
+  }
+
+  export type QuestionNullableScalarRelationFilter = {
+    is?: QuestionWhereInput | null
+    isNot?: QuestionWhereInput | null
   }
 
   export type QuestionCountOrderByAggregateInput = {
@@ -26838,7 +28802,24 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrder
+    avgTimeToAnswer?: SortOrder
+    tags?: SortOrder
+    lastUsedAt?: SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    parentVersionId?: SortOrder
     userGeneratedBy?: SortOrder
+  }
+
+  export type QuestionAvgOrderByAggregateInput = {
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrder
+    avgTimeToAnswer?: SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
   }
 
   export type QuestionMaxOrderByAggregateInput = {
@@ -26853,6 +28834,14 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrder
+    avgTimeToAnswer?: SortOrder
+    lastUsedAt?: SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    parentVersionId?: SortOrder
     userGeneratedBy?: SortOrder
   }
 
@@ -26868,7 +28857,85 @@ export namespace Prisma {
     status?: SortOrder
     createdAt?: SortOrder
     updatedAt?: SortOrder
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrder
+    avgTimeToAnswer?: SortOrder
+    lastUsedAt?: SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+    isActive?: SortOrder
+    parentVersionId?: SortOrder
     userGeneratedBy?: SortOrder
+  }
+
+  export type QuestionSumOrderByAggregateInput = {
+    usageCount?: SortOrder
+    avgCorrectRate?: SortOrder
+    avgTimeToAnswer?: SortOrder
+    reviewCount?: SortOrder
+    version?: SortOrder
+  }
+
+  export type EnumQuestionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuestionStatus | EnumQuestionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuestionStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuestionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuestionStatusFilter<$PrismaModel>
+    _max?: NestedEnumQuestionStatusFilter<$PrismaModel>
+  }
+
+  export type QuestionScalarRelationFilter = {
+    is?: QuestionWhereInput
+    isNot?: QuestionWhereInput
+  }
+
+  export type UserQuestionHistoryCountOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    questionId?: SortOrder
+    usedAt?: SortOrder
+    wasCorrect?: SortOrder
+    timeSpent?: SortOrder
+    subject?: SortOrder
+    topic?: SortOrder
+    difficulty?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserQuestionHistoryAvgOrderByAggregateInput = {
+    timeSpent?: SortOrder
+  }
+
+  export type UserQuestionHistoryMaxOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    questionId?: SortOrder
+    usedAt?: SortOrder
+    wasCorrect?: SortOrder
+    timeSpent?: SortOrder
+    subject?: SortOrder
+    topic?: SortOrder
+    difficulty?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserQuestionHistoryMinOrderByAggregateInput = {
+    id?: SortOrder
+    userId?: SortOrder
+    questionId?: SortOrder
+    usedAt?: SortOrder
+    wasCorrect?: SortOrder
+    timeSpent?: SortOrder
+    subject?: SortOrder
+    topic?: SortOrder
+    difficulty?: SortOrder
+    createdAt?: SortOrder
+  }
+
+  export type UserQuestionHistorySumOrderByAggregateInput = {
+    timeSpent?: SortOrder
   }
 
   export type MockExamCountOrderByAggregateInput = {
@@ -27120,6 +29187,13 @@ export namespace Prisma {
     connect?: TopicMasteryWhereUniqueInput | TopicMasteryWhereUniqueInput[]
   }
 
+  export type UserQuestionHistoryCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput> | UserQuestionHistoryCreateWithoutUserInput[] | UserQuestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutUserInput | UserQuestionHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: UserQuestionHistoryCreateManyUserInputEnvelope
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+  }
+
   export type SessionUncheckedCreateNestedManyWithoutUserInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -27215,6 +29289,13 @@ export namespace Prisma {
     connectOrCreate?: TopicMasteryCreateOrConnectWithoutUserInput | TopicMasteryCreateOrConnectWithoutUserInput[]
     createMany?: TopicMasteryCreateManyUserInputEnvelope
     connect?: TopicMasteryWhereUniqueInput | TopicMasteryWhereUniqueInput[]
+  }
+
+  export type UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput> | UserQuestionHistoryCreateWithoutUserInput[] | UserQuestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutUserInput | UserQuestionHistoryCreateOrConnectWithoutUserInput[]
+    createMany?: UserQuestionHistoryCreateManyUserInputEnvelope
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
   }
 
   export type BoolFieldUpdateOperationsInput = {
@@ -27468,6 +29549,20 @@ export namespace Prisma {
     deleteMany?: TopicMasteryScalarWhereInput | TopicMasteryScalarWhereInput[]
   }
 
+  export type UserQuestionHistoryUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput> | UserQuestionHistoryCreateWithoutUserInput[] | UserQuestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutUserInput | UserQuestionHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: UserQuestionHistoryUpsertWithWhereUniqueWithoutUserInput | UserQuestionHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserQuestionHistoryCreateManyUserInputEnvelope
+    set?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    disconnect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    delete?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    update?: UserQuestionHistoryUpdateWithWhereUniqueWithoutUserInput | UserQuestionHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserQuestionHistoryUpdateManyWithWhereWithoutUserInput | UserQuestionHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
+  }
+
   export type SessionUncheckedUpdateManyWithoutUserNestedInput = {
     create?: XOR<SessionCreateWithoutUserInput, SessionUncheckedCreateWithoutUserInput> | SessionCreateWithoutUserInput[] | SessionUncheckedCreateWithoutUserInput[]
     connectOrCreate?: SessionCreateOrConnectWithoutUserInput | SessionCreateOrConnectWithoutUserInput[]
@@ -27658,6 +29753,20 @@ export namespace Prisma {
     update?: TopicMasteryUpdateWithWhereUniqueWithoutUserInput | TopicMasteryUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: TopicMasteryUpdateManyWithWhereWithoutUserInput | TopicMasteryUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: TopicMasteryScalarWhereInput | TopicMasteryScalarWhereInput[]
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput> | UserQuestionHistoryCreateWithoutUserInput[] | UserQuestionHistoryUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutUserInput | UserQuestionHistoryCreateOrConnectWithoutUserInput[]
+    upsert?: UserQuestionHistoryUpsertWithWhereUniqueWithoutUserInput | UserQuestionHistoryUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserQuestionHistoryCreateManyUserInputEnvelope
+    set?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    disconnect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    delete?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    update?: UserQuestionHistoryUpdateWithWhereUniqueWithoutUserInput | UserQuestionHistoryUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserQuestionHistoryUpdateManyWithWhereWithoutUserInput | UserQuestionHistoryUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
   }
 
   export type UserCreateNestedOneWithoutSessionsInput = {
@@ -27884,10 +29993,57 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutSatDiagnosticResultsInput, UserUpdateWithoutSatDiagnosticResultsInput>, UserUncheckedUpdateWithoutSatDiagnosticResultsInput>
   }
 
+  export type QuestionCreatetagsInput = {
+    set: string[]
+  }
+
   export type UserCreateNestedOneWithoutGeneratedQuestionsInput = {
     create?: XOR<UserCreateWithoutGeneratedQuestionsInput, UserUncheckedCreateWithoutGeneratedQuestionsInput>
     connectOrCreate?: UserCreateOrConnectWithoutGeneratedQuestionsInput
     connect?: UserWhereUniqueInput
+  }
+
+  export type QuestionCreateNestedOneWithoutChildQuestionsInput = {
+    create?: XOR<QuestionCreateWithoutChildQuestionsInput, QuestionUncheckedCreateWithoutChildQuestionsInput>
+    connectOrCreate?: QuestionCreateOrConnectWithoutChildQuestionsInput
+    connect?: QuestionWhereUniqueInput
+  }
+
+  export type QuestionCreateNestedManyWithoutParentQuestionInput = {
+    create?: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput> | QuestionCreateWithoutParentQuestionInput[] | QuestionUncheckedCreateWithoutParentQuestionInput[]
+    connectOrCreate?: QuestionCreateOrConnectWithoutParentQuestionInput | QuestionCreateOrConnectWithoutParentQuestionInput[]
+    createMany?: QuestionCreateManyParentQuestionInputEnvelope
+    connect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+  }
+
+  export type UserQuestionHistoryCreateNestedManyWithoutQuestionInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput> | UserQuestionHistoryCreateWithoutQuestionInput[] | UserQuestionHistoryUncheckedCreateWithoutQuestionInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutQuestionInput | UserQuestionHistoryCreateOrConnectWithoutQuestionInput[]
+    createMany?: UserQuestionHistoryCreateManyQuestionInputEnvelope
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+  }
+
+  export type QuestionUncheckedCreateNestedManyWithoutParentQuestionInput = {
+    create?: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput> | QuestionCreateWithoutParentQuestionInput[] | QuestionUncheckedCreateWithoutParentQuestionInput[]
+    connectOrCreate?: QuestionCreateOrConnectWithoutParentQuestionInput | QuestionCreateOrConnectWithoutParentQuestionInput[]
+    createMany?: QuestionCreateManyParentQuestionInputEnvelope
+    connect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+  }
+
+  export type UserQuestionHistoryUncheckedCreateNestedManyWithoutQuestionInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput> | UserQuestionHistoryCreateWithoutQuestionInput[] | UserQuestionHistoryUncheckedCreateWithoutQuestionInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutQuestionInput | UserQuestionHistoryCreateOrConnectWithoutQuestionInput[]
+    createMany?: UserQuestionHistoryCreateManyQuestionInputEnvelope
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+  }
+
+  export type EnumQuestionStatusFieldUpdateOperationsInput = {
+    set?: $Enums.QuestionStatus
+  }
+
+  export type QuestionUpdatetagsInput = {
+    set?: string[]
+    push?: string | string[]
   }
 
   export type UserUpdateOneWithoutGeneratedQuestionsNestedInput = {
@@ -27898,6 +30054,100 @@ export namespace Prisma {
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutGeneratedQuestionsInput, UserUpdateWithoutGeneratedQuestionsInput>, UserUncheckedUpdateWithoutGeneratedQuestionsInput>
+  }
+
+  export type QuestionUpdateOneWithoutChildQuestionsNestedInput = {
+    create?: XOR<QuestionCreateWithoutChildQuestionsInput, QuestionUncheckedCreateWithoutChildQuestionsInput>
+    connectOrCreate?: QuestionCreateOrConnectWithoutChildQuestionsInput
+    upsert?: QuestionUpsertWithoutChildQuestionsInput
+    disconnect?: QuestionWhereInput | boolean
+    delete?: QuestionWhereInput | boolean
+    connect?: QuestionWhereUniqueInput
+    update?: XOR<XOR<QuestionUpdateToOneWithWhereWithoutChildQuestionsInput, QuestionUpdateWithoutChildQuestionsInput>, QuestionUncheckedUpdateWithoutChildQuestionsInput>
+  }
+
+  export type QuestionUpdateManyWithoutParentQuestionNestedInput = {
+    create?: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput> | QuestionCreateWithoutParentQuestionInput[] | QuestionUncheckedCreateWithoutParentQuestionInput[]
+    connectOrCreate?: QuestionCreateOrConnectWithoutParentQuestionInput | QuestionCreateOrConnectWithoutParentQuestionInput[]
+    upsert?: QuestionUpsertWithWhereUniqueWithoutParentQuestionInput | QuestionUpsertWithWhereUniqueWithoutParentQuestionInput[]
+    createMany?: QuestionCreateManyParentQuestionInputEnvelope
+    set?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    disconnect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    delete?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    connect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    update?: QuestionUpdateWithWhereUniqueWithoutParentQuestionInput | QuestionUpdateWithWhereUniqueWithoutParentQuestionInput[]
+    updateMany?: QuestionUpdateManyWithWhereWithoutParentQuestionInput | QuestionUpdateManyWithWhereWithoutParentQuestionInput[]
+    deleteMany?: QuestionScalarWhereInput | QuestionScalarWhereInput[]
+  }
+
+  export type UserQuestionHistoryUpdateManyWithoutQuestionNestedInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput> | UserQuestionHistoryCreateWithoutQuestionInput[] | UserQuestionHistoryUncheckedCreateWithoutQuestionInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutQuestionInput | UserQuestionHistoryCreateOrConnectWithoutQuestionInput[]
+    upsert?: UserQuestionHistoryUpsertWithWhereUniqueWithoutQuestionInput | UserQuestionHistoryUpsertWithWhereUniqueWithoutQuestionInput[]
+    createMany?: UserQuestionHistoryCreateManyQuestionInputEnvelope
+    set?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    disconnect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    delete?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    update?: UserQuestionHistoryUpdateWithWhereUniqueWithoutQuestionInput | UserQuestionHistoryUpdateWithWhereUniqueWithoutQuestionInput[]
+    updateMany?: UserQuestionHistoryUpdateManyWithWhereWithoutQuestionInput | UserQuestionHistoryUpdateManyWithWhereWithoutQuestionInput[]
+    deleteMany?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
+  }
+
+  export type QuestionUncheckedUpdateManyWithoutParentQuestionNestedInput = {
+    create?: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput> | QuestionCreateWithoutParentQuestionInput[] | QuestionUncheckedCreateWithoutParentQuestionInput[]
+    connectOrCreate?: QuestionCreateOrConnectWithoutParentQuestionInput | QuestionCreateOrConnectWithoutParentQuestionInput[]
+    upsert?: QuestionUpsertWithWhereUniqueWithoutParentQuestionInput | QuestionUpsertWithWhereUniqueWithoutParentQuestionInput[]
+    createMany?: QuestionCreateManyParentQuestionInputEnvelope
+    set?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    disconnect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    delete?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    connect?: QuestionWhereUniqueInput | QuestionWhereUniqueInput[]
+    update?: QuestionUpdateWithWhereUniqueWithoutParentQuestionInput | QuestionUpdateWithWhereUniqueWithoutParentQuestionInput[]
+    updateMany?: QuestionUpdateManyWithWhereWithoutParentQuestionInput | QuestionUpdateManyWithWhereWithoutParentQuestionInput[]
+    deleteMany?: QuestionScalarWhereInput | QuestionScalarWhereInput[]
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateManyWithoutQuestionNestedInput = {
+    create?: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput> | UserQuestionHistoryCreateWithoutQuestionInput[] | UserQuestionHistoryUncheckedCreateWithoutQuestionInput[]
+    connectOrCreate?: UserQuestionHistoryCreateOrConnectWithoutQuestionInput | UserQuestionHistoryCreateOrConnectWithoutQuestionInput[]
+    upsert?: UserQuestionHistoryUpsertWithWhereUniqueWithoutQuestionInput | UserQuestionHistoryUpsertWithWhereUniqueWithoutQuestionInput[]
+    createMany?: UserQuestionHistoryCreateManyQuestionInputEnvelope
+    set?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    disconnect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    delete?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    connect?: UserQuestionHistoryWhereUniqueInput | UserQuestionHistoryWhereUniqueInput[]
+    update?: UserQuestionHistoryUpdateWithWhereUniqueWithoutQuestionInput | UserQuestionHistoryUpdateWithWhereUniqueWithoutQuestionInput[]
+    updateMany?: UserQuestionHistoryUpdateManyWithWhereWithoutQuestionInput | UserQuestionHistoryUpdateManyWithWhereWithoutQuestionInput[]
+    deleteMany?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
+  }
+
+  export type UserCreateNestedOneWithoutQuestionHistoriesInput = {
+    create?: XOR<UserCreateWithoutQuestionHistoriesInput, UserUncheckedCreateWithoutQuestionHistoriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutQuestionHistoriesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type QuestionCreateNestedOneWithoutUserHistoriesInput = {
+    create?: XOR<QuestionCreateWithoutUserHistoriesInput, QuestionUncheckedCreateWithoutUserHistoriesInput>
+    connectOrCreate?: QuestionCreateOrConnectWithoutUserHistoriesInput
+    connect?: QuestionWhereUniqueInput
+  }
+
+  export type UserUpdateOneRequiredWithoutQuestionHistoriesNestedInput = {
+    create?: XOR<UserCreateWithoutQuestionHistoriesInput, UserUncheckedCreateWithoutQuestionHistoriesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutQuestionHistoriesInput
+    upsert?: UserUpsertWithoutQuestionHistoriesInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutQuestionHistoriesInput, UserUpdateWithoutQuestionHistoriesInput>, UserUncheckedUpdateWithoutQuestionHistoriesInput>
+  }
+
+  export type QuestionUpdateOneRequiredWithoutUserHistoriesNestedInput = {
+    create?: XOR<QuestionCreateWithoutUserHistoriesInput, QuestionUncheckedCreateWithoutUserHistoriesInput>
+    connectOrCreate?: QuestionCreateOrConnectWithoutUserHistoriesInput
+    upsert?: QuestionUpsertWithoutUserHistoriesInput
+    connect?: QuestionWhereUniqueInput
+    update?: XOR<XOR<QuestionUpdateToOneWithWhereWithoutUserHistoriesInput, QuestionUpdateWithoutUserHistoriesInput>, QuestionUncheckedUpdateWithoutUserHistoriesInput>
   }
 
   export type UserCreateNestedOneWithoutMockExamsInput = {
@@ -28375,6 +30625,23 @@ export namespace Prisma {
     not?: InputJsonValue | JsonFieldRefInput<$PrismaModel> | JsonNullValueFilter
   }
 
+  export type NestedEnumQuestionStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuestionStatus | EnumQuestionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuestionStatusFilter<$PrismaModel> | $Enums.QuestionStatus
+  }
+
+  export type NestedEnumQuestionStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.QuestionStatus | EnumQuestionStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.QuestionStatus[] | ListEnumQuestionStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumQuestionStatusWithAggregatesFilter<$PrismaModel> | $Enums.QuestionStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumQuestionStatusFilter<$PrismaModel>
+    _max?: NestedEnumQuestionStatusFilter<$PrismaModel>
+  }
+
   export type UserCreateWithoutPostsInput = {
     id: string
     createdAt?: Date | string
@@ -28412,6 +30679,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPostsInput = {
@@ -28451,6 +30719,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPostsInput = {
@@ -28506,6 +30775,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPostsInput = {
@@ -28545,6 +30815,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionCreateWithoutUserInput = {
@@ -28872,9 +31143,20 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentQuestion?: QuestionCreateNestedOneWithoutChildQuestionsInput
+    childQuestions?: QuestionCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryCreateNestedManyWithoutQuestionInput
   }
 
   export type QuestionUncheckedCreateWithoutUserInput = {
@@ -28887,9 +31169,20 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
+    childQuestions?: QuestionUncheckedCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutQuestionInput
   }
 
   export type QuestionCreateOrConnectWithoutUserInput = {
@@ -28989,6 +31282,40 @@ export namespace Prisma {
 
   export type TopicMasteryCreateManyUserInputEnvelope = {
     data: TopicMasteryCreateManyUserInput | TopicMasteryCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserQuestionHistoryCreateWithoutUserInput = {
+    id?: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+    question: QuestionCreateNestedOneWithoutUserHistoriesInput
+  }
+
+  export type UserQuestionHistoryUncheckedCreateWithoutUserInput = {
+    id?: string
+    questionId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserQuestionHistoryCreateOrConnectWithoutUserInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    create: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserQuestionHistoryCreateManyUserInputEnvelope = {
+    data: UserQuestionHistoryCreateManyUserInput | UserQuestionHistoryCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -29328,9 +31655,18 @@ export namespace Prisma {
     answer?: StringFilter<"Question"> | string
     explanation?: StringFilter<"Question"> | string
     source?: StringFilter<"Question"> | string
-    status?: StringFilter<"Question"> | string
+    status?: EnumQuestionStatusFilter<"Question"> | $Enums.QuestionStatus
     createdAt?: DateTimeFilter<"Question"> | Date | string
     updatedAt?: DateTimeFilter<"Question"> | Date | string
+    usageCount?: IntFilter<"Question"> | number
+    avgCorrectRate?: FloatNullableFilter<"Question"> | number | null
+    avgTimeToAnswer?: FloatNullableFilter<"Question"> | number | null
+    tags?: StringNullableListFilter<"Question">
+    lastUsedAt?: DateTimeNullableFilter<"Question"> | Date | string | null
+    reviewCount?: IntFilter<"Question"> | number
+    version?: IntFilter<"Question"> | number
+    isActive?: BoolFilter<"Question"> | boolean
+    parentVersionId?: StringNullableFilter<"Question"> | string | null
     userGeneratedBy?: StringNullableFilter<"Question"> | string | null
   }
 
@@ -29423,6 +31759,38 @@ export namespace Prisma {
     updatedAt?: DateTimeFilter<"TopicMastery"> | Date | string
   }
 
+  export type UserQuestionHistoryUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    update: XOR<UserQuestionHistoryUpdateWithoutUserInput, UserQuestionHistoryUncheckedUpdateWithoutUserInput>
+    create: XOR<UserQuestionHistoryCreateWithoutUserInput, UserQuestionHistoryUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserQuestionHistoryUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    data: XOR<UserQuestionHistoryUpdateWithoutUserInput, UserQuestionHistoryUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserQuestionHistoryUpdateManyWithWhereWithoutUserInput = {
+    where: UserQuestionHistoryScalarWhereInput
+    data: XOR<UserQuestionHistoryUpdateManyMutationInput, UserQuestionHistoryUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserQuestionHistoryScalarWhereInput = {
+    AND?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
+    OR?: UserQuestionHistoryScalarWhereInput[]
+    NOT?: UserQuestionHistoryScalarWhereInput | UserQuestionHistoryScalarWhereInput[]
+    id?: StringFilter<"UserQuestionHistory"> | string
+    userId?: StringFilter<"UserQuestionHistory"> | string
+    questionId?: StringFilter<"UserQuestionHistory"> | string
+    usedAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+    wasCorrect?: BoolNullableFilter<"UserQuestionHistory"> | boolean | null
+    timeSpent?: IntNullableFilter<"UserQuestionHistory"> | number | null
+    subject?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    topic?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    difficulty?: StringNullableFilter<"UserQuestionHistory"> | string | null
+    createdAt?: DateTimeFilter<"UserQuestionHistory"> | Date | string
+  }
+
   export type UserCreateWithoutSessionsInput = {
     id: string
     createdAt?: Date | string
@@ -29460,6 +31828,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -29499,6 +31868,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -29554,6 +31924,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -29593,6 +31964,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAccountsInput = {
@@ -29632,6 +32004,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAccountsInput = {
@@ -29671,6 +32044,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAccountsInput = {
@@ -29726,6 +32100,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -29765,6 +32140,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutActivitiesInput = {
@@ -29804,6 +32180,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivitiesInput = {
@@ -29843,6 +32220,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivitiesInput = {
@@ -29898,6 +32276,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivitiesInput = {
@@ -29937,6 +32316,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutStreakInput = {
@@ -29976,6 +32356,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutStreakInput = {
@@ -30015,6 +32396,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutStreakInput = {
@@ -30070,6 +32452,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutStreakInput = {
@@ -30109,6 +32492,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutAchievementsInput = {
@@ -30148,6 +32532,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAchievementsInput = {
@@ -30187,6 +32572,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAchievementsInput = {
@@ -30242,6 +32628,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAchievementsInput = {
@@ -30281,6 +32668,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutChatSessionsInput = {
@@ -30320,6 +32708,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutChatSessionsInput = {
@@ -30359,6 +32748,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutChatSessionsInput = {
@@ -30446,6 +32836,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutChatSessionsInput = {
@@ -30485,6 +32876,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ChatMessageUpsertWithWhereUniqueWithoutSessionInput = {
@@ -30611,6 +33003,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSatStudyPlansInput = {
@@ -30650,6 +33043,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSatStudyPlansInput = {
@@ -30705,6 +33099,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSatStudyPlansInput = {
@@ -30744,6 +33139,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSatPracticeSessionsInput = {
@@ -30783,6 +33179,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSatPracticeSessionsInput = {
@@ -30822,6 +33219,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSatPracticeSessionsInput = {
@@ -30877,6 +33275,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSatPracticeSessionsInput = {
@@ -30916,6 +33315,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSatDiagnosticResultsInput = {
@@ -30955,6 +33355,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSatDiagnosticResultsInput = {
@@ -30994,6 +33395,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSatDiagnosticResultsInput = {
@@ -31049,6 +33451,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSatDiagnosticResultsInput = {
@@ -31088,6 +33491,7 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutGeneratedQuestionsInput = {
@@ -31127,6 +33531,7 @@ export namespace Prisma {
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutGeneratedQuestionsInput = {
@@ -31166,11 +33571,165 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutGeneratedQuestionsInput = {
     where: UserWhereUniqueInput
     create: XOR<UserCreateWithoutGeneratedQuestionsInput, UserUncheckedCreateWithoutGeneratedQuestionsInput>
+  }
+
+  export type QuestionCreateWithoutChildQuestionsInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    user?: UserCreateNestedOneWithoutGeneratedQuestionsInput
+    parentQuestion?: QuestionCreateNestedOneWithoutChildQuestionsInput
+    userHistories?: UserQuestionHistoryCreateNestedManyWithoutQuestionInput
+  }
+
+  export type QuestionUncheckedCreateWithoutChildQuestionsInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
+    userGeneratedBy?: string | null
+    userHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutQuestionInput
+  }
+
+  export type QuestionCreateOrConnectWithoutChildQuestionsInput = {
+    where: QuestionWhereUniqueInput
+    create: XOR<QuestionCreateWithoutChildQuestionsInput, QuestionUncheckedCreateWithoutChildQuestionsInput>
+  }
+
+  export type QuestionCreateWithoutParentQuestionInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    user?: UserCreateNestedOneWithoutGeneratedQuestionsInput
+    childQuestions?: QuestionCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryCreateNestedManyWithoutQuestionInput
+  }
+
+  export type QuestionUncheckedCreateWithoutParentQuestionInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    userGeneratedBy?: string | null
+    childQuestions?: QuestionUncheckedCreateNestedManyWithoutParentQuestionInput
+    userHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutQuestionInput
+  }
+
+  export type QuestionCreateOrConnectWithoutParentQuestionInput = {
+    where: QuestionWhereUniqueInput
+    create: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput>
+  }
+
+  export type QuestionCreateManyParentQuestionInputEnvelope = {
+    data: QuestionCreateManyParentQuestionInput | QuestionCreateManyParentQuestionInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserQuestionHistoryCreateWithoutQuestionInput = {
+    id?: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+    user: UserCreateNestedOneWithoutQuestionHistoriesInput
+  }
+
+  export type UserQuestionHistoryUncheckedCreateWithoutQuestionInput = {
+    id?: string
+    userId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+  }
+
+  export type UserQuestionHistoryCreateOrConnectWithoutQuestionInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    create: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput>
+  }
+
+  export type UserQuestionHistoryCreateManyQuestionInputEnvelope = {
+    data: UserQuestionHistoryCreateManyQuestionInput | UserQuestionHistoryCreateManyQuestionInput[]
+    skipDuplicates?: boolean
   }
 
   export type UserUpsertWithoutGeneratedQuestionsInput = {
@@ -31221,6 +33780,7 @@ export namespace Prisma {
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutGeneratedQuestionsInput = {
@@ -31260,6 +33820,398 @@ export namespace Prisma {
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type QuestionUpsertWithoutChildQuestionsInput = {
+    update: XOR<QuestionUpdateWithoutChildQuestionsInput, QuestionUncheckedUpdateWithoutChildQuestionsInput>
+    create: XOR<QuestionCreateWithoutChildQuestionsInput, QuestionUncheckedCreateWithoutChildQuestionsInput>
+    where?: QuestionWhereInput
+  }
+
+  export type QuestionUpdateToOneWithWhereWithoutChildQuestionsInput = {
+    where?: QuestionWhereInput
+    data: XOR<QuestionUpdateWithoutChildQuestionsInput, QuestionUncheckedUpdateWithoutChildQuestionsInput>
+  }
+
+  export type QuestionUpdateWithoutChildQuestionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneWithoutGeneratedQuestionsNestedInput
+    parentQuestion?: QuestionUpdateOneWithoutChildQuestionsNestedInput
+    userHistories?: UserQuestionHistoryUpdateManyWithoutQuestionNestedInput
+  }
+
+  export type QuestionUncheckedUpdateWithoutChildQuestionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    userHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutQuestionNestedInput
+  }
+
+  export type QuestionUpsertWithWhereUniqueWithoutParentQuestionInput = {
+    where: QuestionWhereUniqueInput
+    update: XOR<QuestionUpdateWithoutParentQuestionInput, QuestionUncheckedUpdateWithoutParentQuestionInput>
+    create: XOR<QuestionCreateWithoutParentQuestionInput, QuestionUncheckedCreateWithoutParentQuestionInput>
+  }
+
+  export type QuestionUpdateWithWhereUniqueWithoutParentQuestionInput = {
+    where: QuestionWhereUniqueInput
+    data: XOR<QuestionUpdateWithoutParentQuestionInput, QuestionUncheckedUpdateWithoutParentQuestionInput>
+  }
+
+  export type QuestionUpdateManyWithWhereWithoutParentQuestionInput = {
+    where: QuestionScalarWhereInput
+    data: XOR<QuestionUpdateManyMutationInput, QuestionUncheckedUpdateManyWithoutParentQuestionInput>
+  }
+
+  export type UserQuestionHistoryUpsertWithWhereUniqueWithoutQuestionInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    update: XOR<UserQuestionHistoryUpdateWithoutQuestionInput, UserQuestionHistoryUncheckedUpdateWithoutQuestionInput>
+    create: XOR<UserQuestionHistoryCreateWithoutQuestionInput, UserQuestionHistoryUncheckedCreateWithoutQuestionInput>
+  }
+
+  export type UserQuestionHistoryUpdateWithWhereUniqueWithoutQuestionInput = {
+    where: UserQuestionHistoryWhereUniqueInput
+    data: XOR<UserQuestionHistoryUpdateWithoutQuestionInput, UserQuestionHistoryUncheckedUpdateWithoutQuestionInput>
+  }
+
+  export type UserQuestionHistoryUpdateManyWithWhereWithoutQuestionInput = {
+    where: UserQuestionHistoryScalarWhereInput
+    data: XOR<UserQuestionHistoryUpdateManyMutationInput, UserQuestionHistoryUncheckedUpdateManyWithoutQuestionInput>
+  }
+
+  export type UserCreateWithoutQuestionHistoriesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    role?: $Enums.UserRole
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    isOnboarded?: boolean
+    gradeLevel?: number | null
+    age?: number | null
+    school?: string | null
+    subjects?: UserCreatesubjectsInput | string[]
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    learningStyle?: $Enums.LearningStyle
+    difficultyLevel?: $Enums.DifficultyLevel
+    sessionDuration?: number | null
+    interests?: UserCreateinterestsInput | string[]
+    pastEngagement?: number | null
+    isInterestedInSATPrep?: boolean | null
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    accounts?: AccountCreateNestedManyWithoutUserInput
+    posts?: PostCreateNestedManyWithoutUserInput
+    activities?: StudentActivityCreateNestedManyWithoutUserInput
+    streak?: LearningStreakCreateNestedOneWithoutUserInput
+    achievements?: AchievementCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionCreateNestedManyWithoutUserInput
+    satStudyPlans?: SATStudyPlanCreateNestedManyWithoutUserInput
+    satPracticeSessions?: SATPracticeSessionCreateNestedManyWithoutUserInput
+    satDiagnosticResults?: SATDiagnosticResultCreateNestedManyWithoutUserInput
+    generatedQuestions?: QuestionCreateNestedManyWithoutUserInput
+    mockExams?: MockExamCreateNestedManyWithoutUserInput
+    mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
+    topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutQuestionHistoriesInput = {
+    id: string
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    name: string
+    email: string
+    emailVerified: boolean
+    image?: string | null
+    role?: $Enums.UserRole
+    banned?: boolean | null
+    banReason?: string | null
+    banExpires?: Date | string | null
+    isOnboarded?: boolean
+    gradeLevel?: number | null
+    age?: number | null
+    school?: string | null
+    subjects?: UserCreatesubjectsInput | string[]
+    learningGoals?: UserCreatelearningGoalsInput | string[]
+    learningStyle?: $Enums.LearningStyle
+    difficultyLevel?: $Enums.DifficultyLevel
+    sessionDuration?: number | null
+    interests?: UserCreateinterestsInput | string[]
+    pastEngagement?: number | null
+    isInterestedInSATPrep?: boolean | null
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    accounts?: AccountUncheckedCreateNestedManyWithoutUserInput
+    posts?: PostUncheckedCreateNestedManyWithoutUserInput
+    activities?: StudentActivityUncheckedCreateNestedManyWithoutUserInput
+    streak?: LearningStreakUncheckedCreateNestedOneWithoutUserInput
+    achievements?: AchievementUncheckedCreateNestedManyWithoutUserInput
+    chatSessions?: ChatSessionUncheckedCreateNestedManyWithoutUserInput
+    satStudyPlans?: SATStudyPlanUncheckedCreateNestedManyWithoutUserInput
+    satPracticeSessions?: SATPracticeSessionUncheckedCreateNestedManyWithoutUserInput
+    satDiagnosticResults?: SATDiagnosticResultUncheckedCreateNestedManyWithoutUserInput
+    generatedQuestions?: QuestionUncheckedCreateNestedManyWithoutUserInput
+    mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
+    mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
+    topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutQuestionHistoriesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutQuestionHistoriesInput, UserUncheckedCreateWithoutQuestionHistoriesInput>
+  }
+
+  export type QuestionCreateWithoutUserHistoriesInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    user?: UserCreateNestedOneWithoutGeneratedQuestionsInput
+    parentQuestion?: QuestionCreateNestedOneWithoutChildQuestionsInput
+    childQuestions?: QuestionCreateNestedManyWithoutParentQuestionInput
+  }
+
+  export type QuestionUncheckedCreateWithoutUserHistoriesInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
+    userGeneratedBy?: string | null
+    childQuestions?: QuestionUncheckedCreateNestedManyWithoutParentQuestionInput
+  }
+
+  export type QuestionCreateOrConnectWithoutUserHistoriesInput = {
+    where: QuestionWhereUniqueInput
+    create: XOR<QuestionCreateWithoutUserHistoriesInput, QuestionUncheckedCreateWithoutUserHistoriesInput>
+  }
+
+  export type UserUpsertWithoutQuestionHistoriesInput = {
+    update: XOR<UserUpdateWithoutQuestionHistoriesInput, UserUncheckedUpdateWithoutQuestionHistoriesInput>
+    create: XOR<UserCreateWithoutQuestionHistoriesInput, UserUncheckedCreateWithoutQuestionHistoriesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutQuestionHistoriesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutQuestionHistoriesInput, UserUncheckedUpdateWithoutQuestionHistoriesInput>
+  }
+
+  export type UserUpdateWithoutQuestionHistoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOnboarded?: BoolFieldUpdateOperationsInput | boolean
+    gradeLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    school?: NullableStringFieldUpdateOperationsInput | string | null
+    subjects?: UserUpdatesubjectsInput | string[]
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    learningStyle?: EnumLearningStyleFieldUpdateOperationsInput | $Enums.LearningStyle
+    difficultyLevel?: EnumDifficultyLevelFieldUpdateOperationsInput | $Enums.DifficultyLevel
+    sessionDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    interests?: UserUpdateinterestsInput | string[]
+    pastEngagement?: NullableFloatFieldUpdateOperationsInput | number | null
+    isInterestedInSATPrep?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    accounts?: AccountUpdateManyWithoutUserNestedInput
+    posts?: PostUpdateManyWithoutUserNestedInput
+    activities?: StudentActivityUpdateManyWithoutUserNestedInput
+    streak?: LearningStreakUpdateOneWithoutUserNestedInput
+    achievements?: AchievementUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUpdateManyWithoutUserNestedInput
+    satStudyPlans?: SATStudyPlanUpdateManyWithoutUserNestedInput
+    satPracticeSessions?: SATPracticeSessionUpdateManyWithoutUserNestedInput
+    satDiagnosticResults?: SATDiagnosticResultUpdateManyWithoutUserNestedInput
+    generatedQuestions?: QuestionUpdateManyWithoutUserNestedInput
+    mockExams?: MockExamUpdateManyWithoutUserNestedInput
+    mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
+    topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutQuestionHistoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    name?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    emailVerified?: BoolFieldUpdateOperationsInput | boolean
+    image?: NullableStringFieldUpdateOperationsInput | string | null
+    role?: EnumUserRoleFieldUpdateOperationsInput | $Enums.UserRole
+    banned?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    banReason?: NullableStringFieldUpdateOperationsInput | string | null
+    banExpires?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    isOnboarded?: BoolFieldUpdateOperationsInput | boolean
+    gradeLevel?: NullableIntFieldUpdateOperationsInput | number | null
+    age?: NullableIntFieldUpdateOperationsInput | number | null
+    school?: NullableStringFieldUpdateOperationsInput | string | null
+    subjects?: UserUpdatesubjectsInput | string[]
+    learningGoals?: UserUpdatelearningGoalsInput | string[]
+    learningStyle?: EnumLearningStyleFieldUpdateOperationsInput | $Enums.LearningStyle
+    difficultyLevel?: EnumDifficultyLevelFieldUpdateOperationsInput | $Enums.DifficultyLevel
+    sessionDuration?: NullableIntFieldUpdateOperationsInput | number | null
+    interests?: UserUpdateinterestsInput | string[]
+    pastEngagement?: NullableFloatFieldUpdateOperationsInput | number | null
+    isInterestedInSATPrep?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    accounts?: AccountUncheckedUpdateManyWithoutUserNestedInput
+    posts?: PostUncheckedUpdateManyWithoutUserNestedInput
+    activities?: StudentActivityUncheckedUpdateManyWithoutUserNestedInput
+    streak?: LearningStreakUncheckedUpdateOneWithoutUserNestedInput
+    achievements?: AchievementUncheckedUpdateManyWithoutUserNestedInput
+    chatSessions?: ChatSessionUncheckedUpdateManyWithoutUserNestedInput
+    satStudyPlans?: SATStudyPlanUncheckedUpdateManyWithoutUserNestedInput
+    satPracticeSessions?: SATPracticeSessionUncheckedUpdateManyWithoutUserNestedInput
+    satDiagnosticResults?: SATDiagnosticResultUncheckedUpdateManyWithoutUserNestedInput
+    generatedQuestions?: QuestionUncheckedUpdateManyWithoutUserNestedInput
+    mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
+    mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
+    topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type QuestionUpsertWithoutUserHistoriesInput = {
+    update: XOR<QuestionUpdateWithoutUserHistoriesInput, QuestionUncheckedUpdateWithoutUserHistoriesInput>
+    create: XOR<QuestionCreateWithoutUserHistoriesInput, QuestionUncheckedCreateWithoutUserHistoriesInput>
+    where?: QuestionWhereInput
+  }
+
+  export type QuestionUpdateToOneWithWhereWithoutUserHistoriesInput = {
+    where?: QuestionWhereInput
+    data: XOR<QuestionUpdateWithoutUserHistoriesInput, QuestionUncheckedUpdateWithoutUserHistoriesInput>
+  }
+
+  export type QuestionUpdateWithoutUserHistoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneWithoutGeneratedQuestionsNestedInput
+    parentQuestion?: QuestionUpdateOneWithoutChildQuestionsNestedInput
+    childQuestions?: QuestionUpdateManyWithoutParentQuestionNestedInput
+  }
+
+  export type QuestionUncheckedUpdateWithoutUserHistoriesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    childQuestions?: QuestionUncheckedUpdateManyWithoutParentQuestionNestedInput
   }
 
   export type UserCreateWithoutMockExamsInput = {
@@ -31299,6 +34251,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMockExamsInput = {
@@ -31338,6 +34291,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMockExamsInput = {
@@ -31425,6 +34379,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMockExamsInput = {
@@ -31464,6 +34419,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MockAttemptUpsertWithWhereUniqueWithoutMockExamInput = {
@@ -31519,6 +34475,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionCreateNestedManyWithoutUserInput
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMockAttemptsInput = {
@@ -31558,6 +34515,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedCreateNestedManyWithoutUserInput
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     topicMasteries?: TopicMasteryUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMockAttemptsInput = {
@@ -31638,6 +34596,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUpdateManyWithoutUserNestedInput
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMockAttemptsInput = {
@@ -31677,6 +34636,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedUpdateManyWithoutUserNestedInput
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     topicMasteries?: TopicMasteryUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MockExamUpsertWithoutAttemptsInput = {
@@ -31747,6 +34707,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionCreateNestedManyWithoutUserInput
     mockExams?: MockExamCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTopicMasteriesInput = {
@@ -31786,6 +34747,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedCreateNestedManyWithoutUserInput
     mockExams?: MockExamUncheckedCreateNestedManyWithoutUserInput
     mockAttempts?: MockAttemptUncheckedCreateNestedManyWithoutUserInput
+    questionHistories?: UserQuestionHistoryUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTopicMasteriesInput = {
@@ -31841,6 +34803,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUpdateManyWithoutUserNestedInput
     mockExams?: MockExamUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTopicMasteriesInput = {
@@ -31880,6 +34843,7 @@ export namespace Prisma {
     generatedQuestions?: QuestionUncheckedUpdateManyWithoutUserNestedInput
     mockExams?: MockExamUncheckedUpdateManyWithoutUserNestedInput
     mockAttempts?: MockAttemptUncheckedUpdateManyWithoutUserNestedInput
+    questionHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionCreateManyUserInput = {
@@ -31994,9 +34958,18 @@ export namespace Prisma {
     answer: string
     explanation: string
     source?: string
-    status?: string
+    status?: $Enums.QuestionStatus
     createdAt?: Date | string
     updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    parentVersionId?: string | null
   }
 
   export type MockExamCreateManyUserInput = {
@@ -32026,6 +34999,18 @@ export namespace Prisma {
     total?: number
     lastSeenAt?: Date | string
     updatedAt?: Date | string
+  }
+
+  export type UserQuestionHistoryCreateManyUserInput = {
+    id?: string
+    questionId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
   }
 
   export type SessionUpdateWithoutUserInput = {
@@ -32346,9 +35331,20 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentQuestion?: QuestionUpdateOneWithoutChildQuestionsNestedInput
+    childQuestions?: QuestionUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUpdateManyWithoutQuestionNestedInput
   }
 
   export type QuestionUncheckedUpdateWithoutUserInput = {
@@ -32361,9 +35357,20 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
+    childQuestions?: QuestionUncheckedUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutQuestionNestedInput
   }
 
   export type QuestionUncheckedUpdateManyWithoutUserInput = {
@@ -32376,9 +35383,18 @@ export namespace Prisma {
     answer?: StringFieldUpdateOperationsInput | string
     explanation?: StringFieldUpdateOperationsInput | string
     source?: StringFieldUpdateOperationsInput | string
-    status?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    parentVersionId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MockExamUpdateWithoutUserInput = {
@@ -32470,6 +35486,42 @@ export namespace Prisma {
     updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserQuestionHistoryUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    question?: QuestionUpdateOneRequiredWithoutUserHistoriesNestedInput
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    questionId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    questionId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ChatMessageCreateManySessionInput = {
     id?: string
     createdAt?: Date | string
@@ -32512,6 +35564,154 @@ export namespace Prisma {
     imageUrl?: NullableStringFieldUpdateOperationsInput | string | null
     links?: NullableJsonNullValueInput | InputJsonValue
     keywords?: ChatMessageUpdatekeywordsInput | string[]
+  }
+
+  export type QuestionCreateManyParentQuestionInput = {
+    id?: string
+    topic: string
+    subject: string
+    difficulty: string
+    question: string
+    choices: JsonNullValueInput | InputJsonValue
+    answer: string
+    explanation: string
+    source?: string
+    status?: $Enums.QuestionStatus
+    createdAt?: Date | string
+    updatedAt?: Date | string
+    usageCount?: number
+    avgCorrectRate?: number | null
+    avgTimeToAnswer?: number | null
+    tags?: QuestionCreatetagsInput | string[]
+    lastUsedAt?: Date | string | null
+    reviewCount?: number
+    version?: number
+    isActive?: boolean
+    userGeneratedBy?: string | null
+  }
+
+  export type UserQuestionHistoryCreateManyQuestionInput = {
+    id?: string
+    userId: string
+    usedAt?: Date | string
+    wasCorrect?: boolean | null
+    timeSpent?: number | null
+    subject?: string | null
+    topic?: string | null
+    difficulty?: string | null
+    createdAt?: Date | string
+  }
+
+  export type QuestionUpdateWithoutParentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    user?: UserUpdateOneWithoutGeneratedQuestionsNestedInput
+    childQuestions?: QuestionUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUpdateManyWithoutQuestionNestedInput
+  }
+
+  export type QuestionUncheckedUpdateWithoutParentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+    childQuestions?: QuestionUncheckedUpdateManyWithoutParentQuestionNestedInput
+    userHistories?: UserQuestionHistoryUncheckedUpdateManyWithoutQuestionNestedInput
+  }
+
+  export type QuestionUncheckedUpdateManyWithoutParentQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    topic?: StringFieldUpdateOperationsInput | string
+    subject?: StringFieldUpdateOperationsInput | string
+    difficulty?: StringFieldUpdateOperationsInput | string
+    question?: StringFieldUpdateOperationsInput | string
+    choices?: JsonNullValueInput | InputJsonValue
+    answer?: StringFieldUpdateOperationsInput | string
+    explanation?: StringFieldUpdateOperationsInput | string
+    source?: StringFieldUpdateOperationsInput | string
+    status?: EnumQuestionStatusFieldUpdateOperationsInput | $Enums.QuestionStatus
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    updatedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    usageCount?: IntFieldUpdateOperationsInput | number
+    avgCorrectRate?: NullableFloatFieldUpdateOperationsInput | number | null
+    avgTimeToAnswer?: NullableFloatFieldUpdateOperationsInput | number | null
+    tags?: QuestionUpdatetagsInput | string[]
+    lastUsedAt?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    reviewCount?: IntFieldUpdateOperationsInput | number
+    version?: IntFieldUpdateOperationsInput | number
+    isActive?: BoolFieldUpdateOperationsInput | boolean
+    userGeneratedBy?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type UserQuestionHistoryUpdateWithoutQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutQuestionHistoriesNestedInput
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateWithoutQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserQuestionHistoryUncheckedUpdateManyWithoutQuestionInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    userId?: StringFieldUpdateOperationsInput | string
+    usedAt?: DateTimeFieldUpdateOperationsInput | Date | string
+    wasCorrect?: NullableBoolFieldUpdateOperationsInput | boolean | null
+    timeSpent?: NullableIntFieldUpdateOperationsInput | number | null
+    subject?: NullableStringFieldUpdateOperationsInput | string | null
+    topic?: NullableStringFieldUpdateOperationsInput | string | null
+    difficulty?: NullableStringFieldUpdateOperationsInput | string | null
+    createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type MockAttemptCreateManyMockExamInput = {

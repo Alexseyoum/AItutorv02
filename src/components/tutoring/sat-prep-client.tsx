@@ -166,7 +166,8 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
 
         if (sessionsRes.ok) {
           const data = await sessionsRes.json();
-          setPracticeSessions(data.sessions);
+          // Fix: use data.practiceSessions instead of data.sessions
+          setPracticeSessions(data.practiceSessions || []);
         } else if (sessionsRes.status === 401) {
           toast.error("Please log in to view your practice sessions");
         } else {
@@ -298,37 +299,16 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
   // Function to start a practice session
   const startPracticeSession = async (section: 'math' | 'reading' | 'writing' | 'full') => {
     try {
-      const response = await fetch("/api/ai/sat/practice-sessions", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          section,
-          score: 0,
-          maxScore: section === 'full' ? 1600 : 800,
-          answers: {},
-          timeSpent: 0
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        console.error("API Error:", errorData);
-        // Check if it's an authentication error
-        if (response.status === 401) {
-          toast.error("Please log in to start a practice session");
-          return;
-        }
-        throw new Error(errorData.error || "Failed to start practice session");
+      // Handle full practice test differently
+      if (section === 'full') {
+        // For full practice test, we'll redirect to the practice page without creating a session first
+        // The practice page will handle creating a full test with questions from all sections
+        window.location.href = '/tutoring/sat-prep/practice?section=full';
+        return;
       }
-
-      const data = await response.json();
-      _setCurrentSession({section, startTime: new Date()});
-      setPracticeSessions([data.session, ...practiceSessions]);
       
-      // Navigate to the practice page with the session ID
-      window.location.href = `/tutoring/sat-prep/practice?sessionId=${data.session.id}`;
+      // Redirect to the new separate practice routes
+      window.location.href = `/tutoring/sat-prep/practice/${section}`;
     } catch (error: unknown) {
       console.error("Error starting practice session:", error);
       if (error instanceof Error) {
@@ -616,8 +596,16 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                       <span className="text-sm text-gray-600 dark:text-gray-400">Strengths:</span>
                       {(() => {
                         const strengths = satStats.latestDiagnostic?.strengths || diagnosticResult?.strengths;
-                        // Parse JSON if needed
-                        const parsedStrengths = typeof strengths === 'string' ? JSON.parse(strengths) : strengths;
+                        // Parse JSON if needed with error handling
+                        let parsedStrengths = strengths;
+                        if (typeof strengths === 'string') {
+                          try {
+                            parsedStrengths = JSON.parse(strengths);
+                          } catch (e) {
+                            console.error('Failed to parse strengths:', e);
+                            parsedStrengths = [];
+                          }
+                        }
                         return Array.isArray(parsedStrengths) ? parsedStrengths.slice(0, 3).map((strength: string, index: number) => (
                           <Badge key={index} variant="secondary" className="bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200">
                             {strength}
@@ -630,8 +618,16 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                       <span className="text-sm text-gray-600 dark:text-gray-400">Areas to Improve:</span>
                       {(() => {
                         const weaknesses = satStats.latestDiagnostic?.weaknesses || diagnosticResult?.weaknesses;
-                        // Parse JSON if needed
-                        const parsedWeaknesses = typeof weaknesses === 'string' ? JSON.parse(weaknesses) : weaknesses;
+                        // Parse JSON if needed with error handling
+                        let parsedWeaknesses = weaknesses;
+                        if (typeof weaknesses === 'string') {
+                          try {
+                            parsedWeaknesses = JSON.parse(weaknesses);
+                          } catch (e) {
+                            console.error('Failed to parse weaknesses:', e);
+                            parsedWeaknesses = [];
+                          }
+                        }
                         return Array.isArray(parsedWeaknesses) ? parsedWeaknesses.slice(0, 3).map((weakness: string, index: number) => (
                           <Badge key={index} variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200">
                             {weakness}
@@ -700,7 +696,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                     </div>
                     
                     {/* Recent Sessions */}
-                    {practiceSessions.length > 0 ? (
+                    {practiceSessions && practiceSessions.length > 0 ? (
                       <div className="space-y-4">
                         <h3 className="font-medium text-gray-900 dark:text-white">Recent Sessions</h3>
                         {practiceSessions.slice(0, 3).map((session) => (
@@ -741,6 +737,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
                         </p>
                       </div>
                     )}
+
                   </div>
                 ) : (
                   <div className="text-center py-8">
@@ -765,7 +762,7 @@ export default function SATPrepClient({ user, profile }: SATPrepClientProps) {
         {/* Study Plan Tab */}
         {activeTab === 'study-plan' && (
           <div className="space-y-6">
-            <Card className="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+            <Card className="bg-white dark:bg-gray-8800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold text-gray-900 dark:text-white flex items-center justify-between">
                   <span className="flex items-center gap-2">

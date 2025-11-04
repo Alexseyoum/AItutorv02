@@ -12,7 +12,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
-import { generateQuestions } from "@/lib/utils/questionBank";
+import { QuestionBankService } from "@/lib/question-bank";
 
 interface _User {
   id: string;
@@ -29,6 +29,11 @@ interface StudentProfile {
   [key: string]: any;
 }
 
+interface SATDiagnosticClientProps {
+  profile: StudentProfile;
+  userId: string;
+}
+
 interface Question {
   id: string;
   topic: string;
@@ -36,7 +41,7 @@ interface Question {
   difficulty: string;
   question: string;
   choices: string[];
-  answer: string;
+  answer: string | number;  // Allow both string and number types
   explanation: string;
   source: string;
 }
@@ -57,49 +62,10 @@ interface DiagnosticSession {
   isCompleted: boolean;
 }
 
-const MATH_TOPICS = [
-  "Algebra: Linear Equations",
-  "Algebra: Systems of Equations",
-  "Geometry: Triangles",
-  "Geometry: Circles",
-  "Data Analysis: Statistics",
-  "Data Analysis: Probability"
-] as const;
+// Remove the hardcoded DIAGNOSTIC_TOPICS constant and replace with dynamic fetching
+// const DIAGNOSTIC_TOPICS = [ ... ]; // Remove this
 
-const READING_TOPICS = [
-  "Reading Comprehension: Literature",
-  "Reading Comprehension: History",
-  "Reading Comprehension: Science",
-  "Command of Evidence",
-  "Words in Context"
-] as const;
-
-const WRITING_TOPICS = [
-  "Standard English Conventions: Grammar",
-  "Standard English Conventions: Punctuation",
-  "Expression of Ideas: Organization",
-  "Expression of Ideas: Precision"
-] as const;
-
-const _ALL_TOPICS = [...MATH_TOPICS, ...READING_TOPICS, ...WRITING_TOPICS] as const;
-
-const DIAGNOSTIC_TOPICS = [
-  "Algebra: Linear Equations",
-  "Algebra: Quadratic Equations",
-  "Geometry: Triangles",
-  "Geometry: Circles",
-  "Data Analysis: Statistics",
-  "Data Analysis: Probability",
-  "Reading Comprehension: Literature",
-  "Reading Comprehension: History",
-  "Reading Comprehension: Science",
-  "Vocabulary: Context Clues",
-  "Grammar: Sentence Structure",
-  "Grammar: Punctuation",
-  "Rhetoric: Argument Analysis"
-];
-
-export default function SATDiagnosticClient({ profile }: { profile: StudentProfile }) {
+export default function SATDiagnosticClient({ profile: _profile, userId }: SATDiagnosticClientProps) {
   const router = useRouter();
   const [session, setSession] = useState<DiagnosticSession | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -116,32 +82,411 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
   const initializeSession = useCallback(async () => {
     setIsLoading(true);
     try {
-      // Generate questions for diagnostic
-      const questions: Question[] = [];
+      console.log("Initializing diagnostic session for user:", userId);
+      
+      // Fetch available topics dynamically
+      let diagnosticTopics: string[] = [];
+      try {
+        const response = await fetch("/api/sat/topics");
+        if (response.ok) {
+          const data = await response.json();
+          diagnosticTopics = data.diagnosticTopics || data.topics || [];
+        }
+      } catch (topicFetchError) {
+        console.warn("Failed to fetch topics from API, using fallback:", topicFetchError);
+        // Fallback to hardcoded topics if API fails
+        diagnosticTopics = [
+          "Algebra: Linear Equations",
+          "Algebra: Quadratic Equations",
+          "Geometry: Triangles",
+          "Geometry: Circles",
+          "Reading Comprehension: Literature",
+          "Reading Comprehension: History",
+          "Grammar: Sentence Structure",
+          "Grammar: Punctuation"
+        ];
+      }
+      
+      // Generate questions for diagnostic using the question bank
+      const questions: any[] = [];
+      let successfulTopics = 0;
       
       // Process topics one by one to better handle errors
-      for (const topic of DIAGNOSTIC_TOPICS.slice(0, 8)) {
+      for (const topic of diagnosticTopics.slice(0, 8)) {
         try {
-          const generatedQuestions = await generateQuestions({
-            grade: profile.gradeLevel || 11,
-            topic,
-            subject: "Mixed",
-            difficulty: profile.difficultyLevel?.toLowerCase() || 'medium',
-            goal: 'SAT',
-            questionCount: 1
-          });
+          console.log("Generating questions for topic:", topic);
           
-          questions.push(...generatedQuestions);
+          // Determine subject based on topic
+          let subject = "Math";
+          if (topic.includes("Reading") || topic.includes("Vocabulary") || topic.includes("Command of Evidence") || topic.includes("Words in Context")) {
+            subject = "Reading";
+          } else if (topic.includes("Writing") || topic.includes("Grammar") || topic.includes("Rhetoric") || topic.includes("Standard English Conventions") || topic.includes("Expression of Ideas")) {
+            subject = "Writing";
+          } else if (topic.includes("Science") || topic.includes("Literature") || topic.includes("History")) {
+            subject = "Reading";
+          } else if (topic.includes("Grammar") || topic.includes("Punctuation") || topic.includes("Sentence")) {
+            subject = "Writing";
+          }
+          
+          console.log("Determined subject:", subject);
+          
+          // Get questions from the question bank
+          let generatedQuestions: any[] = [];
+          try {
+            // Use the API route instead of directly calling SATQuestionGenerator
+            const response = await fetch("/api/ai/sat/diagnostic/questions", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({
+                section: subject.toLowerCase(),
+                topic,
+                count: 1
+              })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              generatedQuestions = data.questions || [];
+            } else {
+              const errorData = await response.json().catch(() => ({}));
+              throw new Error(errorData.error || "Failed to fetch questions");
+            }
+          } catch (generatorError: any) {
+            console.warn(`Failed to generate questions for topic "${topic}" using API, trying fallback:`, generatorError);
+            // Check if it's a database connectivity error
+            const isDatabaseError = generatorError.message?.includes("Can't reach database server") || 
+                                   generatorError.message?.includes("P1001");
+            
+            if (isDatabaseError) {
+              console.warn("Database connectivity issue detected, using mock questions as fallback");
+              // Use mock questions as fallback when database is unreachable
+              generatedQuestions = [{
+                id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                question: `What is 2 + 2? (Mock question for topic: ${topic})`,
+                choices: ["3", "4", "5", "6"],
+                answer: 1, // Index instead of string
+                explanation: "This is a mock question because we couldn't connect to the database.",
+                subject: subject,
+                topic: topic,
+                difficulty: "INTERMEDIATE",
+                source: "mock"
+              }];
+            } else {
+              // Try a more direct approach to get questions
+              try {
+                const directQuestions = await QuestionBankService.getQuestionsByCriteria(
+                  subject,
+                  topic,
+                  "INTERMEDIATE",
+                  1
+                );
+                // Transform to match expected format
+                generatedQuestions = directQuestions.map((q: any) => ({
+                  id: q.id,
+                  question: q.question,
+                  choices: Array.isArray(q.choices) ? q.choices : 
+                           typeof q.choices === 'string' ? JSON.parse(q.choices) : [],
+                  answer: q.answer,
+                  explanation: q.explanation,
+                  subject: q.subject,
+                  topic: q.topic,
+                  difficulty: q.difficulty
+                }));
+              } catch (fallbackError: any) {
+                console.error(`Fallback also failed for topic "${topic}":`, fallbackError);
+                // Check if it's a database connectivity error
+                const isFallbackDatabaseError = fallbackError?.message?.includes("Can't reach database server") || 
+                                               fallbackError?.message?.includes("P1001");
+                
+                if (isFallbackDatabaseError) {
+                  console.warn("Database connectivity issue detected in fallback, using mock questions");
+                  // Use mock questions as fallback when database is unreachable
+                  generatedQuestions = [{
+                    id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                    question: `What is 2 + 2? (Mock question for topic: ${topic})`,
+                    choices: ["3", "4", "5", "6"],
+                    answer: 1, // Index instead of string
+                    explanation: "This is a mock question because we couldn't connect to the database.",
+                    subject: subject,
+                    topic: topic,
+                    difficulty: "INTERMEDIATE",
+                    source: "mock"
+                  }];
+                } else {
+                  // Try to get ANY questions from this subject as ultimate fallback
+                  try {
+                    const anyQuestions = await QuestionBankService.getQuestionsByCriteria(
+                      subject,
+                      "", // Empty topic to get any topic
+                      "INTERMEDIATE",
+                      1
+                    );
+                    
+                    if (anyQuestions && anyQuestions.length > 0) {
+                      const q = anyQuestions[0];
+                      generatedQuestions = [{
+                        id: q.id,
+                        question: q.question,
+                        choices: Array.isArray(q.choices) ? q.choices : 
+                                 typeof q.choices === 'string' ? JSON.parse(q.choices) : [],
+                        answer: q.answer,
+                        explanation: q.explanation,
+                        subject: q.subject,
+                        topic: q.topic,
+                        difficulty: q.difficulty
+                      }];
+                    } else {
+                      // Ultimate fallback - create a mock question
+                      generatedQuestions = [{
+                        id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        question: `What is 2 + 2? (Mock question for topic: ${topic})`,
+                        choices: ["3", "4", "5", "6"],
+                        answer: 1, // Index instead of string
+                        explanation: "This is a mock question because we couldn't find real questions in the database.",
+                        subject: subject,
+                        topic: topic,
+                        difficulty: "INTERMEDIATE",
+                        source: "mock"
+                      }];
+                    }
+                  } catch (ultimateFallbackError) {
+                    console.error(`Ultimate fallback failed for topic "${topic}":`, ultimateFallbackError);
+                    // Ultimate fallback - create a mock question
+                    generatedQuestions = [{
+                        id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+                        question: `What is 2 + 2? (Mock question for topic: ${topic})`,
+                        choices: ["3", "4", "5", "6"],
+                        answer: 1, // Index instead of string
+                        explanation: "This is a mock question because we couldn't find real questions in the database.",
+                        subject: subject,
+                        topic: topic,
+                        difficulty: "INTERMEDIATE",
+                        source: "mock"
+                      }];
+                  }
+                }
+              }
+            }
+          } // This was missing
+          
+          console.log("Got generated questions:", generatedQuestions.length);
+          
+          // Only add questions if we successfully got them
+          if (generatedQuestions && generatedQuestions.length > 0) {
+            // Transform questions to match the expected format
+            const transformedQuestions = generatedQuestions
+              .filter((q: any) => q && q.id) // Filter out any undefined or invalid questions
+              .map((q: any) => {
+                // Ensure choices is properly formatted
+                let choicesArray: string[] = [];
+                if (typeof q.choices === 'string') {
+                  try {
+                    choicesArray = JSON.parse(q.choices);
+                  } catch (e) {
+                    console.error("Error parsing choices:", e);
+                    choicesArray = [];
+                  }
+                } else if (Array.isArray(q.choices)) {
+                  choicesArray = q.choices;
+                }
+              
+                // For diagnostic questions, we need to ensure the answer is properly handled
+                // If answer is already an index, use it; otherwise, find the index
+                let answerIndex = 0;
+                if (typeof q.answer === 'number' && q.answer >= 0) {
+                  // Answer is already an index
+                  answerIndex = q.answer;
+                } else if (typeof q.answer === 'string') {
+                  // Answer is a string, find its index in choices
+                  const normalizedAnswer = q.answer?.trim().toLowerCase() || '';
+                  answerIndex = choicesArray.findIndex((choice: string) => 
+                    choice.trim().toLowerCase() === normalizedAnswer
+                  );
+                
+                  // If not found, try to extract just the answer part (in case AI returns "C) 7" format)
+                  if (answerIndex === -1) {
+                    // Remove option letters like "A)", "B)", etc.
+                    const cleanedAnswer = normalizedAnswer.replace(/^[a-d]\)\s*/i, '');
+                    answerIndex = choicesArray.findIndex((choice: string) => 
+                      choice.trim().toLowerCase() === cleanedAnswer ||
+                      choice.trim().toLowerCase().includes(cleanedAnswer)
+                    );
+                  }
+                
+                  // If still not found, default to 0 and log error
+                  if (answerIndex === -1) {
+                    console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
+                    answerIndex = 0;
+                  }
+                }
+              
+                return {
+                  id: q.id,
+                  topic: q.topic,
+                  subject: q.subject,
+                  difficulty: q.difficulty,
+                  question: q.question,
+                  choices: choicesArray,
+                  answer: answerIndex, // Use index instead of string
+                  explanation: q.explanation,
+                  source: q.source || "database"
+                };
+              })
+              .filter((q: any) => q.question && q.choices && q.choices.length > 0); // Additional filtering
+            
+            console.log("Transformed questions:", transformedQuestions.length);
+            
+            if (transformedQuestions.length > 0) {
+              questions.push(...transformedQuestions);
+              successfulTopics++;
+            }
+          }
         } catch (topicError: any) {
           console.error(`Failed to generate questions for topic "${topic}":`, topicError);
-          // Continue with other topics instead of failing the entire session
-          toast.error(`Failed to generate questions for topic: ${topic}. Continuing with available questions.`);
+          // Check if it's a database connectivity error
+          const isDatabaseError = topicError.message?.includes("Can't reach database server") || 
+                                 topicError.message?.includes("P1001");
+          
+          if (isDatabaseError) {
+            console.warn("Database connectivity issue detected, adding mock question");
+            // Add a mock question as fallback
+            questions.push({
+              id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+              question: `What is 2 + 2? (Mock question for topic: ${topic})`,
+              choices: ["3", "4", "5", "6"],
+              answer: 1, // Index instead of string
+              explanation: "This is a mock question because we couldn't connect to the database.",
+              subject: "Math",
+              topic: topic,
+              difficulty: "INTERMEDIATE",
+              source: "mock"
+            });
+            successfulTopics++;
+          } else {
+            // Continue with other topics instead of failing the entire session
+            toast.error(`Failed to generate questions for topic: ${topic}. Continuing with available questions.`);
+          }
         }
       }
       
+      console.log("Total questions collected:", questions.length);
+      console.log("Successful topics:", successfulTopics);
+      
       // Check if we have any questions
       if (questions.length === 0) {
-        throw new Error("Failed to generate any questions for the diagnostic test");
+        // Try a broader approach - get any questions from the database
+        try {
+          console.log("Trying to get any available questions from database...");
+          // Try to get questions from different subjects and topics as fallback
+          const fallbackTopics = [
+            { subject: "Math", topic: "Algebra: Linear Equations" },
+            { subject: "Reading", topic: "Reading Comprehension" },
+            { subject: "Writing", topic: "Grammar: Sentence Structure" }
+          ];
+          
+          for (const { subject, topic } of fallbackTopics) {
+            if (questions.length >= 5) break; // Stop if we have enough questions
+            
+            try {
+              const fallbackQuestions = await QuestionBankService.getQuestionsByCriteria(
+                subject,
+                topic,
+                "INTERMEDIATE",
+                5
+              );
+              
+              if (fallbackQuestions && fallbackQuestions.length > 0) {
+                // Transform to match expected format
+                const transformedQuestions = fallbackQuestions
+                  .filter((q: any) => q && q.id) // Filter out any undefined or invalid questions
+                  .map((q: any) => ({
+                    id: q.id,
+                    topic: q.topic || topic,
+                    subject: q.subject || subject,
+                    difficulty: q.difficulty || "INTERMEDIATE",
+                    question: q.question || "",
+                    choices: Array.isArray(q.choices) ? q.choices : 
+                             typeof q.choices === 'string' ? JSON.parse(q.choices) : [],
+                    answer: q.answer || "",
+                    explanation: q.explanation || "",
+                    source: "database"
+                  }))
+                  .filter((q: any) => q.question && q.choices && q.choices.length > 0); // Additional filtering
+                
+                if (transformedQuestions.length > 0) {
+                  questions.push(...transformedQuestions);
+                }
+              }
+            } catch (fallbackTopicError: any) {
+              console.error(`Failed to get fallback questions for ${subject} - ${topic}:`, fallbackTopicError);
+              // Check if it's a database connectivity error
+              const isDatabaseError = fallbackTopicError.message?.includes("Can't reach database server") || 
+                                     fallbackTopicError.message?.includes("P1001");
+              
+              if (isDatabaseError) {
+                console.warn("Database connectivity issue detected in fallback topic, adding mock questions");
+                // Add mock questions as fallback
+                for (let i = 0; i < 2; i++) {
+                  questions.push({
+                    id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
+                    question: `What is 2 + 2? (Mock question for ${subject})`,
+                    choices: ["3", "4", "5", "6"],
+                    answer: 1, // Use index instead of string
+                    explanation: "This is a mock question because we couldn't connect to the database.",
+                    subject: subject,
+                    topic: topic,
+                    difficulty: "INTERMEDIATE",
+                    source: "mock"
+                  });
+                }
+              }
+            }
+          }
+        } catch (fallbackError: any) {
+          console.error("Fallback to getQuestionsByCriteria also failed:", fallbackError);
+          // Check if it's a database connectivity error
+          const isDatabaseError = fallbackError.message?.includes("Can't reach database server") || 
+                                 fallbackError.message?.includes("P1001");
+          
+          if (isDatabaseError) {
+            console.warn("Database connectivity issue detected in general fallback, adding mock questions");
+            // Add several mock questions as ultimate fallback
+            for (let i = 0; i < 5; i++) {
+              questions.push({
+                id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
+                question: `What is 2 + 2? (Mock question #${i + 1})`,
+                choices: ["3", "4", "5", "6"],
+                answer: 1, // Use index instead of string (4 is at index 1)
+                explanation: "This is a mock question because we couldn't connect to the database.",
+                subject: "Math", // Use default values instead of undefined variables
+                topic: "Algebra: Linear Equations", // Use default values instead of undefined variables
+                difficulty: "INTERMEDIATE",
+                source: "mock"
+              });
+            }
+          }
+        }
+      }
+      
+      // Final check if we have any questions
+      if (questions.length === 0) {
+        // Ultimate fallback - create mock questions
+        console.warn("No questions found, creating mock questions as ultimate fallback");
+        for (let i = 0; i < 5; i++) {
+          questions.push({
+            id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
+            question: `What is 2 + 2? (Mock question #${i + 1})`,
+            choices: ["3", "4", "5", "6"],
+            answer: 1, // Use index instead of string (4 is at index 1)
+            explanation: "This is a mock question because we couldn't connect to the database.",
+            subject: "Math",
+            topic: "Algebra: Linear Equations",
+            difficulty: "INTERMEDIATE",
+            source: "mock"
+          });
+        }
       }
       
       // Create session
@@ -165,11 +510,13 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
       toast.success(`Started diagnostic test with ${questions.length} questions!`);
     } catch (error: any) {
       console.error("Failed to initialize diagnostic session:", error);
-      toast.error(`Failed to start diagnostic test: ${error.message || "Unknown error"}`);
+      toast.error(`Failed to start diagnostic test: ${error.message || "Unknown error. Please check your connection and try again."}`);
+      // Reset loading state on error
+      setIsLoading(false);
     } finally {
       setIsLoading(false);
     }
-  }, [profile]);
+  }, [userId]);
 
   // Complete session
   const completeSession = useCallback(async () => {
@@ -179,6 +526,36 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     if (timer) {
       clearInterval(timer);
       setTimer(null);
+    }
+    
+    // Record question usage for adaptive learning
+    try {
+      for (const userAnswer of session.userAnswers) {
+        try {
+          // Find the corresponding question to get subject, topic, and difficulty
+          const question = session.questions.find(q => q.id === userAnswer.questionId);
+          
+          await fetch('/api/question-bank/record-usage', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              questionId: userAnswer.questionId,
+              wasCorrect: userAnswer.isCorrect,
+              timeSpent: userAnswer.timeSpent,
+              subject: question?.subject || "Unknown",
+              topic: question?.topic || "Unknown",
+              difficulty: question?.difficulty || "INTERMEDIATE"
+            })
+          });
+        } catch (recordError) {
+          console.error("Error recording question usage:", recordError);
+          // Continue with other questions even if one fails
+        }
+      }
+    } catch (error) {
+      console.error("Error recording question usage:", error);
     }
     
     // Mark session as completed
@@ -191,7 +568,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     setSession(completedSession);
     
     // Prepare question answers data for storage
-    const questionAnswers = session.questions.map((question, index) => {
+    const questionAnswers = session.questions.map((question: Question, index: number) => {
       const userAnswer = session.userAnswers[index];
       return {
         questionId: question.id,
@@ -352,7 +729,22 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     if (!session || !selectedAnswer || showExplanation) return;
     
     const currentQuestion = session.questions[currentQuestionIndex];
-    const isCorrect = selectedAnswer === currentQuestion.answer;
+    // Add check to ensure currentQuestion exists
+    if (!currentQuestion) {
+      console.error("Current question is undefined");
+      return;
+    }
+    
+    // Fix: Compare selected answer with the correct answer, handling both string and index types
+    let isCorrect = false;
+    if (typeof currentQuestion.answer === 'number') {
+      // Answer is an index
+      const selectedIndex = currentQuestion.choices.indexOf(selectedAnswer);
+      isCorrect = selectedIndex === currentQuestion.answer;
+    } else {
+      // Answer is a string
+      isCorrect = selectedAnswer === currentQuestion.answer;
+    }
     
     const newUserAnswer: UserAnswer = {
       questionId: currentQuestion.id,
@@ -371,7 +763,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     
     setSession(updatedSession);
     setShowExplanation(true);
-  }, [session, selectedAnswer, showExplanation, currentQuestionIndex]);
+  }, [ session, selectedAnswer, showExplanation, currentQuestionIndex]);
 
   // Handle answer selection
   const handleAnswerSelect = useCallback((answer: string) => {
@@ -402,9 +794,17 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     }
     
     if (currentQuestionIndex < session.questions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      const nextIndex = currentQuestionIndex + 1;
+      const nextQuestion = session.questions[nextIndex];
+      
+      // Add check to ensure nextQuestion exists
+      if (!nextQuestion) {
+        console.error("Next question is undefined");
+        return;
+      }
+      
+      setCurrentQuestionIndex(nextIndex);
       // Set the selected answer for the new question if it exists
-      const nextQuestion = session.questions[currentQuestionIndex + 1];
       const nextUserAnswer = session.userAnswers.find(a => a.questionId === nextQuestion.id);
       setSelectedAnswer(nextUserAnswer?.selectedAnswer || null);
       setShowExplanation(!!nextUserAnswer?.selectedAnswer);
@@ -428,9 +828,17 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
     }
     
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      const prevIndex = currentQuestionIndex - 1;
+      const prevQuestion = session.questions[prevIndex];
+      
+      // Add check to ensure prevQuestion exists
+      if (!prevQuestion) {
+        console.error("Previous question is undefined");
+        return;
+      }
+      
+      setCurrentQuestionIndex(prevIndex);
       // Set the selected answer for the new question if it exists
-      const prevQuestion = session.questions[currentQuestionIndex - 1];
       const prevUserAnswer = session.userAnswers.find(a => a.questionId === prevQuestion.id);
       setSelectedAnswer(prevUserAnswer?.selectedAnswer || null);
       setShowExplanation(!!prevUserAnswer?.selectedAnswer);
@@ -731,10 +1139,30 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
 
   // Show current question
   const currentQuestion = session.questions[currentQuestionIndex];
-  const userAnswer = session.userAnswers.find(a => a.questionId === currentQuestion.id);
+  const userAnswer = currentQuestion ? session.userAnswers.find(a => a.questionId === currentQuestion.id) : undefined;
   
   // Check if current question has been answered
-  const isCurrentQuestionAnswered = session.userAnswers.some(a => a.questionId === currentQuestion.id && a.selectedAnswer !== null);
+  const isCurrentQuestionAnswered = currentQuestion ? session.userAnswers.some(a => a.questionId === currentQuestion.id && a.selectedAnswer !== null) : false;
+  
+  // If we don't have a current question, show an error
+  if (!currentQuestion) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
+        <div className="relative z-10 max-w-4xl mx-auto px-6 py-12">
+          <div className="text-center py-12">
+            <div className="text-red-400 text-2xl font-bold mb-4">Error Loading Questions</div>
+            <p className="text-purple-200">No questions available for this test. Please try again later.</p>
+            <Button 
+              onClick={goBack}
+              className="mt-6 bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-600 hover:to-cyan-600"
+            >
+              Back to SAT Prep
+            </Button>
+          </div>
+        </div>
+      </div>
+    );
+  }
   
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative">
@@ -790,7 +1218,11 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
               {currentQuestion.choices.map((choice, index) => {
                 const isSelected = selectedAnswer === choice;
                 const isIncorrect = !userAnswer?.isCorrect && userAnswer?.selectedAnswer === choice;
-                const showCorrect = showExplanation && choice === currentQuestion.answer;
+                // Fix: Get the correct answer string from choices array, handling both string and index types
+                const correctAnswer = typeof currentQuestion.answer === 'number' 
+                  ? currentQuestion.choices[currentQuestion.answer] 
+                  : currentQuestion.answer;
+                const showCorrect = showExplanation && choice === correctAnswer;
                 
                 return (
                   <button
@@ -811,7 +1243,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
                           ? "bg-purple-500/30 border-purple-500/70"
                           : "bg-white/5 border-white/10 hover:bg-white/10"
                       }
-                      ${showExplanation && choice === currentQuestion.answer ? "ring-2 ring-green-500/50" : ""}
+                      ${showExplanation && choice === correctAnswer ? "ring-2 ring-green-500/50" : ""}
                     `}
                   >
                     <div className="flex items-center">
@@ -831,7 +1263,7 @@ export default function SATDiagnosticClient({ profile }: { profile: StudentProfi
                         }
                       `}>
                         {showExplanation || isCurrentQuestionAnswered ? (
-                          showCorrect || (isIncorrect && choice === currentQuestion.answer) ? (
+                          showCorrect || (isIncorrect && choice === correctAnswer) ? (
                             <CheckCircle className="h-4 w-4 text-white" />
                           ) : isIncorrect ? (
                             <XCircle className="h-4 w-4 text-white" />

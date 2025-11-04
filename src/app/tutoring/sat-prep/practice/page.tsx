@@ -4,7 +4,7 @@ import { headers } from "next/headers";
 import SATPracticeClient from "@/components/tutoring/sat-practice-client";
 import { prisma } from "@/lib/prisma";
 
-export default async function SATPracticePage() {
+export default async function SATPracticePage({ searchParams }: { searchParams: Promise<{ section?: string }> }) {
   const headersList = await headers();
   const session = await auth.api.getSession({
     headers: headersList
@@ -39,5 +39,9 @@ export default async function SATPracticePage() {
     redirect('/tutoring');
   }
 
-  return <SATPracticeClient />;
+  // Check if this is a full practice test
+  const params = await searchParams;
+  const isFullTest = params.section === 'full';
+
+  return <SATPracticeClient isFullTest={isFullTest} />;
 }

@@ -299,7 +299,29 @@ exports.Prisma.QuestionScalarFieldEnum = {
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
+  usageCount: 'usageCount',
+  avgCorrectRate: 'avgCorrectRate',
+  avgTimeToAnswer: 'avgTimeToAnswer',
+  tags: 'tags',
+  lastUsedAt: 'lastUsedAt',
+  reviewCount: 'reviewCount',
+  version: 'version',
+  isActive: 'isActive',
+  parentVersionId: 'parentVersionId',
   userGeneratedBy: 'userGeneratedBy'
+};
+
+exports.Prisma.UserQuestionHistoryScalarFieldEnum = {
+  id: 'id',
+  userId: 'userId',
+  questionId: 'questionId',
+  usedAt: 'usedAt',
+  wasCorrect: 'wasCorrect',
+  timeSpent: 'timeSpent',
+  subject: 'subject',
+  topic: 'topic',
+  difficulty: 'difficulty',
+  createdAt: 'createdAt'
 };
 
 exports.Prisma.MockExamScalarFieldEnum = {
@@ -399,6 +421,14 @@ exports.AchievementCategory = exports.$Enums.AchievementCategory = {
   MILESTONE: 'MILESTONE'
 };
 
+exports.QuestionStatus = exports.$Enums.QuestionStatus = {
+  PENDING_REVIEW: 'PENDING_REVIEW',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  RETIRED: 'RETIRED',
+  ARCHIVED: 'ARCHIVED'
+};
+
 exports.Prisma.ModelName = {
   Post: 'Post',
   User: 'User',
@@ -414,6 +444,7 @@ exports.Prisma.ModelName = {
   SATPracticeSession: 'SATPracticeSession',
   SATDiagnosticResult: 'SATDiagnosticResult',
   Question: 'Question',
+  UserQuestionHistory: 'UserQuestionHistory',
   MockExam: 'MockExam',
   MockAttempt: 'MockAttempt',
   TopicMastery: 'TopicMastery'

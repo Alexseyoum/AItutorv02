@@ -35,7 +35,7 @@ export async function PUT(_request: NextRequest) {
       );
     }
 
-    if (!["approved", "rejected"].includes(status as string)) {
+    if (!["APPROVED", "REJECTED"].includes(status as string)) {
       return NextResponse.json(
         { success: false, message: "Status must be 'approved' or 'rejected'" },
         { status: 400 }
@@ -44,7 +44,7 @@ export async function PUT(_request: NextRequest) {
 
     const updatedQuestion = await prisma.question.update({
       where: { id: id as string },
-      data: { status: status as string, updatedAt: new Date() }
+      data: { status: status as any, updatedAt: new Date() }
     });
 
     return NextResponse.json({ success: true, question: updatedQuestion });
@@ -79,7 +79,7 @@ export async function GET(_request: NextRequest) {
 
     const questions = await prisma.question.findMany({
       where: {
-        status: "approved",
+        status: "APPROVED",
         ...(topic && { topic: { contains: topic, mode: "insensitive" } }),
         ...(subject && { subject: { contains: subject, mode: "insensitive" } }),
         ...(difficulty && { difficulty: { contains: difficulty, mode: "insensitive" } })
