@@ -1,6 +1,5 @@
-// File: src/scripts/populate-question-bank.ts
-import { PrismaClient } from "../generated/prisma";
-import { QuestionStatus } from "../generated/prisma";
+// File: scripts/populate-question-bank.js
+const { PrismaClient, QuestionStatus } = require("../src/generated/prisma");
 
 const prisma = new PrismaClient();
 
@@ -1035,7 +1034,7 @@ const highQualityWritingQuestions = [
 ];
 
 // Improved math question generation with integer solutions, correct signs, and no zero coefficients
-function generateMathQuestion(subject: string, topic: string, _difficulty: string) {
+function generateMathQuestion(subject, topic, difficulty) {
   // First check if we have high-quality questions for this topic
   const topicQuestions = highQualityMathQuestions.find(tq => tq.topic === topic);
   if (topicQuestions && topicQuestions.questions.length > 0) {
@@ -1204,8 +1203,8 @@ function generateMathQuestion(subject: string, topic: string, _difficulty: strin
   return { question, choices, answer, explanation };
 }
 
-// Improved reading question generation with more templates for variety
-function generateReadingQuestion(subject: string, topic: string, _difficulty: string) {
+// Improved reading question generation with more detailed explanations
+function generateReadingQuestion(subject, topic, difficulty) {
   // Prefer high-quality if available
   const topicQuestions = highQualityReadingQuestions.find(tq => tq.topic === topic);
   if (topicQuestions && topicQuestions.questions.length > 0) {
@@ -1218,37 +1217,37 @@ function generateReadingQuestion(subject: string, topic: string, _difficulty: st
     };
   }
   
-  // Improved fallback with varied templates
+  // Improved fallback with varied templates and more detailed explanations
   const templates = [
     {
       question: "The author's primary purpose is to:",
       choices: ["Argue for a position", "Describe a phenomenon", "Narrate an event", "Analyze a theory"],
       answer: "Argue for a position",
-      explanation: "The passage presents evidence to support a viewpoint."
+      explanation: "The author presents evidence and reasoning to support a specific viewpoint, using persuasive techniques such as citing statistics, providing examples, and addressing counterarguments. This indicates an argumentative purpose rather than simple description or narration."
     },
     {
       question: "The tone of the passage can best be described as:",
       choices: ["Skeptical", "Enthusiastic", "Objective", "Critical"],
       answer: "Skeptical",
-      explanation: "The author questions assumptions and evidence."
+      explanation: "The author questions assumptions and expresses doubt about claims without concrete evidence. Words and phrases that indicate doubt, questioning, or reservation contribute to this skeptical tone, distinguishing it from enthusiasm or objectivity."
     },
     {
       question: "Which best supports the claim in line 15?",
       choices: ["The statistic in line 20", "The anecdote in line 10", "The quote in line 25", "The definition in line 5"],
       answer: "The statistic in line 20",
-      explanation: "Direct empirical support for the claim."
+      explanation: "The statistic in line 20 provides empirical data that directly reinforces the claim made in line 15. Unlike anecdotes or quotes, statistics offer measurable evidence that strengthens the argumentative foundation of the claim."
     },
     {
       question: "The relationship between the two passages is that Passage 2:",
       choices: ["Refutes Passage 1", "Supports Passage 1", "Expands on Passage 1", "Contrasts with Passage 1"],
       answer: "Refutes Passage 1",
-      explanation: "Presents opposing evidence."
+      explanation: "Passage 2 presents opposing evidence and arguments that directly challenge the main points of Passage 1. This refutation is evident through contrasting viewpoints, contradictory evidence, and explicit disagreement with Passage 1's conclusions."
     },
     {
       question: "The word 'ambiguous' in line 8 most nearly means:",
       choices: ["Unclear", "Definitive", "Complex", "Simple"],
       answer: "Unclear",
-      explanation: "Context suggests open to multiple interpretations."
+      explanation: "In context, 'ambiguous' refers to something that is open to multiple interpretations or lacks clarity. The surrounding sentences likely show that the subject being described could be understood in different ways, making 'unclear' the most appropriate synonym."
     }
   ];
   
@@ -1261,8 +1260,8 @@ function generateReadingQuestion(subject: string, topic: string, _difficulty: st
   };
 }
 
-// Improved writing question generation with variety
-function generateWritingQuestion(subject: string, topic: string, _difficulty: string) {
+// Improved writing question generation with more detailed explanations
+function generateWritingQuestion(subject, topic, difficulty) {
   // Prefer high-quality
   const topicQuestions = highQualityWritingQuestions.find(tq => tq.topic === topic);
   if (topicQuestions && topicQuestions.questions.length > 0) {
@@ -1275,31 +1274,31 @@ function generateWritingQuestion(subject: string, topic: string, _difficulty: st
     };
   }
   
-  // Improved fallback with varied templates
+  // Improved fallback with varied templates and more detailed explanations
   const templates = [
     {
       question: "Which choice best maintains consistent verb tense?",
       choices: ["Walked", "Walks", "Walking", "Walk"],
       answer: "Walked",
-      explanation: "Matches past tense of the paragraph."
+      explanation: "The paragraph uses past tense verbs throughout, so 'walked' maintains consistency with the established tense. Mixing tenses without a clear narrative purpose creates confusion for readers and disrupts the flow of the text."
     },
     {
       question: "The best placement for the underlined phrase is:",
       choices: ["Where it is now", "After 'the'", "Before 'dog'", "At the end"],
       answer: "Where it is now",
-      explanation: "Logical flow and clarity."
+      explanation: "The current placement creates the most logical flow and clarity in the sentence. Moving it would either create ambiguity, disrupt the natural word order, or separate closely related ideas that should remain together for reader comprehension."
     },
     {
       question: "Which revision improves sentence variety?",
       choices: ["Combine with next sentence", "Split into two", "Add transition", "No change"],
       answer: "Combine with next sentence",
-      explanation: "Reduces choppiness."
+      explanation: "The current sentence is short and choppy, creating a staccato rhythm that can be fatiguing for readers. Combining it with the next sentence using appropriate punctuation or conjunctions creates better flow and more sophisticated sentence structure."
     },
     {
       question: "The sentence is best deleted because it:",
       choices: ["Is irrelevant", "Repeats information", "Contradicts the thesis", "Is too detailed"],
       answer: "Is irrelevant",
-      explanation: "Does not support the main idea."
+      explanation: "The sentence does not support the main idea or purpose of the paragraph. Including irrelevant information distracts readers from the central argument and weakens the overall effectiveness of the writing, making deletion the best option."
     }
   ];
   
@@ -1313,7 +1312,7 @@ function generateWritingQuestion(subject: string, topic: string, _difficulty: st
 }
 
 // Dispatch function unchanged
-function generateQuestion(subject: string, topic: string, difficulty: string) {
+function generateQuestion(subject, topic, difficulty) {
   if (subject === "Math") {
     return generateMathQuestion(subject, topic, difficulty);
   } else if (subject === "Reading") {
@@ -1354,7 +1353,7 @@ async function populateQuestionBank() {
                 answer: questionData.answer,
                 explanation: questionData.explanation,
                 source: "ai_generated",
-                status: QuestionStatus.APPROVED,
+                status: "APPROVED",
                 usageCount: 0,
                 avgCorrectRate: 0,
                 avgTimeToAnswer: 0,
@@ -1407,3 +1406,5 @@ if (require.main === module) {
       process.exit(1);
     });
 }
+
+module.exports = { populateQuestionBank };
