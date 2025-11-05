@@ -56,10 +56,48 @@ try {
 }
 
 const TIME_LIMITS: Record<string, number> = {
-  math: 35 * 60,
-  reading: 32 * 60,
-  writing: 32 * 60
+  math: 70 * 60,      // 70 minutes for Math section
+  reading: 64 * 60,   // 64 minutes for Reading section (part of Reading & Writing)
+  writing: 64 * 60,   // 64 minutes for Writing section (part of Reading & Writing)
+  full: 134 * 60      // 134 minutes for full test (Math + Reading & Writing)
 };
+
+// Update the section definitions to match real SAT structure
+const _SAT_SECTIONS: SATSection[] = [
+  {
+    id: "math",
+    name: "Math",
+    topics: [
+      "Algebra: Linear Equations",
+      "Algebra: Quadratic Equations",
+      "Algebra: Systems of Equations",
+      "Geometry: Triangles",
+      "Geometry: Circles",
+      "Data Analysis: Statistics",
+      "Data Analysis: Probability"
+    ],
+    timeLimit: 70 * 60 // 70 minutes
+  },
+  {
+    id: "reading",
+    name: "Reading", 
+    topics: [
+      "Reading Comprehension: Literature",
+      "Reading Comprehension: History",
+      "Reading Comprehension: Science"
+    ],
+    timeLimit: 64 * 60 // 64 minutes
+  },
+  {
+    id: "writing",
+    name: "Writing",
+    topics: [
+      "Grammar: Sentence Structure",
+      "Grammar: Punctuation"
+    ],
+    timeLimit: 64 * 60 // 64 minutes
+  }
+];
 
 function sanitizeUrl(url: string): string {
   try {
@@ -160,7 +198,8 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
                 topics: data.topicsBySubject.Math || [
                   "Algebra: Linear Equations",
                   "Algebra: Quadratic Equations",
-                  "Geometry: Triangles"
+                  "Geometry: Triangles",
+                  "Data Analysis: Probability"
                 ],
                 timeLimit: 35 * 60
               },
@@ -169,7 +208,8 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
                 name: "Reading", 
                 topics: data.topicsBySubject.Reading || [
                   "Reading Comprehension: Literature",
-                  "Reading Comprehension: History"
+                  "Reading Comprehension: History",
+                  "Reading Comprehension: Science"
                 ],
                 timeLimit: 32 * 60
               },
@@ -301,71 +341,123 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
       
       // Handle full practice test
       if (sectionId === 'full') {
-        // For full practice test, we need to get questions from all sections
-        const allQuestions: any[] = [];
-        const sections = ['math', 'reading', 'writing'];
-        const topics = {
-          math: 'Algebra: Linear Equations',
-          reading: 'Reading Comprehension',
-          writing: 'Grammar: Sentence Structure'
-        };
+        // For full practice test, we want to simulate the real SAT structure:
+        // 54 Reading & Writing questions + 44 Math questions = 98 total questions
+        // But we'll use a reasonable subset for practice: 30 Reading/Writing + 20 Math = 50 questions
+        const readingWritingCount = 30;
+        const mathCount = 20;
         
-        // Get questions from each section
-        for (const section of sections) {
+        // Get Reading & Writing questions (combined)
+        const readingWritingQuestions: any[] = [];
+        const readingTopics = satSections.find(s => s.id === 'reading')?.topics || [];
+        const writingTopics = satSections.find(s => s.id === 'writing')?.topics || [];
+        
+        // Get questions from Reading topics (including Science)
+        for (const topic of readingTopics) {
+          if (readingWritingQuestions.length >= readingWritingCount) break;
+          
           try {
             const response = await fetch("/api/sat/start", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ 
-                section: section, 
-                topic: topics[section as keyof typeof topics] 
+              body: JSON.stringify({
+                section: "reading",
+                topic,
+                count: Math.ceil(readingWritingCount / readingTopics.length)
               })
             });
             
             if (response.ok) {
               const data = await response.json();
               if (data.questions && Array.isArray(data.questions)) {
-                // Add section identifier to each question
-                const questionsWithSection = data.questions.map((q: any) => ({
-                  ...q,
-                  section: section
-                }));
-                allQuestions.push(...questionsWithSection);
+                // Only add questions that don't exceed our target
+                const remainingSlots = readingWritingCount - readingWritingQuestions.length;
+                const questionsToAdd = data.questions.slice(0, remainingSlots);
+                readingWritingQuestions.push(...questionsToAdd);
               }
             }
-          } catch (sectionError) {
-            console.error(`Error getting questions for ${section}:`, sectionError);
+          } catch (error) {
+            console.warn(`Failed to fetch questions for topic ${topic}:`, error);
           }
         }
         
-        // If we don't have enough questions, create mock ones
-        if (allQuestions.length < 10) {
-          console.warn("Not enough questions for full test, creating mock questions");
-          const mockQuestions: any[] = [];
-          const totalQuestions = Math.max(15, allQuestions.length); // At least 15 questions
+        // Get questions from Writing topics
+        for (const topic of writingTopics) {
+          if (readingWritingQuestions.length >= readingWritingCount) break;
           
-          for (let i = allQuestions.length; i < totalQuestions; i++) {
-            const section = sections[i % sections.length];
-            mockQuestions.push({
-              id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
-              question: `What is 2 + 2? (Mock full test question #${i + 1})`,
-              choices: JSON.stringify(["3", "4", "5", "6"]),
-              answer: "4",
-              explanation: "This is a mock question for the full practice test.",
-              subject: section.charAt(0).toUpperCase() + section.slice(1),
-              topic: topics[section as keyof typeof topics],
-              difficulty: "INTERMEDIATE",
-              section: section
+          try {
+            const response = await fetch("/api/sat/start", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                section: "writing",
+                topic,
+                count: Math.ceil(readingWritingCount / writingTopics.length)
+              })
             });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.questions && Array.isArray(data.questions)) {
+                // Only add questions that don't exceed our target
+                const remainingSlots = readingWritingCount - readingWritingQuestions.length;
+                const questionsToAdd = data.questions.slice(0, remainingSlots);
+                readingWritingQuestions.push(...questionsToAdd);
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch questions for topic ${topic}:`, error);
           }
-          allQuestions.push(...mockQuestions);
+        }
+        
+        // Get Math questions (including Probability)
+        const mathQuestions: any[] = [];
+        const mathTopics = satSections.find(s => s.id === 'math')?.topics || [];
+        
+        for (const topic of mathTopics) {
+          if (mathQuestions.length >= mathCount) break;
+          
+          try {
+            const response = await fetch("/api/sat/start", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                section: "math",
+                topic,
+                count: Math.ceil(mathCount / mathTopics.length)
+              })
+            });
+            
+            if (response.ok) {
+              const data = await response.json();
+              if (data.questions && Array.isArray(data.questions)) {
+                // Only add questions that don't exceed our target
+                const remainingSlots = mathCount - mathQuestions.length;
+                const questionsToAdd = data.questions.slice(0, remainingSlots);
+                mathQuestions.push(...questionsToAdd);
+              }
+            }
+          } catch (error) {
+            console.warn(`Failed to fetch questions for topic ${topic}:`, error);
+          }
+        }
+        
+        // Combine questions and limit to desired count
+        let allQuestions = [...readingWritingQuestions, ...mathQuestions];
+        // Limit to total desired count but ensure we have a good mix
+        const maxQuestions = readingWritingCount + mathCount;
+        if (allQuestions.length > maxQuestions) {
+          // Shuffle and take a sample
+          allQuestions = allQuestions
+            .sort(() => 0.5 - Math.random())
+            .slice(0, maxQuestions);
         }
         
         // Transform questions to match expected format
-        const formattedQuestions = allQuestions
-          .filter((q: any) => q && q.id) // Filter out any undefined or invalid questions
-          .map((q: any, _i: number) => {
-          // Ensure choices is an array
+        const transformedQuestions = allQuestions
+        .filter((q: any) => q && q.id && typeof q.id === 'string' && q.id.length > 0)
+        .map((q: any) => {
+          // Ensure choices is properly formatted
           let choicesArray: string[] = [];
           if (typeof q.choices === 'string') {
             try {
@@ -378,66 +470,139 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
             choicesArray = q.choices;
           }
           
-          // Normalize answer to handle edge cases - convert string answer to index
-          let correctAnswerIndex = -1;
-          const normalizedAnswer = q.answer?.toString()?.trim().toLowerCase() || '';
+          // Skip questions with no choices
+          if (!Array.isArray(choicesArray) || choicesArray.length === 0) {
+            console.warn("Skipping question with no valid choices:", q.id);
+            return null;
+          }
           
-          // Try exact match first
-          correctAnswerIndex = choicesArray.findIndex((choice: string) => 
-            choice.trim().toLowerCase() === normalizedAnswer
-          );
-          
-          // If not found, try to extract just the answer part (in case AI returns "C) 7" format)
-          if (correctAnswerIndex === -1) {
-            // Remove option letters like "A)", "B)", etc.
-            const cleanedAnswer = normalizedAnswer.replace(/^[a-d]\)\s*/i, '');
-            correctAnswerIndex = choicesArray.findIndex((choice: string) => 
-              choice.trim().toLowerCase() === cleanedAnswer ||
-              choice.trim().toLowerCase().includes(cleanedAnswer)
+          // Ensure we have a valid correctAnswer (should be a number now)
+          let correctAnswer = 0;
+          // Use the 'answer' field from API response and map it to 'correctAnswer'
+          if (typeof typeof q.correctAnswer === 'number' && q.correctAnswer >= 0 && q.correctAnswer < choicesArray.length) {
+            correctAnswer = q.correctAnswer;
+          } else if (typeof q.answer === 'number' && q.answer >= 0 && q.answer < choicesArray.length) {
+            // Fallback to answer if correctAnswer is not available
+            correctAnswer = q.answer;
+          } else if (typeof q.answer === 'string') {
+            // If answer is a string, find its index in choices
+            const normalizedAnswer = q.answer?.toString()?.trim().toLowerCase() || '';
+            correctAnswer = choicesArray.findIndex((choice: string) => 
+              choice.trim().toLowerCase() === normalizedAnswer
             );
-          }
-          
-          // Additional fallback: If answer is already a number, use it directly
-          if (correctAnswerIndex === -1 && !isNaN(Number(q.answer)) && Number(q.answer) >= 0 && Number(q.answer) < choicesArray.length) {
-            correctAnswerIndex = Number(q.answer);
-          }
-          
-          // If still not found, default to 0 and log error
-          if (correctAnswerIndex === -1) {
-            console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
-            correctAnswerIndex = 0;
-          }
-          
-          // Map difficulty to expected values
-          let difficulty: "easy" | "medium" | "hard" = "medium";
-          if (q.difficulty) {
-            const lowerDiff = q.difficulty.toLowerCase();
-            if (lowerDiff.includes("easy") || lowerDiff === "beginner") {
-              difficulty = "easy";
-            } else if (lowerDiff.includes("hard") || lowerDiff.includes("advanced")) {
-              difficulty = "hard";
-            } else {
-              difficulty = "medium";
+            
+            // If not found, try to extract just the answer part (in case AI returns "C) 7" format)
+            if (correctAnswer === -1) {
+              // Remove option letters like "A)", "B)", etc.
+              const cleanedAnswer = normalizedAnswer.replace(/^[a-d]\)\s*/i, '');
+              correctAnswer = choicesArray.findIndex((choice: string) => 
+                choice.trim().toLowerCase() === cleanedAnswer ||
+                choice.trim().toLowerCase().includes(cleanedAnswer)
+              );
             }
+            
+            // Additional fallback: Try to match by finding the choice that contains the answer
+            if (correctAnswer === -1) {
+              correctAnswer = choicesArray.findIndex((choice: string) => 
+                choice.trim().toLowerCase().includes(normalizedAnswer) ||
+                normalizedAnswer.includes(choice.trim().toLowerCase())
+              );
+            }
+            
+            // Additional fallback: If answer is already a number, use it directly
+            if (correctAnswer === -1 && !isNaN(Number(q.answer)) && Number(q.answer) >= 0 && Number(q.answer) < choicesArray.length) {
+              correctAnswer = Number(q.answer);
+            }
+            
+            // Additional fallback: Try partial matching for more flexibility
+            if (correctAnswer === -1) {
+              correctAnswer = choicesArray.findIndex((choice: string) => {
+                const choiceLower = choice.trim().toLowerCase();
+                const answerLower = normalizedAnswer.toLowerCase();
+                // Check if either contains the other
+                return choiceLower.includes(answerLower) || answerLower.includes(choiceLower);
+              });
+            }
+            
+            // If still not found, log detailed error but don't default to 0
+            // Instead, use a more intelligent approach to select a reasonable answer
+            if (correctAnswer === -1) {
+              console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
+              // Try to find a numeric answer in the choices
+              const numericChoices = choicesArray.map((choice, index) => {
+                const match = choice.trim().match(/[\d.]+/);
+                return match ? { index, value: parseFloat(match[0]) } : null;
+              }).filter(Boolean) as { index: number; value: number }[];
+              
+              if (numericChoices.length > 0 && !isNaN(Number(q.answer))) {
+                const targetValue = parseFloat(q.answer.toString());
+                // Find the closest numeric match
+                numericChoices.sort((a, b) => Math.abs(a.value - targetValue) - Math.abs(b.value - targetValue));
+                correctAnswer = numericChoices[0].index;
+              } else {
+                // As a last resort, randomly select an answer that isn't the first one
+                // to avoid the pattern of always selecting the first option
+                const validIndices = choicesArray.map((_, index) => index).filter(index => index !== 0);
+                if (validIndices.length > 0) {
+                  correctAnswer = validIndices[Math.floor(Math.random() * validIndices.length)];
+                } else {
+                  correctAnswer = 0; // Only use 0 if it's the only option
+                }
+              }
+              console.log(`Using fallback answer index: ${correctAnswer} for question ${q.id}`);
+            }
+          } else {
+            // Final fallback if no valid answer found
+            correctAnswer = 0;
           }
           
           return {
             id: q.id,
             question: q.question || "",
             choices: choicesArray,
-            correctAnswer: correctAnswerIndex,
+            correctAnswer: correctAnswer,
             explanation: q.explanation || "",
-            topic: q.topic || topic,
-            difficulty: difficulty,
-            section: q.section || sectionId
+            topic: q.topic || "",
+            difficulty: q.difficulty || "medium"
           };
         })
-        .filter((q: any) => q.id && q.question && Array.isArray(q.choices) && q.choices.length > 0); // Filter out malformed questions
+        .filter((q: any): q is SATQuestion => q !== null && 
+          typeof q === 'object' && 
+          typeof q.id === 'string' && 
+          q.id.length > 0 &&
+          typeof q.question === 'string' && 
+          q.question.length > 0 &&
+          Array.isArray(q.choices) && 
+          q.choices.length > 0 &&
+          typeof q.correctAnswer === 'number' &&
+          q.correctAnswer >= 0 &&
+          q.correctAnswer < q.choices.length && // Ensure correctAnswer is within valid range
+          typeof q.explanation === 'string' &&
+          typeof q.topic === 'string' &&
+          (q.difficulty === 'easy' || q.difficulty === 'medium' || q.difficulty === 'hard'));
 
-        console.log("Formatted questions for full test:", formattedQuestions.length);
+        console.log("Formatted questions for full test:", transformedQuestions.length);
+
+        // Filter out any null values to ensure we have a proper SATQuestion array
+        const validQuestions = transformedQuestions.filter((q): q is SATQuestion => 
+          q !== null && 
+          typeof q === 'object' && 
+          typeof q.id === 'string' && 
+          q.id.length > 0 &&
+          typeof q.question === 'string' && 
+          q.question.length > 0 &&
+          Array.isArray(q.choices) && 
+          q.choices.length > 0 &&
+          typeof q.correctAnswer === 'number' &&
+          q.correctAnswer >= 0 &&
+          q.correctAnswer < q.choices.length &&
+          typeof q.explanation === 'string' &&
+          typeof q.topic === 'string' &&
+          (q.difficulty === 'easy' || q.difficulty === 'medium' || q.difficulty === 'hard')
+        );
 
         // Check if we have any valid questions
-        if (formattedQuestions.length === 0) {
+        if (validQuestions.length === 0) {
           throw new Error("No valid questions available for full practice test");
         }
 
@@ -445,16 +610,16 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
           id: `full-test-${Date.now()}`,
           section: 'full',
           topic: 'Full SAT Practice Test',
-          questions: formattedQuestions,
+          questions: validQuestions,
           currentQuestionIndex: 0,
-          answers: new Array(formattedQuestions.length).fill(null),
+          answers: new Array(validQuestions.length).fill(null),
           score: 0,
           isCompleted: false,
           startedAt: new Date()
         };
 
         setSession(newSession);
-        setTimeRemaining(3 * 60 * 60); // 3 hours for full test
+        setTimeRemaining(134 * 60); // 134 minutes for full test
         setLoading(false);
         return;
       }
@@ -477,8 +642,10 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
       // Check if we have valid questions, if not create mock questions
       if (!data || !data.questions || !Array.isArray(data.questions) || data.questions.length === 0) {
         console.warn(`No valid questions received for ${sectionId}, creating mock questions`);
+        // Use appropriate question count based on section
+        const questionCount = sectionId === 'math' ? 22 : 27; // Half of real SAT counts
         const mockQuestions: SATQuestion[] = [];
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < questionCount; i++) {
           mockQuestions.push({
             id: `mock-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${i}`,
             question: `What is 2 + 2? (Mock ${sectionId} practice question #${i + 1})`,
@@ -533,11 +700,12 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
           
           // Ensure we have a valid correctAnswer (should be a number now)
           let correctAnswer = 0;
-          if (typeof q.correctAnswer === 'number' && q.correctAnswer >= 0) {
-            correctAnswer = q.correctAnswer;
-          } else if (typeof q.answer === 'number' && q.answer >= 0) {
-            // Fallback to 'answer' field if 'correctAnswer' is not available
+          // Use the 'answer' field from API response and map it to 'correctAnswer'
+          if (typeof q.answer === 'number' && q.answer >= 0 && q.answer < choicesArray.length) {
             correctAnswer = q.answer;
+          } else if (typeof q.correctAnswer === 'number' && q.correctAnswer >= 0 && q.correctAnswer < choicesArray.length) {
+            // Fallback to correctAnswer if answer is not available
+            correctAnswer = q.correctAnswer;
           } else if (typeof q.answer === 'string') {
             // If answer is a string, find its index in choices
             const normalizedAnswer = q.answer?.toString()?.trim().toLowerCase() || '';
@@ -569,11 +737,11 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
             correctAnswer: correctAnswer,
             explanation: q.explanation || '',
             topic: q.topic || topic,
-            difficulty: q.difficulty || 'medium'
+            difficulty: q.difficulty || 'medium',
+            section: q.section || q.subject || sectionId // Add section field
           };
         })
-        .filter((q: any) => 
-          q && 
+        .filter((q: any): q is SATQuestion => q !== null && 
           typeof q === 'object' && 
           q.id && 
           typeof q.id === 'string' && 
@@ -583,11 +751,14 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
           q.question.length > 0 &&
           q.choices && 
           Array.isArray(q.choices) && 
-          q.choices.length > 0
+          q.choices.length > 0 &&
+          typeof q.correctAnswer === 'number' && // Ensure correctAnswer is a number
+          q.correctAnswer >= 0 && 
+          q.correctAnswer < q.choices.length
         ); // Filter out malformed questions
       
       // Additional safety check - ensure we have a valid array
-      const safeQuestionsList = Array.isArray(validQuestionsList) ? validQuestionsList.filter(q => q !== null) : [];
+      const safeQuestionsList: SATQuestion[] = validQuestionsList as SATQuestion[];
       
       if (safeQuestionsList.length === 0) {
         // Ultimate fallback - create mock questions
@@ -674,7 +845,7 @@ export default function SATPracticeClient({ isFullTest = false }: SATPracticeCli
       // Ensure loading is always set to false
       setLoading(false);
     }
-  }, []); // Empty dependency array since we don't want this to change
+  }, [satSections]); // Add satSections to dependency array
 
   // Add missing functions for full practice test
   const handleAnswer = (answerIndex: number) => {

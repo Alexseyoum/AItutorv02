@@ -50,7 +50,8 @@ export class SATQuestionGenerator {
           subject,
           topic,
           difficulty,
-          count
+          count,
+          userId // Pass userId to avoid repetition
         );
         questions = [...questions, ...fallbackQuestions];
         console.log("Got fallback questions:", fallbackQuestions.length);
@@ -63,7 +64,8 @@ export class SATQuestionGenerator {
           subject,
           topic,
           "INTERMEDIATE", // Try intermediate as default
-          count
+          count,
+          userId // Pass userId to avoid repetition
         );
         questions = [...questions, ...anyDifficultyQuestions];
         console.log("Got any difficulty questions:", anyDifficultyQuestions.length);

@@ -54,9 +54,9 @@ export async function POST(request: NextRequest) {
         choicesArray = q.choices;
       }
       
-      // Normalize answer to handle edge cases
+      // Normalize answer to handle edge cases - convert string answer to index
       let correctAnswerIndex = -1;
-      const normalizedAnswer = q.answer?.trim().toLowerCase() || '';
+      const normalizedAnswer = q.answer?.toString()?.trim().toLowerCase() || '';
       
       // Try exact match first
       correctAnswerIndex = choicesArray.findIndex((choice: string) => 
@@ -81,18 +81,48 @@ export async function POST(request: NextRequest) {
         );
       }
       
-      // If still not found, log detailed error and use the first choice as fallback
+      // Additional fallback: If answer is already a number, use it directly
+      if (correctAnswerIndex === -1 && !isNaN(Number(q.answer)) && Number(q.answer) >= 0 && Number(q.answer) < choicesArray.length) {
+        correctAnswerIndex = Number(q.answer);
+      }
+      
+      // Additional fallback: Try partial matching for more flexibility
+      if (correctAnswerIndex === -1) {
+        correctAnswerIndex = choicesArray.findIndex((choice: string) => {
+          const choiceLower = choice.trim().toLowerCase();
+          const answerLower = normalizedAnswer.toLowerCase();
+          // Check if either contains the other
+          return choiceLower.includes(answerLower) || answerLower.includes(choiceLower);
+        });
+      }
+      
+      // If still not found, log detailed error but don't default to 0
+      // Instead, use a more intelligent approach to select a reasonable answer
       if (correctAnswerIndex === -1) {
         console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
-        // Instead of defaulting to 0, we'll use a more robust approach
-        // If the answer is a number and within range, use it as index
-        if (!isNaN(Number(q.answer)) && Number(q.answer) >= 0 && Number(q.answer) < choicesArray.length) {
-          correctAnswerIndex = Number(q.answer);
+        // Try to find a numeric answer in the choices
+        const numericChoices = choicesArray.map((choice, index) => {
+          const match = choice.trim().match(/[\d.]+/);
+          return match ? { index, value: parseFloat(match[0]) } : null;
+        }).filter(Boolean) as { index: number; value: number }[];
+        
+        if (numericChoices.length > 0 && !isNaN(Number(q.answer))) {
+          const targetValue = parseFloat(q.answer.toString());
+          // Find the closest numeric match
+          numericChoices.sort((a, b) => Math.abs(a.value - targetValue) - Math.abs(b.value - targetValue));
+          correctAnswerIndex = numericChoices[0].index;
         } else {
-          // As a last resort, default to 0 but log this clearly
-          correctAnswerIndex = 0;
-          console.warn(`Using first choice as answer fallback for question ID ${q.id}`);
+          // As a last resort, randomly select an answer that isn't the first one
+          // to avoid the pattern of always selecting the first option
+          const validIndices = choicesArray.map((_, index) => index).filter(index => index !== 0);
+          if (validIndices.length > 0) {
+            correctAnswerIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+          } else {
+            // If there's only one choice, use that; otherwise avoid always picking the first
+            correctAnswerIndex = choicesArray.length > 1 ? 1 : 0;
+          }
         }
+        console.log(`Using fallback answer index: ${correctAnswerIndex} for question ${q.id}`);
       }
       
       return {

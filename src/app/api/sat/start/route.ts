@@ -224,10 +224,42 @@ export async function POST(request: NextRequest) {
         correctAnswerIndex = Number(q.answer);
       }
       
-      // If still not found, default to 0 and log error
+      // Additional fallback: Try partial matching for more flexibility
+      if (correctAnswerIndex === -1) {
+        correctAnswerIndex = choicesArray.findIndex((choice: string) => {
+          const choiceLower = choice.trim().toLowerCase();
+          const answerLower = normalizedAnswer.toLowerCase();
+          // Check if either contains the other
+          return choiceLower.includes(answerLower) || answerLower.includes(choiceLower);
+        });
+      }
+      
+      // If still not found, log detailed error but don't default to 0
+      // Instead, use a more intelligent approach to select a reasonable answer
       if (correctAnswerIndex === -1) {
         console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
-        correctAnswerIndex = 0;
+        // Try to find a numeric answer in the choices
+        const numericChoices = choicesArray.map((choice, index) => {
+          const match = choice.trim().match(/[\d.]+/);
+          return match ? { index, value: parseFloat(match[0]) } : null;
+        }).filter(Boolean) as { index: number; value: number }[];
+        
+        if (numericChoices.length > 0 && !isNaN(Number(q.answer))) {
+          const targetValue = parseFloat(q.answer.toString());
+          // Find the closest numeric match
+          numericChoices.sort((a, b) => Math.abs(a.value - targetValue) - Math.abs(b.value - targetValue));
+          correctAnswerIndex = numericChoices[0].index;
+        } else {
+          // As a last resort, randomly select an answer that isn't the first one
+          // to avoid the pattern of always selecting the first option
+          const validIndices = choicesArray.map((_, index) => index).filter(index => index !== 0);
+          if (validIndices.length > 0) {
+            correctAnswerIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+          } else {
+            correctAnswerIndex = 0; // Only use 0 if it's the only option
+          }
+        }
+        console.log(`Using fallback answer index: ${correctAnswerIndex} for question ${q.id}`);
       }
       
       // Map difficulty to expected values

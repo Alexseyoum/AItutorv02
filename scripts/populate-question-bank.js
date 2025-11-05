@@ -258,9 +258,9 @@ const sampleQuestionsData = [
   }
 ];
 
-// Expanded high-quality SAT-style math questions with correct answers, variety, and fixed explanations
+// Greatly expanded with real SAT samples from College Board
 const highQualityMathQuestions = [
-  // Linear equations (Expanded with more varied questions)
+  // Algebra: Linear Equations (added real samples)
   {
     topic: "Algebra: Linear Equations",
     questions: [
@@ -323,10 +323,23 @@ const highQualityMathQuestions = [
         choices: ["6", "9", "14", "18"],
         answer: "6",
         explanation: "Let n be the second number. 3n - 8 = 10. Add 8: 3n = 18. Divide by 3: n = 6."
+      },
+      // New real SAT samples
+      {
+        question: "If f(x) = x + 7 and g(x) = 7x, what is the value of 4f(2) - g(2)?",
+        choices: ["-5", "1", "22", "28"],
+        answer: "22",
+        explanation: "f(2) = 2 + 7 = 9. g(2) = 7*2 = 14. 4*9 - 14 = 36 - 14 = 22."
+      },
+      {
+        question: "The equation 24x² + 25x - 47 / ax - 3 = -8x - 3 + 53 / ax - 3 is true for all values of x ≠ 3/a, where a is a constant. What is the value of a?",
+        choices: ["-16", "-3", "3", "16"],
+        answer: "-16",
+        explanation: "Combine terms over common denominator. Numerator must match for identity. Solve quadratic equivalence."
       }
     ]
   },
-  // Quadratic equations (Expanded with integer solutions for realism)
+  // Algebra: Quadratic Equations
   {
     topic: "Algebra: Quadratic Equations",
     questions: [
@@ -390,6 +403,13 @@ const highQualityMathQuestions = [
         choices: ["x=3/2", "x=3", "x=3/2 and x=3", "No real roots"],
         answer: "x=3/2",
         explanation: "Discriminant = 144 - 144 = 0. Double root x = 12/(8) = 1.5 = 3/2."
+      },
+      // New
+      {
+        question: "For the function f(x) = -4x² + 3x + 7, what is the maximum value?",
+        choices: ["7.375", "7.75", "8", "8.5"],
+        answer: "7.375",
+        explanation: "Vertex at x = -b/(2a) = -3/(2*-4) = 3/8. f(3/8) = -4*(3/8)² + 3*(3/8) + 7 = 59/8 = 7.375."
       }
     ]
   },
@@ -587,7 +607,7 @@ const highQualityMathQuestions = [
   }
 ];
 
-// Expanded high-quality SAT-style reading questions with more variety and realism
+// Expanded Reading with passages
 const highQualityReadingQuestions = [
   {
     topic: "Reading Comprehension: Literature",
@@ -679,6 +699,18 @@ const highQualityReadingQuestions = [
         ],
         answer: "Fragmented identity",
         explanation: "Broken mirror often symbolizes shattered self-perception."
+      },
+      // New real SAT with passages
+      {
+        question: "Passage: To dye wool, Navajo (Diné) weaver Lillie Taylor uses plants and vegetables from Arizona, where she lives. For example, she achieved the deep reds and browns featured in her 2003 rug In the Path of the Four Seasons by using Arizona dock roots, drying and grinding them before mixing the powder with water to create a dye bath. To intensify the appearance of certain colors, Taylor also sometimes mixes in clay obtained from nearby soil. Question: Which choice best states the main idea of the text?",
+        choices: [
+          "Reds and browns are not commonly featured in most of Taylor’s rugs.",
+          "In the Path of the Four Seasons is widely acclaimed for its many colors and innovative weaving techniques.",
+          "Taylor draws on local resources in the approach she uses to dye wool.",
+          "Taylor finds it difficult to locate Arizona dock root in the desert."
+        ],
+        answer: "Taylor draws on local resources in the approach she uses to dye wool.",
+        explanation: "The passage focuses on Taylor using local plants, vegetables, and soil for dyes."
       }
     ]
   },
@@ -826,7 +858,7 @@ const highQualityReadingQuestions = [
   }
 ];
 
-// Expanded high-quality SAT-style writing questions with variety
+// Expanded Writing
 const highQualityWritingQuestions = [
   {
     topic: "Grammar: Sentence Structure",
@@ -896,6 +928,13 @@ const highQualityWritingQuestions = [
         ],
         answer: "Although it was raining, we went out.",
         explanation: "Adds independent clause to complete the thought."
+      },
+      // New
+      {
+        question: "Passage: Iraqi artist Nazik Al-Malaika, celebrated as the first Arabic poet to write in free verse, didn’t reject traditional forms entirely; her poem “Elegy for a Woman of No Importance” consists of two ten-line stanzas and a standard number of syllables. Even in this superficially traditional work, ______ Al-Malaika was breaking new ground by memorializing an anonymous woman rather than a famous man. Which choice completes the text with the most logical transition?",
+        choices: ["in fact,", "though,", "therefore,", "moreover,"],
+        answer: "though,",
+        explanation: "It qualifies the point, showing subversion even in traditional forms."
       }
     ]
   },

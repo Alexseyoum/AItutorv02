@@ -25,7 +25,8 @@
     "validate-questions": "node scripts/validate-sat-questions.js",
     "review-questions": "node scripts/admin-review.js",
     "assess-quality": "node src/scripts/assess-question-quality.js",
-    "enhance-explanations": "node scripts/enhance-explanations.js"
+    "enhance-explanations": "node scripts/enhance-explanations.js",
+    "approve-all": "node scripts/approve-all-questions.js"
   },
   "dependencies": {
     "@huggingface/inference": "^2.8.1",

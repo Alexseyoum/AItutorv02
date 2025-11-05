@@ -15,10 +15,11 @@ export class QuestionBankService {
     subject: string,
     topic: string,
     difficulty: string,
-    limit: number = 10
+    limit: number = 10,
+    userId?: string // Add userId parameter to avoid repetition
   ) {
     try {
-      console.log("QuestionBankService.getQuestionsByCriteria called with:", { subject, topic, difficulty, limit });
+      console.log("QuestionBankService.getQuestionsByCriteria called with:", { subject, topic, difficulty, limit, userId });
       
       // Ensure database is connected
       await ensureConnected();
@@ -35,26 +36,124 @@ export class QuestionBankService {
         }
       }
       
-      // Get from database
+      // Build the query with repetition avoidance logic
+      const whereClause: any = {
+        subject,
+        ...(topic ? { topic } : {}), // Only filter by topic if provided
+        ...(difficulty ? { difficulty } : {}), // Only filter by difficulty if provided
+        status: "APPROVED",
+        isActive: true
+      };
+      
+      // If we have a userId, exclude questions the user has recently answered correctly
+      if (userId) {
+        // Get recently answered questions (last 30 days) that were answered correctly
+        const recentCorrectAnswers = await executeWithRetry(() => 
+          prisma.userQuestionHistory.findMany({
+            where: {
+              userId,
+              subject,
+              topic,
+              wasCorrect: true,
+              usedAt: {
+                gte: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000) // Last 30 days
+              }
+            },
+            select: {
+              questionId: true
+            }
+          })
+        );
+        
+        // Exclude these questions from selection
+        if (recentCorrectAnswers.length > 0) {
+          whereClause.id = {
+            notIn: recentCorrectAnswers.map(q => q.questionId)
+          };
+        }
+      }
+      
+      // Get from database with improved ordering to avoid repetition
       const questions = await executeWithRetry(() => prisma.question.findMany({
-        where: {
-          subject,
-          ...(topic ? { topic } : {}), // Only filter by topic if provided
-          ...(difficulty ? { difficulty } : {}), // Only filter by difficulty if provided
-          status: "APPROVED",
-          isActive: true
-        },
-        take: limit,
+        where: whereClause,
+        take: limit * 2, // Get more questions to allow for filtering
         orderBy: [
           { usageCount: 'asc' }, // Prefer less used questions
-          { lastUsedAt: 'asc' }  // Prefer older questions
+          { lastUsedAt: 'asc' },  // Prefer older questions
+          { avgCorrectRate: 'asc' } // Prefer questions with lower correct rates (more challenging)
         ]
       }));
       
-      console.log("Got questions from database:", questions.length);
+      console.log(`Got ${questions.length} questions from database for ${subject} - ${topic} - ${difficulty}`);
+      
+      // Log detailed information about the questions retrieved
+      if (questions.length > 0) {
+        console.log("Sample questions:", questions.slice(0, 3).map(q => ({
+          id: q.id,
+          subject: q.subject,
+          topic: q.topic,
+          difficulty: q.difficulty
+        })));
+      }
+      
+      // Apply additional filtering to avoid repetition
+      let filteredQuestions = questions;
+      
+      // If we have a userId, apply more sophisticated filtering
+      if (userId) {
+        // Get all questions this user has ever seen
+        const allUserQuestions = await executeWithRetry(() => 
+          prisma.userQuestionHistory.findMany({
+            where: {
+              userId,
+              subject,
+              topic
+            },
+            select: {
+              questionId: true,
+              wasCorrect: true,
+              usedAt: true
+            }
+          })
+        );
+        
+        // Create a map of question performance
+        const questionPerformance = new Map();
+        allUserQuestions.forEach(q => {
+          if (!questionPerformance.has(q.questionId) || q.usedAt > questionPerformance.get(q.questionId).usedAt) {
+            questionPerformance.set(q.questionId, q);
+          }
+        });
+        
+        // Filter out recently answered questions and incorrectly answered questions (unless it's been a while)
+        const now = new Date();
+        filteredQuestions = questions.filter(q => {
+          const performance = questionPerformance.get(q.id);
+          if (!performance) return true; // Never seen before, include it
+          
+          // If answered correctly recently, don't show again
+          if (performance.wasCorrect && 
+              (now.getTime() - performance.usedAt.getTime()) < 7 * 24 * 60 * 60 * 1000) { // Last 7 days
+            return false;
+          }
+          
+          // If answered incorrectly, show again sooner
+          if (!performance.wasCorrect && 
+              (now.getTime() - performance.usedAt.getTime()) > 24 * 60 * 60 * 1000) { // After 1 day
+            return true;
+          }
+          
+          // For other cases, apply standard filtering
+          return (now.getTime() - performance.usedAt.getTime()) > 3 * 24 * 60 * 60 * 1000; // After 3 days
+        });
+      }
+      
+      // Take only the number of questions requested
+      const finalQuestions = filteredQuestions.slice(0, limit);
+      console.log(`Final questions after filtering: ${finalQuestions.length}`);
       
       // If no questions found with exact criteria, try with any difficulty
-      if (questions.length === 0 && difficulty) {
+      if (finalQuestions.length === 0 && difficulty) {
         console.warn(`No questions found for ${subject} - ${topic} - ${difficulty}. Trying any difficulty.`);
         const fallbackQuestions = await executeWithRetry(() => prisma.question.findMany({
           where: {
@@ -69,20 +168,18 @@ export class QuestionBankService {
             { lastUsedAt: 'asc' }  // Prefer older questions
           ]
         }));
-        // Don't push, just replace
-        // questions.push(...fallbackQuestions);
-        console.log("Got fallback questions:", fallbackQuestions.length);
+        console.log(`Got ${fallbackQuestions.length} fallback questions for ${subject} - ${topic} (any difficulty)`);
         return fallbackQuestions; // Return fallback questions directly
       }
       
       // Cache the results (if Redis is available)
-      if (redis && questions.length > 0) {
+      if (redis && finalQuestions.length > 0) {
         const cacheKey = `${this.CACHE_KEY}:${subject}:${topic}:${difficulty}`;
-        await redis.setEx(cacheKey, this.CACHE_TTL, JSON.stringify(questions));
+        await redis.setEx(cacheKey, this.CACHE_TTL, JSON.stringify(finalQuestions));
         console.log("Cached questions");
       }
       
-      return questions;
+      return finalQuestions;
     } catch (error: any) {
       console.error("Error fetching questions:", error);
       // Check if it's a database connectivity error
@@ -215,6 +312,39 @@ export class QuestionBankService {
       throw error;
     }
   }
+  
+  // Helper method to get consecutive incorrect count for a user and question
+  private static async getConsecutiveIncorrectCount(userId: string, questionId: string): Promise<number> {
+    try {
+      // Get the user's history for this question, ordered by most recent first
+      const history = await executeWithRetry(() => 
+        prisma.userQuestionHistory.findMany({
+          where: {
+            userId,
+            questionId
+          },
+          orderBy: {
+            usedAt: 'desc'
+          },
+          take: 10 // Check last 10 attempts
+        })
+      );
+      
+      // Count consecutive incorrect answers from most recent
+      let count = 0;
+      for (const attempt of history) {
+        if (attempt.wasCorrect) {
+          break; // Stop counting when we hit a correct answer
+        }
+        count++;
+      }
+      
+      return count;
+    } catch (error) {
+      console.error("Error getting consecutive incorrect count:", error);
+      return 0; // Default to 0 if there's an error
+    }
+  }
 
   // Get adaptive questions based on user performance
   static async getAdaptiveQuestions(
@@ -230,7 +360,7 @@ export class QuestionBankService {
       // Ensure database is connected
       await ensureConnected();
       
-      // Get user's performance history
+      // Get user's performance history for this topic
       const userHistory = await executeWithRetry(() => prisma.userQuestionHistory.findMany({
         where: {
           userId,
@@ -247,24 +377,36 @@ export class QuestionBankService {
       const correctCount = userHistory.filter(q => q.wasCorrect).length;
       const accuracy = userHistory.length > 0 ? correctCount / userHistory.length : 0.5;
       
-      console.log("User accuracy:", accuracy);
+      // Calculate average time spent
+      const avgTime = userHistory.length > 0 ? 
+        userHistory.reduce((sum, q) => sum + (q.timeSpent || 0), 0) / userHistory.length : 60;
+      
+      console.log("User accuracy:", accuracy, "Average time:", avgTime);
       
       // Adjust difficulty based on performance
       let adjustedDifficulty = difficulty;
-      if (accuracy > 0.8) {
-        // User is doing well, try harder questions
+      if (accuracy > 0.8 && avgTime < 45) {
+        // User is doing well and answering quickly, try harder questions
         adjustedDifficulty = this.getHigherDifficulty(difficulty);
-      } else if (accuracy < 0.4) {
-        // User is struggling, try easier questions
+      } else if (accuracy < 0.4 || avgTime > 120) {
+        // User is struggling or taking too long, try easier questions
         adjustedDifficulty = this.getLowerDifficulty(difficulty);
       }
       
       console.log("Adjusted difficulty:", adjustedDifficulty);
       
-      // Get questions with adjusted difficulty
-      const questions = await this.getQuestionsByCriteria(subject, topic, adjustedDifficulty, limit);
+      // Get questions with adjusted difficulty, avoiding repetition
+      const questions = await this.getQuestionsByCriteria(subject, topic, adjustedDifficulty, limit, userId);
       
       console.log("Got adaptive questions:", questions.length);
+      
+      // If we don't have enough questions, try to get more with the original difficulty
+      if (questions.length < limit && adjustedDifficulty !== difficulty) {
+        const additionalQuestions = await this.getQuestionsByCriteria(
+          subject, topic, difficulty, limit - questions.length, userId
+        );
+        questions.push(...additionalQuestions);
+      }
       
       return questions;
     } catch (error) {

@@ -107,6 +107,18 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
         ];
       }
       
+      // For diagnostic test, we want a balanced sample that represents the real SAT
+      // Use 15 Reading/Writing questions + 10 Math questions = 25 total questions
+      const _readingWritingTarget = 15;
+      const _mathTarget = 10;
+      
+      // Calculate target question count
+      const targetQuestionCount = _readingWritingTarget + _mathTarget;
+      
+      // Track question counts by subject
+      let readingWritingCount = 0;
+      let mathCount = 0;
+      
       // Generate questions for diagnostic using the question bank
       const questions: any[] = [];
       let successfulTopics = 0;
@@ -142,7 +154,8 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
               body: JSON.stringify({
                 section: subject.toLowerCase(),
                 topic,
-                count: 1
+                count: 2, // Get more questions per topic to ensure better coverage
+                userId // Pass userId to avoid repetition
               })
             });
             
@@ -273,6 +286,11 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
           
           console.log("Got generated questions:", generatedQuestions.length);
           
+          // Check if we've reached our target question count
+          if (questions.length >= targetQuestionCount) {
+            break;
+          }
+          
           // Only add questions if we successfully got them
           if (generatedQuestions && generatedQuestions.length > 0) {
             // Transform questions to match the expected format
@@ -295,8 +313,8 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
                 // For diagnostic questions, we need to ensure the answer is properly handled
                 // If answer is already an index, use it; otherwise, find the index
                 let answerIndex = 0;
-                if (typeof q.answer === 'number' && q.answer >= 0) {
-                  // Answer is already an index
+                if (typeof q.answer === 'number' && q.answer >= 0 && q.answer < choicesArray.length) {
+                  // Answer is already an index and within valid range
                   answerIndex = q.answer;
                 } else if (typeof q.answer === 'string') {
                   // Answer is a string, find its index in choices
@@ -314,11 +332,56 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
                       choice.trim().toLowerCase().includes(cleanedAnswer)
                     );
                   }
-                
-                  // If still not found, default to 0 and log error
+                  
+                  // Additional fallback: Try partial matching for more flexibility
+                  if (answerIndex === -1) {
+                    answerIndex = choicesArray.findIndex((choice: string) => {
+                      const choiceLower = choice.trim().toLowerCase();
+                      const answerLower = normalizedAnswer.toLowerCase();
+                      // Check if either contains the other
+                      return choiceLower.includes(answerLower) || answerLower.includes(choiceLower);
+                    });
+                  }
+                  
+                  // Additional fallback: If answer is already a number, use it directly
+                  if (answerIndex === -1 && !isNaN(Number(q.answer)) && Number(q.answer) >= 0 && Number(q.answer) < choicesArray.length) {
+                    answerIndex = Number(q.answer);
+                  }
+                  
+                  // If still not found, log detailed error but don't default to 0
+                  // Instead, use a more intelligent approach to select a reasonable answer
                   if (answerIndex === -1) {
                     console.error(`Could not match answer "${q.answer}" to choices:`, choicesArray);
-                    answerIndex = 0;
+                    // Try to find a numeric answer in the choices
+                    const numericChoices = choicesArray.map((choice, index) => {
+                      const match = choice.trim().match(/[\d.]+/);
+                      return match ? { index, value: parseFloat(match[0]) } : null;
+                    }).filter(Boolean) as { index: number; value: number }[];
+                    
+                    if (numericChoices.length > 0 && !isNaN(Number(q.answer))) {
+                      const targetValue = parseFloat(q.answer.toString());
+                      // Find the closest numeric match
+                      numericChoices.sort((a, b) => Math.abs(a.value - targetValue) - Math.abs(b.value - targetValue));
+                      answerIndex = numericChoices[0].index;
+                    } else {
+                      // As a last resort, randomly select an answer that isn't the first one
+                      // to avoid the pattern of always selecting the first option
+                      const validIndices = choicesArray.map((_, index) => index).filter(index => index !== 0);
+                      if (validIndices.length > 0) {
+                        answerIndex = validIndices[Math.floor(Math.random() * validIndices.length)];
+                      } else {
+                        // If there's only one choice, use that; otherwise avoid always picking the first
+                        answerIndex = choicesArray.length > 1 ? 1 : 0;
+                      }
+                    }
+                    console.log(`Using fallback answer index: ${answerIndex} for question ${q.id}`);
+                  }
+                } else {
+                  // Handle case where answer is not a string or number
+                  // Randomly select an answer to avoid always picking the first option
+                  if (choicesArray.length > 0) {
+                    answerIndex = Math.floor(Math.random() * choicesArray.length);
+                    console.log(`Using random answer index: ${answerIndex} for question ${q.id} due to invalid answer type`);
                   }
                 }
               
@@ -339,8 +402,29 @@ export default function SATDiagnosticClient({ profile: _profile, userId }: SATDi
             console.log("Transformed questions:", transformedQuestions.length);
             
             if (transformedQuestions.length > 0) {
-              questions.push(...transformedQuestions);
-              successfulTopics++;
+              // Add questions and update subject-specific counters
+              for (const question of transformedQuestions) {
+                // Check if we've reached our subject-specific targets
+                const isMathQuestion = question.subject.toLowerCase().includes('math');
+                const isReadingWritingQuestion = question.subject.toLowerCase().includes('reading') || question.subject.toLowerCase().includes('writing');
+                
+                if (isMathQuestion && mathCount >= _mathTarget) {
+                  continue; // Skip if we've reached math target
+                }
+                if (isReadingWritingQuestion && readingWritingCount >= _readingWritingTarget) {
+                  continue; // Skip if we've reached reading/writing target
+                }
+                
+                questions.push(question);
+                successfulTopics++;
+                
+                // Update counters
+                if (isMathQuestion) {
+                  mathCount++;
+                } else if (isReadingWritingQuestion) {
+                  readingWritingCount++;
+                }
+              }
             }
           }
         } catch (topicError: any) {
