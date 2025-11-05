@@ -167,7 +167,7 @@ export async function POST(request: NextRequest) {
       ...q,
       id: q.id || `gen_${Date.now()}_${i}`,
       createdAt: new Date().toISOString(),
-      status: "pending_review",
+      status: "PENDING_REVIEW",
     }));
 
     return NextResponse.json({ success: true, questions: finalized });
@@ -210,7 +210,7 @@ export async function GET(request: NextRequest) {
 
     const questions = await prisma.question.findMany({
       where: {
-        status: "pending_review"
+        status: "PENDING_REVIEW"
       },
       orderBy: {
         createdAt: "desc"

@@ -53,8 +53,9 @@ export default async function SATDiagnosticPage() {
       pastEngagement: user.pastEngagement || 0,
       isOnboarded: user.isOnboarded,
       isInterestedInSATPrep: user.isInterestedInSATPrep
-    }
+    },
+    userId: session.user.id
   };
 
-  return <SATDiagnosticClient profile={profileData.profile} />;
+  return <SATDiagnosticClient {...profileData} />;
 }

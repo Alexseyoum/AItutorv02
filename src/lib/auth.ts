@@ -27,7 +27,21 @@ const validateEnvVars = () => {
   }
 };
 
+// Add database connection check
+const ensureDatabaseConnection = async () => {
+  try {
+    // Wait for database connection
+    await prisma.$queryRaw`SELECT 1`;
+    Logger.info("Database connection verified for auth initialization");
+  } catch (error) {
+    Logger.error("Database not ready for auth initialization:", error as Error);
+    // We'll still try to initialize auth, but it might fail if DB is not ready
+  }
+};
+
+// Run validation and connection check
 validateEnvVars();
+ensureDatabaseConnection();
 
 export const auth = betterAuth({
   database: prismaAdapter(prisma, {

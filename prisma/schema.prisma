@@ -46,6 +46,14 @@ enum AchievementCategory {
   MILESTONE
 }
 
+enum QuestionStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+  RETIRED
+  ARCHIVED
+}
+
 model Post {
   id String @id @default(uuid())
   createdAt DateTime @default(now())
@@ -104,6 +112,9 @@ model User {
   mockExams MockExam[]
   mockAttempts MockAttempt[]
   topicMasteries TopicMastery[]
+  
+  // New relation for question history
+  questionHistories UserQuestionHistory[]
 
   @@map("users")
   @@index([email])
@@ -319,15 +330,61 @@ model Question {
   answer      String
   explanation String
   source      String   @default("generated") // "generated" or "official"
-  status      String   @default("pending_review") // "pending_review", "approved", "rejected"
+  status      QuestionStatus @default(PENDING_REVIEW)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // Enhanced analytics fields for question bank system
+  usageCount      Int      @default(0)
+  avgCorrectRate  Float?
+  avgTimeToAnswer Float?
+  tags            String[] @default([])
+  lastUsedAt      DateTime?
+  reviewCount     Int      @default(0)
+  version         Int      @default(1)
+  isActive        Boolean  @default(true)
+  parentVersionId String?
 
   // Relations
   userGeneratedBy String?
   user            User?    @relation("UserGeneratedQuestions", fields: [userGeneratedBy], references: [id], onDelete: SetNull)
   
+  // Self-referencing relation for versioning
+  parentQuestion  Question? @relation("QuestionVersion", fields: [parentVersionId], references: [id], onDelete: SetNull)
+  childQuestions  Question[] @relation("QuestionVersion")
+  
+  // Relation to user question history
+  userHistories   UserQuestionHistory[]
+
   @@map("questions")
+  @@index([subject, topic, difficulty])
+  @@index([usageCount])
+  @@index([avgCorrectRate])
+  @@index([lastUsedAt])
+  @@index([isActive])
+}
+
+// New model for tracking user question history
+model UserQuestionHistory {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  usedAt      DateTime @default(now())
+  wasCorrect  Boolean?
+  timeSpent   Int?     // Time spent in seconds
+  subject     String?
+  topic       String?
+  difficulty  String?
+  createdAt   DateTime @default(now())
+
+  @@map("user_question_history")
+  @@index([userId])
+  @@index([questionId])
+  @@index([usedAt])
+  @@index([subject, topic])
+  @@index([userId, questionId])
 }
 
 model MockExam {

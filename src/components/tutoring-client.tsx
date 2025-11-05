@@ -319,6 +319,9 @@ export default function TutoringClient({ user, profile }: TutoringClientProps) {
                     <Target className="h-5 w-5 text-yellow-600 dark:text-yellow-400" />
                   </div>
                   <h3 className="text-lg font-semibold text-gray-900 dark:text-white">SAT Preparation</h3>
+                  <Badge variant="secondary" className="bg-orange-100 dark:bg-orange-900/30 text-orange-800 dark:text-orange-200 text-xs">
+                    BETA
+                  </Badge>
                 </div>
                 <p className="text-gray-600 dark:text-gray-400 mb-4">Personalized SAT study plan and practice tests</p>
                 <Button asChild className="w-full bg-yellow-500 hover:bg-yellow-600 text-white">

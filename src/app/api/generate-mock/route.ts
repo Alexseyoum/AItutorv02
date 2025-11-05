@@ -72,7 +72,7 @@ export async function POST(_request: NextRequest) {
               topic: { contains: topic, mode: "insensitive" },
               subject: { equals: subject },
               difficulty: { equals: difficulty },
-              status: "approved"
+              status: "APPROVED"
             },
             take: count
           });

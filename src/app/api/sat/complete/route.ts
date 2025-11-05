@@ -2,6 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { QuestionBankService } from "@/lib/question-bank";
 
 export async function POST(request: NextRequest) {
   try {
@@ -35,6 +36,33 @@ export async function POST(request: NextRequest) {
         { error: "Session not found or unauthorized" },
         { status: 404 }
       );
+    }
+
+    // Record question usage for adaptive learning
+    if (Array.isArray(answers)) {
+      for (const answer of answers) {
+        try {
+          // Assuming answer object has questionId, selectedAnswer, and correctAnswer properties
+          if (answer.questionId) {
+            const wasCorrect = answer.selectedAnswer === answer.correctAnswer;
+            const timeSpent = answer.timeSpent || 0;
+            
+            // Record question usage in the question bank
+            await QuestionBankService.recordQuestionUsage(
+              answer.questionId,
+              session.user.id,
+              wasCorrect,
+              timeSpent,
+              answer.subject || "Math", // Default subject
+              answer.topic || "Algebra", // Default topic
+              answer.difficulty || "INTERMEDIATE" // Default difficulty
+            );
+          }
+        } catch (recordError) {
+          console.error("Error recording question usage:", recordError);
+          // Continue with other answers even if one fails
+        }
+      }
     }
 
     // Calculate time spent (assuming answers array contains timing information)
